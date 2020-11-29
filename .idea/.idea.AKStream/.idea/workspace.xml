@@ -22,22 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9a47e047-820f-4920-a18b-2e6a213ba4cf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/Test_GB28181SIPGate.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Debug/netcoreapp3.1/.NETCoreApp,Version=v3.1.AssemblyAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Debug/netcoreapp3.1/Test_GB28181SIPGate.AssemblyInfo.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Debug/netcoreapp3.1/Test_GB28181SIPGate.AssemblyInfoInputs.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Debug/netcoreapp3.1/Test_GB28181SIPGate.assets.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Debug/netcoreapp3.1/Test_GB28181SIPGate.csprojAssemblyReference.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Test_GB28181SIPGate.csproj.nuget.dgspec.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Test_GB28181SIPGate.csproj.nuget.g.props" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/Test_GB28181SIPGate.csproj.nuget.g.targets" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/project.assets.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/project.nuget.cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/project.packagespec.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_GB28181SIPGate/obj/rider.project.restore.info" afterDir="false" />
-    </list>
+    <list default="true" id="9a47e047-820f-4920-a18b-2e6a213ba4cf" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,7 +79,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606657912057</updated>
       <workItem from="1606657918400" duration="48000" />
-      <workItem from="1606658011612" duration="1015000" />
+      <workItem from="1606658011612" duration="1061000" />
     </task>
     <servers />
   </component>
