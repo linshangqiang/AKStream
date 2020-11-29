@@ -35,6 +35,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Test_GB28181SIPGate/Program.cs" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -78,7 +79,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606657912057</updated>
       <workItem from="1606657918400" duration="48000" />
-      <workItem from="1606658011612" duration="514000" />
+      <workItem from="1606658011612" duration="874000" />
     </task>
     <servers />
   </component>
