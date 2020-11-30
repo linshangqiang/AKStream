@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_GB28181SIPGate", "Test_GB28181SIPGate\Test_GB28181SIPGate.csproj", "{90EDEFE5-22C1-4183-820C-F9B8E76F9675}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIPSorcery", "SipSorcery\SIPSorcery.csproj", "{05621CB0-0AE9-49BF-B22E-081641B048A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibCommon", "LibCommon\LibCommon.csproj", "{4925291C-A9CE-43DE-8C96-94AAD37EE7E6}"
@@ -16,10 +14,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{90EDEFE5-22C1-4183-820C-F9B8E76F9675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90EDEFE5-22C1-4183-820C-F9B8E76F9675}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90EDEFE5-22C1-4183-820C-F9B8E76F9675}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90EDEFE5-22C1-4183-820C-F9B8E76F9675}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05621CB0-0AE9-49BF-B22E-081641B048A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05621CB0-0AE9-49BF-B22E-081641B048A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05621CB0-0AE9-49BF-B22E-081641B048A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
