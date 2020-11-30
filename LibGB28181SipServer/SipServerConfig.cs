@@ -9,16 +9,19 @@ namespace LibGB28181SipProxy
     public class SipServerConfig
     {
         private string _sipIpAddress;
+        private string? _sipIpV6Address;
         private string _msgEncode;
         private string _serverSipDeviceId;
         private ushort _sipPort;
         private string _gbVersion;
         private bool _authentication;
-        private string _sipUsername;
-        private string _sipPassword;
+        private string? _sipUsername;
+        private string? _sipPassword;
         private string _msgProtocol;
         private int _keepAliveInterval;
         private int _keepAliveLostNumber;
+        private bool ipV6enable=false;
+        
 
         /// <summary>
         /// sip服务器ip地址
@@ -27,6 +30,15 @@ namespace LibGB28181SipProxy
         {
             get => _sipIpAddress;
             set => _sipIpAddress = value;
+        }
+
+        /// <summary>
+        /// ipv6地址
+        /// </summary>
+        public string? SipIpV6Address
+        {
+            get => _sipIpV6Address;
+            set => _sipIpV6Address = value;
         }
 
         /// <summary>
@@ -77,7 +89,7 @@ namespace LibGB28181SipProxy
         /// <summary>
         /// sip用户名
         /// </summary>
-        public string SipUsername
+        public string? SipUsername
         {
             get => _sipUsername;
             set => _sipUsername = value;
@@ -86,7 +98,7 @@ namespace LibGB28181SipProxy
         /// <summary>
         /// sip密码
         /// </summary>
-        public string SipPassword
+        public string? SipPassword
         {
             get => _sipPassword;
             set => _sipPassword = value;
@@ -117,6 +129,15 @@ namespace LibGB28181SipProxy
         {
             get => _keepAliveLostNumber;
             set => _keepAliveLostNumber = value;
+        }
+
+        /// <summary>
+        /// ipv6使能
+        /// </summary>
+        public bool IpV6Enable
+        {
+            get => ipV6enable;
+            set => ipV6enable = value;
         }
     }
 }
