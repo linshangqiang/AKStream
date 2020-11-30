@@ -1,9 +1,0 @@
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/bin/Debug/netcoreapp3.1/LibSystemInfo.deps.json
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/bin/Debug/netcoreapp3.1/LibSystemInfo.dll
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/bin/Debug/netcoreapp3.1/LibSystemInfo.pdb
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.csprojAssemblyReference.cache
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.csproj.CoreCompileInputs.cache
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.AssemblyInfoInputs.cache
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.AssemblyInfo.cs
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.dll
-/Users/qiuzhouwei/Projects/StreamNode/LibSystemInfo/obj/Debug/netcoreapp3.1/LibSystemInfo.pdb
