@@ -1,0 +1,9 @@
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Debug/netcoreapp3.1/Logger.deps.json
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Debug/netcoreapp3.1/Logger.dll
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Debug/netcoreapp3.1/Logger.pdb
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.csprojAssemblyReference.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.csproj.CoreCompileInputs.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.AssemblyInfoInputs.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.AssemblyInfo.cs
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.dll
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Debug/netcoreapp3.1/Logger.pdb

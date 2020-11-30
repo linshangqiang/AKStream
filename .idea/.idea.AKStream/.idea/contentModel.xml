@@ -7,7 +7,391 @@
     <e p="$USER_HOME$/Library/Caches/JetBrains/Rider2020.2/resharper-host/local/Transient/Rider/v202/SolutionCaches/_AKStream.-1368469629.00" t="ExcludeRecursive" />
     <e p="$PROJECT_DIR$" t="IncludeFlat">
       <e p="AKStream.sln" t="IncludeFlat" />
+      <e p="LibCommon" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="CRC32Helper.cs" t="Include" />
+        <e p="JsonHelper.cs" t="Include" />
+        <e p="LibCommon.cs" t="Include" />
+        <e p="LibCommon.csproj" t="IncludeRecursive" />
+        <e p="NetHelper.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="LibCommon.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="ORMHelper.cs" t="Include" />
+        <e p="ProcessHelper.cs" t="Include" />
+        <e p="UtilsHelper.cs" t="Include" />
+      </e>
+      <e p="LibLogger" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="LibLogger.csproj" t="IncludeRecursive" />
+        <e p="Logger.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="LibLogger.AssemblyInfo.cs" t="Include" />
+            </e>
+            <e p="netstandard2.0" t="Include">
+              <e p="LibLogger.AssemblyInfo.cs" t="Include" />
+            </e>
+            <e p="netstandard2.1" t="Include">
+              <e p="LibLogger.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="LibSystemInfo" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Common.cs" t="Include" />
+        <e p="CPULinuxLoadValue.cs" t="Include" />
+        <e p="CPUMacOSLoadValue.cs" t="Include" />
+        <e p="CPUWinLoadValue.cs" t="Include" />
+        <e p="DiskInfoValue.cs" t="Include" />
+        <e p="JsonHelper.cs" t="Include" />
+        <e p="LibSystemInfo.csproj" t="IncludeRecursive" />
+        <e p="MemoryLinuxValue.cs" t="Include" />
+        <e p="MemoryWinValue.cs" t="Include" />
+        <e p="NetWorkLinuxValue.cs" t="Include" />
+        <e p="NetWorkMacValue.cs" t="Include" />
+        <e p="NetWorkWinValue.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="LibSystemInfo.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="SystemInfo.cs" t="Include" />
+      </e>
       <e p="packages" t="ExcludeRecursive" />
+      <e p="SipSorcery" t="IncludeRecursive">
+        <e p=".gitignore" t="Include" />
+        <e p="app" t="Include">
+          <e p="Media" t="Include">
+            <e p="AudioSendOnlyMediaSession.cs" t="Include" />
+            <e p="Codecs" t="Include">
+              <e p="AudioEncoder.cs" t="Include" />
+              <e p="G711Codecs.cs" t="Include" />
+              <e p="G722Codec.cs" t="Include" />
+            </e>
+            <e p="IMediaSession.cs" t="Include" />
+            <e p="MusicMediaSession.cs" t="Include" />
+            <e p="Sources" t="Include">
+              <e p="AudioExtrasSource.cs" t="Include" />
+              <e p="AudioSignalGenerator.cs" t="Include" />
+              <e p="EmptyAudioSource.cs" t="Include" />
+              <e p="VideoTestPatternSource.cs" t="Include" />
+            </e>
+            <e p="VoIPMediaSession.cs" t="Include" />
+          </e>
+          <e p="SIPAppFunctionDelegates.cs" t="Include" />
+          <e p="SIPPacketMangler.cs" t="Include" />
+          <e p="SIPRequestAuthoriser" t="Include">
+            <e p="SIPRequestAuthenticationResult.cs" t="Include" />
+            <e p="SIPRequestAuthenticator.cs" t="Include" />
+          </e>
+          <e p="SIPUserAgents" t="Include">
+            <e p="ISIPClientUserAgent.cs" t="Include" />
+            <e p="ISIPServerUserAgent.cs" t="Include" />
+            <e p="SIPAccount.cs" t="Include" />
+            <e p="SIPCallDescriptor.cs" t="Include" />
+            <e p="SIPClientUserAgent.cs" t="Include" />
+            <e p="SIPNotifierClient.cs" t="Include" />
+            <e p="SIPRegistrationUserAgent.cs" t="Include" />
+            <e p="SIPServerUserAgent.cs" t="Include" />
+            <e p="SIPUserAgent.cs" t="Include" />
+          </e>
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="core" t="Include">
+          <e p="DNS" t="Include">
+            <e p="SIPDns.cs" t="Include" />
+            <e p="SIPDNSConstants.cs" t="Include" />
+          </e>
+          <e p="SIP" t="Include">
+            <e p="Channels" t="Include">
+              <e p="SIPChannel.cs" t="Include" />
+              <e p="SIPClientWebSocketChannel.cs" t="Include" />
+              <e p="SIPStreamConnection.cs" t="Include" />
+              <e p="SIPTCPChannel.cs" t="Include" />
+              <e p="SIPTLSChannel.cs" t="Include" />
+              <e p="SIPUDPChannel.cs" t="Include" />
+              <e p="SIPWebSocketChannel.cs" t="Include" />
+            </e>
+            <e p="SIPConstants.cs" t="Include" />
+            <e p="SIPDialogue.cs" t="Include" />
+            <e p="SIPEndPoint.cs" t="Include" />
+            <e p="SIPHeader.cs" t="Include" />
+            <e p="SIPMessageBase.cs" t="Include" />
+            <e p="SIPMessageBuffer.cs" t="Include" />
+            <e p="SIPParameterlessURI.cs" t="Include" />
+            <e p="SIPParameters.cs" t="Include" />
+            <e p="SIPReplacesParameter.cs" t="Include" />
+            <e p="SIPRequest.cs" t="Include" />
+            <e p="SIPResponse.cs" t="Include" />
+            <e p="SIPTransport.cs" t="Include" />
+            <e p="SIPURI.cs" t="Include" />
+            <e p="SIPUserAgentsRolesEnum.cs" t="Include" />
+            <e p="SIPUserField.cs" t="Include" />
+            <e p="SIPValidationException.cs" t="Include" />
+          </e>
+          <e p="SIPAuthorisation" t="Include">
+            <e p="SIPAuthorisationDigest.cs" t="Include" />
+            <e p="SIPRequestAuthorisationResult.cs" t="Include" />
+          </e>
+          <e p="SIPCDR" t="Include">
+            <e p="SIPCDR.cs" t="Include" />
+          </e>
+          <e p="SIPEvents" t="Include">
+            <e p="Dialog" t="Include">
+              <e p="SIPEventDialog.cs" t="Include" />
+              <e p="SIPEventDialogInfo.cs" t="Include" />
+              <e p="SIPEventDialogParticipant.cs" t="Include" />
+            </e>
+            <e p="Presence" t="Include">
+              <e p="SIPEventPresence.cs" t="Include" />
+              <e p="SIPEventPresenceTuple.cs" t="Include" />
+            </e>
+            <e p="SIPEvent.cs" t="Include" />
+            <e p="SIPEventPackages.cs" t="Include" />
+          </e>
+          <e p="SIPFunctionDelegates.cs" t="Include" />
+          <e p="SIPTransactions" t="Include">
+            <e p="SIPNonInviteTransaction.cs" t="Include" />
+            <e p="SIPTransaction.cs" t="Include" />
+            <e p="SIPTransactionEngine.cs" t="Include" />
+            <e p="UACInviteTransaction.cs" t="Include" />
+            <e p="UASInviteTransaction.cs" t="Include" />
+          </e>
+          <e p="SIPTransportConfig.cs" t="Include" />
+          <e p="Utilities.cs" t="Include" />
+        </e>
+        <e p="icon.png" t="Include" />
+        <e p="Media" t="Include">
+          <e p="Macroform_-_Simplicity.raw" t="Include" />
+          <e p="testpattern.i420" t="Include" />
+        </e>
+        <e p="net" t="Include">
+          <e p="DtlsSrtp" t="Include">
+            <e p="DtlsSrtpClient.cs" t="Include" />
+            <e p="DtlsSrtpServer.cs" t="Include" />
+            <e p="DtlsSrtpTransport.cs" t="Include" />
+            <e p="DtlsUtils.cs" t="Include" />
+            <e p="SrtpParameters.cs" t="Include" />
+            <e p="StrpPolicy.cs" t="Include" />
+            <e p="Transform" t="Include">
+              <e p="IPackerTransformer.cs" t="Include" />
+              <e p="ITransformEngine.cs" t="Include" />
+              <e p="RawPacket.cs" t="Include" />
+              <e p="SrtcpCryptoContext.cs" t="Include" />
+              <e p="SrtcpTransformer.cs" t="Include" />
+              <e p="SrtpCipherCTR.cs" t="Include" />
+              <e p="SrtpCipherF8.cs" t="Include" />
+              <e p="SrtpCryptoContext.cs" t="Include" />
+              <e p="SrtpTransformEngine.cs" t="Include" />
+              <e p="SrtpTransformer.cs" t="Include" />
+            </e>
+          </e>
+          <e p="HEP" t="Include">
+            <e p="HepPacket.cs" t="Include" />
+          </e>
+          <e p="ICE" t="Include">
+            <e p="IceChecklistEntry.cs" t="Include" />
+            <e p="IceServer.cs" t="Include" />
+            <e p="IRTCIceCandidate.cs" t="Include" />
+            <e p="RTCIceCandidate.cs" t="Include" />
+            <e p="RtpIceChannel.cs" t="Include" />
+          </e>
+          <e p="RTCP" t="Include">
+            <e p="ReceptionReport.cs" t="Include" />
+            <e p="RTCPBye.cs" t="Include" />
+            <e p="RTCPCompoundPacket.cs" t="Include" />
+            <e p="RTCPFeedback.cs" t="Include" />
+            <e p="RTCPHeader.cs" t="Include" />
+            <e p="RTCPReceiverReport.cs" t="Include" />
+            <e p="RTCPSdesReport.cs" t="Include" />
+            <e p="RTCPSenderReport.cs" t="Include" />
+            <e p="RTCPSession.cs" t="Include" />
+          </e>
+          <e p="RTP" t="Include">
+            <e p="MediaStreamTrack.cs" t="Include" />
+            <e p="RTPChannel.cs" t="Include" />
+            <e p="RTPEvent.cs" t="Include" />
+            <e p="RTPHeader.cs" t="Include" />
+            <e p="RTPPacket.cs" t="Include" />
+            <e p="RTPSession.cs" t="Include" />
+            <e p="RtpVideoFramer.cs" t="Include" />
+            <e p="RtpVP8Header.cs" t="Include" />
+          </e>
+          <e p="RTSP" t="Include">
+            <e p="Mjpeg.cs" t="Include" />
+            <e p="RTSPContants.cs" t="Include" />
+            <e p="RTSPHeader.cs" t="Include" />
+            <e p="RTSPMessage.cs" t="Include" />
+            <e p="RTSPRequest.cs" t="Include" />
+            <e p="RTSPResponse.cs" t="Include" />
+            <e p="RTSPURL.cs" t="Include" />
+          </e>
+          <e p="SCTP" t="Include">
+            <e p="Association.cs" t="Include" />
+            <e p="AssociationListener.cs" t="Include" />
+            <e p="behave" t="Include">
+              <e p="DCEPStreamBehaviour.cs" t="Include" />
+              <e p="OrderedStreamBehaviour.cs" t="Include" />
+              <e p="SCTPStreamBehaviour.cs" t="Include" />
+              <e p="UnorderedStreamBehaviour.cs" t="Include" />
+            </e>
+            <e p="dataChannel" t="Include">
+              <e p="DataChannelOpen.cs" t="Include" />
+            </e>
+            <e p="MessageCompleteHandler.cs" t="Include" />
+            <e p="messages" t="Include">
+              <e p="AbortChunk.cs" t="Include" />
+              <e p="Chunk.cs" t="Include" />
+              <e p="CookieAckChunk.cs" t="Include" />
+              <e p="CookieEchoChunk.cs" t="Include" />
+              <e p="DataChunk.cs" t="Include" />
+              <e p="ErrorChunk.cs" t="Include" />
+              <e p="exceptions" t="Include">
+                <e p="ChecksumException.cs" t="Include" />
+                <e p="InvalidDataChunkException.cs" t="Include" />
+                <e p="InvalidSCTPPacketException.cs" t="Include" />
+                <e p="MessageException.cs" t="Include" />
+                <e p="SctpPacketFormatException.cs" t="Include" />
+                <e p="StaleCookieException.cs" t="Include" />
+                <e p="UnreadyAssociationException.cs" t="Include" />
+              </e>
+              <e p="FailChunk.cs" t="Include" />
+              <e p="HeartBeatAckChunk.cs" t="Include" />
+              <e p="HeartBeatChunk.cs" t="Include" />
+              <e p="InitAckChunk.cs" t="Include" />
+              <e p="InitChunk.cs" t="Include" />
+              <e p="OrderedMessage.cs" t="Include" />
+              <e p="OrderedMessageHandler.cs" t="Include" />
+              <e p="Packet.cs" t="Include" />
+              <e p="params" t="Include">
+                <e p="AddIncomingStreamsRequestParameter.cs" t="Include" />
+                <e p="AddOutgoingStreamsRequestParameter.cs" t="Include" />
+                <e p="AddStreamsRequestParameter.cs" t="Include" />
+                <e p="CookiePreservative.cs" t="Include" />
+                <e p="HostNameAddress.cs" t="Include" />
+                <e p="IncomingSSNResetRequestParameter.cs" t="Include" />
+                <e p="IPv4Address.cs" t="Include" />
+                <e p="IPv6Address.cs" t="Include" />
+                <e p="KnownError.cs" t="Include" />
+                <e p="KnownParam.cs" t="Include" />
+                <e p="OutgoingSSNResetRequestParameter.cs" t="Include" />
+                <e p="ProtocolViolationError.cs" t="Include" />
+                <e p="ReconfigurationResponseParameter.cs" t="Include" />
+                <e p="RequestedHMACAlgorithmParameter.cs" t="Include" />
+                <e p="SSNTSNResetRequestParameter.cs" t="Include" />
+                <e p="StaleCookieError.cs" t="Include" />
+                <e p="StateCookie.cs" t="Include" />
+                <e p="SupportedAddressTypes.cs" t="Include" />
+                <e p="Unknown.cs" t="Include" />
+                <e p="UnrecognizedParameters.cs" t="Include" />
+                <e p="VariableParam.cs" t="Include" />
+              </e>
+              <e p="ReConfigChunk.cs" t="Include" />
+              <e p="SackChunk.cs" t="Include" />
+            </e>
+            <e p="ReconfigState.cs" t="Include" />
+            <e p="SCTPByteStreamListener.cs" t="Include" />
+            <e p="SCTPMessage.cs" t="Include" />
+            <e p="SCTPStream.cs" t="Include" />
+            <e p="SCTPStreamListener.cs" t="Include" />
+            <e p="small" t="Include">
+              <e p="BlockingSCTPStream.cs" t="Include" />
+              <e p="MessageSizeExceededException.cs" t="Include" />
+              <e p="SimpleSCTPTimer.cs" t="Include" />
+              <e p="ThreadedAssociation.cs" t="Include" />
+              <e p="UDPForwardingStream.cs" t="Include" />
+            </e>
+            <e p="Utils" t="Include">
+              <e p="ByteBuffer.cs" t="Include" />
+              <e p="Crc32c.cs" t="Include" />
+              <e p="FastBitConverter.cs" t="Include" />
+              <e p="JavaExtras" t="Include">
+                <e p="BlockingQueue.cs" t="Include" />
+                <e p="Iterator.cs" t="Include" />
+                <e p="TimeExtension.cs" t="Include" />
+              </e>
+              <e p="SortedArray.cs" t="Include" />
+            </e>
+          </e>
+          <e p="SDP" t="Include">
+            <e p="SDP.cs" t="Include" />
+            <e p="SDPApplicationMediaFormat.cs" t="Include" />
+            <e p="SDPAudioVideoMediaFormat.cs" t="Include" />
+            <e p="SDPConnectionInformation.cs" t="Include" />
+            <e p="SDPMediaAnnouncement.cs" t="Include" />
+            <e p="SDPSecurityDescription.cs" t="Include" />
+            <e p="SDPTypes.cs" t="Include" />
+          </e>
+          <e p="STUN" t="Include">
+            <e p="STUNAppState.cs" t="Include" />
+            <e p="STUNAttributes" t="Include">
+              <e p="STUNAddressAttribute.cs" t="Include" />
+              <e p="STUNAttribute.cs" t="Include" />
+              <e p="STUNChangeRequestAttribute.cs" t="Include" />
+              <e p="STUNErrorCodeAttribute.cs" t="Include" />
+              <e p="STUNXORAddressAttribute.cs" t="Include" />
+            </e>
+            <e p="STUNClient.cs" t="Include" />
+            <e p="STUNDns.cs" t="Include" />
+            <e p="STUNHeader.cs" t="Include" />
+            <e p="STUNListener.cs" t="Include" />
+            <e p="STUNMessage.cs" t="Include" />
+            <e p="STUNServer.cs" t="Include" />
+            <e p="STUNUri.cs" t="Include" />
+          </e>
+          <e p="WebRTC" t="Include">
+            <e p="IRTCDataChannel.cs" t="Include" />
+            <e p="IRTCPeerConnection.cs" t="Include" />
+            <e p="RTCDataChannel.cs" t="Include" />
+            <e p="RTCPeerConnection.cs" t="Include" />
+            <e p="RTCPeerSctpAssociation.cs" t="Include" />
+            <e p="WebRTCNodeDssPeer.cs" t="Include" />
+            <e p="WebRTCWebSocketClient.cs" t="Include" />
+            <e p="WebRTCWebSocketPeer.cs" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.0" t="Include">
+              <e p="SIPSorcery.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="SIPSorcery.csproj" t="IncludeRecursive" />
+        <e p="sys" t="Include">
+          <e p="BufferUtils.cs" t="Include" />
+          <e p="CRC32.cs" t="Include" />
+          <e p="Crypto" t="Include">
+            <e p="Crypto.cs" t="Include" />
+            <e p="PasswordHash.cs" t="Include" />
+          </e>
+          <e p="Formatting" t="Include">
+            <e p="NumberFormatting.cs" t="Include" />
+          </e>
+          <e p="JsonParser.cs" t="Include" />
+          <e p="JSONWriter.cs" t="Include" />
+          <e p="Log.cs" t="Include" />
+          <e p="net" t="Include">
+            <e p="IPSocket.cs" t="Include" />
+            <e p="NetConvert.cs" t="Include" />
+            <e p="NetServices.cs" t="Include" />
+            <e p="PipedMemoryStream.cs" t="Include" />
+            <e p="RawSocket.cs" t="Include" />
+          </e>
+          <e p="SafeXML.cs" t="Include" />
+          <e p="StorageTypes.cs" t="Include" />
+          <e p="TypeExtensions.cs" t="Include" />
+        </e>
+      </e>
       <e p="Test_GB28181SIPGate" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
         <e p="obj" t="ExcludeRecursive">

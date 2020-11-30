@@ -1,0 +1,9 @@
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Release/netstandard2.0/Logger.deps.json
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Release/netstandard2.0/Logger.dll
+/Users/qiuzhouwei/Projects/StreamNode/Logger/bin/Release/netstandard2.0/Logger.pdb
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.csprojAssemblyReference.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.csproj.CoreCompileInputs.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.AssemblyInfoInputs.cache
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.AssemblyInfo.cs
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.dll
+/Users/qiuzhouwei/Projects/StreamNode/Logger/obj/Release/netstandard2.0/Logger.pdb
