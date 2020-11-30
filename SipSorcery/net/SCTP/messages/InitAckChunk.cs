@@ -51,7 +51,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class InitAckChunk : Chunk
     {
-
         private static ILogger logger = Log.Logger;
 
         int _initiateTag;
@@ -62,7 +61,9 @@ namespace SIPSorcery.Net.Sctp
         private byte[] _cookie;
         private byte[] _supportedExtensions;
 
-        public InitAckChunk() : base(ChunkType.INITACK) { }
+        public InitAckChunk() : base(ChunkType.INITACK)
+        {
+        }
 
         public int getInitiateTag()
         {
@@ -130,7 +131,8 @@ namespace SIPSorcery.Net.Sctp
             if (_body.remaining() >= 16)
             {
                 _initiateTag = _body.GetInt();
-                _adRecWinCredit = _body.GetUInt(); ;
+                _adRecWinCredit = _body.GetUInt();
+                ;
                 _numOutStreams = _body.GetUShort();
                 _numInStreams = _body.GetUShort();
                 _initialTSN = _body.GetUInt();
@@ -147,14 +149,14 @@ namespace SIPSorcery.Net.Sctp
                     //logger.LogDebug("variable of type: " + v.getName() + " " + v.ToString());
                     if (typeof(StateCookie).IsAssignableFrom(v.GetType()))
                     {
-                        _cookie = ((StateCookie)v).getData();
+                        _cookie = ((StateCookie) v).getData();
                     }
+
                     //else
                     //{
                     //    logger.LogDebug("ignored variable of type: " + v.getName());
                     //}
                 }
-
             }
         }
 
@@ -162,10 +164,10 @@ namespace SIPSorcery.Net.Sctp
         {
             string ret = base.ToString();
             ret += " initiateTag : " + _initiateTag
-                    + " adRecWinCredit : " + _adRecWinCredit
-                    + " numOutStreams : " + _numOutStreams
-                    + " numInStreams : " + _numInStreams
-                    + " initialTSN : " + _initialTSN;
+                                     + " adRecWinCredit : " + _adRecWinCredit
+                                     + " numOutStreams : " + _numOutStreams
+                                     + " numInStreams : " + _numInStreams
+                                     + " initialTSN : " + _initialTSN;
             //+ ((_supportedExtensions == null) ? " no supported extensions" : " supported extensions are: " + chunksToNames(_supportedExtensions));
             ;
             return ret;
@@ -175,8 +177,8 @@ namespace SIPSorcery.Net.Sctp
         {
             ret.Put(_initiateTag);
             ret.Put(_adRecWinCredit);
-            ret.Put((ushort)_numOutStreams);
-            ret.Put((ushort)_numInStreams);
+            ret.Put((ushort) _numOutStreams);
+            ret.Put((ushort) _numInStreams);
             ret.Put(_initialTSN);
             if (_cookie != null)
             {
@@ -184,6 +186,7 @@ namespace SIPSorcery.Net.Sctp
                 sc.setData(_cookie);
                 _varList.Add(sc);
             }
+
             if (_supportedExtensions != null)
             {
                 SupportedExtensions se = new SupportedExtensions();

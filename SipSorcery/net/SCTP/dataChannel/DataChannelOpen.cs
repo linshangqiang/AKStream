@@ -78,10 +78,10 @@ namespace SIPSorcery.Net.Sctp
     {
         public const byte RELIABLE = 0x0;
         public const byte PARTIAL_RELIABLE_REXMIT = 0x01;
-        public const byte PARTIAL_RELIABLE_REXMIT_UNORDERED = (byte)0x81;
+        public const byte PARTIAL_RELIABLE_REXMIT_UNORDERED = (byte) 0x81;
         public const byte PARTIAL_RELIABLE_TIMED = 0x02;
-        public const byte PARTIAL_RELIABLE_TIMED_UNORDERED = (byte)0x82;
-        public const byte RELIABLE_UNORDERED = (byte)0x80;
+        public const byte PARTIAL_RELIABLE_TIMED_UNORDERED = (byte) 0x82;
+        public const byte RELIABLE_UNORDERED = (byte) 0x80;
 
         private static ILogger logger = Log.Logger;
 
@@ -97,11 +97,13 @@ namespace SIPSorcery.Net.Sctp
         const int ACK = 0x02;
         bool _isAck = false;
 
-        public DataChannelOpen(string label) : this((byte)RELIABLE, 0, 0, label, "") { }
+        public DataChannelOpen(string label) : this((byte) RELIABLE, 0, 0, label, "")
+        {
+        }
 
         public DataChannelOpen(byte chanType, int priority, long reliablity, string label, string protocol)
         {
-            _messType = (byte)OPEN;
+            _messType = (byte) OPEN;
             _chanType = chanType;
             _priority = priority;
             _reliablity = reliablity;
@@ -119,12 +121,12 @@ namespace SIPSorcery.Net.Sctp
 
             byte[] ret = new byte[sz];
             ByteBuffer buff = new ByteBuffer(ret);
-            buff.Put((byte)_messType);
-            buff.Put((byte)_chanType);
-            buff.Put((ushort)_priority);
-            buff.Put((int)_reliablity);
-            buff.Put((ushort)_labLen);
-            buff.Put((ushort)_protLen);
+            buff.Put((byte) _messType);
+            buff.Put((byte) _chanType);
+            buff.Put((ushort) _priority);
+            buff.Put((int) _reliablity);
+            buff.Put((ushort) _labLen);
+            buff.Put((ushort) _protLen);
             buff.Put(_label);
             //buff.Position += pad(_labLen);
             buff.Put(_protocol);
@@ -159,12 +161,14 @@ namespace SIPSorcery.Net.Sctp
 
         public override string ToString()
         {
-            return _isAck ? "Ack " : "Open "
-                    + " _chanType =" + (int)_chanType
-                    + " _priority = " + _priority
-                    + " _reliablity = " + _reliablity
-                    + " _label = " + Encoding.UTF8.GetString(_label)
-                    + " _protocol = " + Packet.getHex(_protocol);
+            return _isAck
+                ? "Ack "
+                : "Open "
+                  + " _chanType =" + (int) _chanType
+                  + " _priority = " + _priority
+                  + " _reliablity = " + _reliablity
+                  + " _label = " + Encoding.UTF8.GetString(_label)
+                  + " _protocol = " + Packet.getHex(_protocol);
         }
 
         public bool isAck()

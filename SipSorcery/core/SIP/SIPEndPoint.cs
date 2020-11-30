@@ -65,7 +65,9 @@ namespace SIPSorcery.SIP
         /// </summary>
         public string ChannelID { get; set; }
 
-        private SIPEndPoint() { }
+        private SIPEndPoint()
+        {
+        }
 
         /// <summary>
         /// Instantiates a new SIP end point from a network end point. Non specified properties
@@ -98,7 +100,8 @@ namespace SIPSorcery.SIP
         /// <param name="channelID">Optional. The unique ID of the channel that created the end point.</param>
         /// <param name="connectionID">Optional. For connection oriented protocols the unique ID of the connection.
         /// For connectionless protocols should be set to null.</param>
-        public SIPEndPoint(SIPProtocolsEnum protocol, IPAddress address, int port, string channelID, string connectionID)
+        public SIPEndPoint(SIPProtocolsEnum protocol, IPAddress address, int port, string channelID,
+            string connectionID)
         {
             Protocol = protocol;
             Address = address;
@@ -249,16 +252,16 @@ namespace SIPSorcery.SIP
 
         public override bool Equals(object obj)
         {
-            return AreEqual(this, (SIPEndPoint)obj);
+            return AreEqual(this, (SIPEndPoint) obj);
         }
 
         public static bool operator ==(SIPEndPoint endPoint1, SIPEndPoint endPoint2)
         {
-            if ((object)endPoint1 == null && (object)endPoint2 == null)
+            if ((object) endPoint1 == null && (object) endPoint2 == null)
             {
                 return true;
             }
-            else if ((object)endPoint1 == null || (object)endPoint2 == null)
+            else if ((object) endPoint1 == null || (object) endPoint2 == null)
             {
                 return false;
             }
@@ -286,13 +289,14 @@ namespace SIPSorcery.SIP
         public override int GetHashCode()
         {
             return Protocol.GetHashCode() + Address.GetHashCode() + Port.GetHashCode()
-                + (ChannelID != null ? ChannelID.GetHashCode() : 0)
-                + (ConnectionID != null ? ConnectionID.GetHashCode() : 0);
+                   + (ChannelID != null ? ChannelID.GetHashCode() : 0)
+                   + (ConnectionID != null ? ConnectionID.GetHashCode() : 0);
         }
 
         public SIPEndPoint CopyOf()
         {
-            SIPEndPoint copy = new SIPEndPoint(Protocol, new IPAddress(Address.GetAddressBytes()), Port, ChannelID, ConnectionID);
+            SIPEndPoint copy = new SIPEndPoint(Protocol, new IPAddress(Address.GetAddressBytes()), Port, ChannelID,
+                ConnectionID);
             return copy;
         }
 

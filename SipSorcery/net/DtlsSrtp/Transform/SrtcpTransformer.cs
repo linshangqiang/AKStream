@@ -41,7 +41,6 @@ namespace SIPSorcery.Net
 
         public SrtcpTransformer(SrtpTransformEngine engine) : this(engine, engine)
         {
-
         }
 
         public SrtcpTransformer(SrtpTransformEngine forwardEngine, SrtpTransformEngine reverseEngine)
@@ -112,6 +111,7 @@ namespace SIPSorcery.Net
             {
                 return packet.GetData();
             }
+
             return null;
         }
 
@@ -132,7 +132,7 @@ namespace SIPSorcery.Net
             foreach (var ssrc in keys)
             {
                 if (contexts.TryRemove(ssrc, out var context))
-                { 
+                {
                     context.Close();
                 }
             }

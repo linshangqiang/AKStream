@@ -31,10 +31,12 @@ namespace SIPSorcery.Net.Sctp
         private object myLock = new object();
         private bool isDone;
         public int Number;
+
         public OrderedMessage(int num)
         {
             this.Number = num;
         }
+
         public OrderedMessage Add(DataChunk dc, int type)
         {
             switch (type)
@@ -58,6 +60,7 @@ namespace SIPSorcery.Net.Sctp
                 {
                     //logger.LogDebug($"duplicate message{this.Number} with  {b.getTsn()}");
                 }
+
                 return dc;
             });
             return this;
@@ -98,6 +101,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 list.Add(Chunks[i]);
             }
+
             return list;
         }
 
@@ -108,12 +112,13 @@ namespace SIPSorcery.Net.Sctp
                 return;
             }
 
-            lock(myLock)
+            lock (myLock)
             {
                 if (isDone)
                 {
                     return;
                 }
+
                 isDone = true;
                 action.Invoke();
             }

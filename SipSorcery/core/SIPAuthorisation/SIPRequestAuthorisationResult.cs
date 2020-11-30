@@ -30,7 +30,8 @@ namespace SIPSorcery.SIP
             SIPDomain = sipDomain;
         }
 
-        public SIPRequestAuthorisationResult(SIPResponseStatusCodesEnum errorResponse, SIPAuthenticationHeader authenticationRequiredHeader)
+        public SIPRequestAuthorisationResult(SIPResponseStatusCodesEnum errorResponse,
+            SIPAuthenticationHeader authenticationRequiredHeader)
         {
             ErrorResponse = errorResponse;
             AuthenticationRequiredHeader = authenticationRequiredHeader;

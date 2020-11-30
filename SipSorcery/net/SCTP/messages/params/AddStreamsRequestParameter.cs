@@ -27,7 +27,9 @@ namespace SIPSorcery.Net.Sctp
 {
     public class AddStreamsRequestParameter : Unknown
     {
-        public AddStreamsRequestParameter(int t, string n) : base(t, n) { }
+        public AddStreamsRequestParameter(int t, string n) : base(t, n)
+        {
+        }
 
         /*
 		 0                   1                   2                   3
@@ -54,9 +56,9 @@ namespace SIPSorcery.Net.Sctp
 
         public override void writeBody(ByteBuffer body)
         {
-            body.Put((uint)reconfReqSeqNo);
-            body.Put((ushort)numNewStreams);
-            body.Put((ushort)reserved);
+            body.Put((uint) reconfReqSeqNo);
+            body.Put((ushort) numNewStreams);
+            body.Put((ushort) reserved);
         }
     }
 }

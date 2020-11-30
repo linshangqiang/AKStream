@@ -21,6 +21,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using SCTP4CS.Utils;
 using SIPSorcery.Sys;
+using Crc32 = SCTP4CS.Utils.Crc32;
 
 /**
 *
@@ -65,6 +66,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 throw new SctpPacketFormatException("SCTP packet too short expected 12 bytes, got " + pkt.Length);
             }
+
             checkChecksum(pkt); // if this isn't ok, then we dump the packet silently - by throwing an exception.
 
             _srcPort = pkt.GetUShort();
@@ -78,8 +80,8 @@ namespace SIPSorcery.Net.Sctp
 
         public Packet(int sp, int dp, int vertag)
         {
-            _srcPort = (ushort)sp;
-            _destPort = (ushort)dp;
+            _srcPort = (ushort) sp;
+            _destPort = (ushort) dp;
             _verTag = vertag;
             _chunks = new List<Chunk>();
         }
@@ -94,13 +96,14 @@ namespace SIPSorcery.Net.Sctp
             int pad = 0;
             foreach (Chunk c in _chunks)
             {
-                ByteBuffer cs = ret.slice();            // create a zero offset buffer to play in
+                ByteBuffer cs = ret.slice(); // create a zero offset buffer to play in
                 c.write(cs); // ask the chunk to write itself into there.
                 pad = cs.Position % 4;
                 pad = (pad != 0) ? 4 - pad : 0;
                 //logger.LogDebug("padding by " + pad);
-                ret.Position += pad + cs.Position;// move us along.
+                ret.Position += pad + cs.Position; // move us along.
             }
+
             /*Log.logger.verb("un padding by " + pad);
 			ret.position(ret.position() - pad);*/
             ret = ret.flip();
@@ -152,6 +155,7 @@ namespace SIPSorcery.Net.Sctp
                 ret.Add(next);
                 //logger.LogDebug("saw chunk: " + next.typeLookup());
             }
+
             return ret;
         }
 
@@ -183,7 +187,7 @@ namespace SIPSorcery.Net.Sctp
         void setChecksum(ByteBuffer pkt)
         {
             pkt.Put(SUMOFFSET, 0);
-            var UUint = new FastBit.Uint(SCTP4CS.Utils.Crc32.CRC32C.Calculate(pkt.Data, pkt.offset, pkt.Limit));
+            var UUint = new FastBit.Uint(Crc32.CRC32C.Calculate(pkt.Data, pkt.offset, pkt.Limit));
             uint flip = new FastBit.Uint(UUint.b3, UUint.b2, UUint.b1, UUint.b0).Auint;
             pkt.Put(SUMOFFSET, flip);
         }
@@ -294,7 +298,8 @@ namespace SIPSorcery.Net.Sctp
             int cverTag = t ? ass.getPeerVerTag() : ass.getMyVerTag();
             if (cverTag != _verTag)
             {
-                throw new InvalidSCTPPacketException($"VerTag on an {(ChunkType)chunk._type} doesn't match " + (t ? "their " : "our ") + " vertag " + _verTag + " != " + cverTag);
+                throw new InvalidSCTPPacketException($"VerTag on an {(ChunkType) chunk._type} doesn't match " +
+                                                     (t ? "their " : "our ") + " vertag " + _verTag + " != " + cverTag);
             }
         }
 
@@ -311,6 +316,7 @@ namespace SIPSorcery.Net.Sctp
                     {
                         throw new InvalidSCTPPacketException("Init must be only chunk in a packet");
                     }
+
                     if (_verTag != 0)
                     {
                         throw new InvalidSCTPPacketException("VerTag on an init packet expected to be Zeros");
@@ -336,7 +342,8 @@ namespace SIPSorcery.Net.Sctp
                             }
                             else
                             {
-                                throw new InvalidSCTPPacketException("SHUTDOWN_COMPLETE must be only chunk in a packet");
+                                throw new InvalidSCTPPacketException(
+                                    "SHUTDOWN_COMPLETE must be only chunk in a packet");
                             }
                         }
                         else
@@ -344,7 +351,8 @@ namespace SIPSorcery.Net.Sctp
                             // somewhat hidden here - but this is the normal case - not init abort or shutdown complete 
                             if (_verTag != ass.getMyVerTag())
                             {
-                                throw new InvalidSCTPPacketException("VerTag on plain packet expected to match ours " + _verTag + " != " + ass.getMyVerTag());
+                                throw new InvalidSCTPPacketException("VerTag on plain packet expected to match ours " +
+                                                                     _verTag + " != " + ass.getMyVerTag());
                             }
                         }
                     }
@@ -366,6 +374,7 @@ namespace SIPSorcery.Net.Sctp
                     ret++;
                 }
             }
+
             return (ret < _chunks.Count) ? ret : -1;
         }
     }

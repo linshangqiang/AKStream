@@ -36,10 +36,17 @@ namespace SIPSorcery.SIP
         public const string QOP_AUTHENTICATION_VALUE = "auth";
         private const int NONCE_DEFAULT_COUNT = 1;
 
-        private static char[] m_headerFieldRemoveChars = new char[] { ' ', '"', '\'' };
+        private static char[] m_headerFieldRemoveChars = new char[] {' ', '"', '\''};
 
-        public SIPAuthorisationHeadersEnum AuthorisationType { get; private set; }              // This is the type of authorisation request received.
-        public SIPAuthorisationHeadersEnum AuthorisationResponseType { get; private set; }      // If this is set it's the type of authorisation response to use otherwise use the same as the request (God knows why you need a different response header?!?)
+        public SIPAuthorisationHeadersEnum
+            AuthorisationType { get; private set; } // This is the type of authorisation request received.
+
+        public SIPAuthorisationHeadersEnum
+            AuthorisationResponseType
+        {
+            get;
+            private set;
+        } // If this is set it's the type of authorisation response to use otherwise use the same as the request (God knows why you need a different response header?!?)
 
         public string Realm;
         public string Username;
@@ -51,9 +58,12 @@ namespace SIPSorcery.SIP
         public string Response;
         public string Algorithhm;
 
-        public string Cnonce;        // Client nonce (used with WWW-Authenticate and qop=auth).
-        public string Qop;           // Quality of Protection. Values permitted are auth (authentication) and auth-int (authentication with integrity protection).
-        private int NonceCount = 0;  // Client nonce count.
+        public string Cnonce; // Client nonce (used with WWW-Authenticate and qop=auth).
+
+        public string
+            Qop; // Quality of Protection. Values permitted are auth (authentication) and auth-int (authentication with integrity protection).
+
+        private int NonceCount = 0; // Client nonce count.
         public string Opaque;
 
         public string Digest
@@ -116,7 +126,8 @@ namespace SIPSorcery.SIP
             AuthorisationType = authorisationType;
         }
 
-        public static SIPAuthorisationDigest ParseAuthorisationDigest(SIPAuthorisationHeadersEnum authorisationType, string authorisationRequest)
+        public static SIPAuthorisationDigest ParseAuthorisationDigest(SIPAuthorisationHeadersEnum authorisationType,
+            string authorisationRequest)
         {
             SIPAuthorisationDigest authRequest = new SIPAuthorisationDigest(authorisationType);
 
@@ -134,43 +145,53 @@ namespace SIPSorcery.SIP
                         string headerName = headerField.Substring(0, equalsIndex).Trim();
                         string headerValue = headerField.Substring(equalsIndex + 1).Trim(m_headerFieldRemoveChars);
 
-                        if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_REALM_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_REALM_KEY + "$", RegexOptions.IgnoreCase)
+                            .Success)
                         {
                             authRequest.Realm = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_NONCE_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_NONCE_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Nonce = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_USERNAME_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_USERNAME_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Username = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_RESPONSE_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_RESPONSE_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Response = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_URI_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_URI_KEY + "$", RegexOptions.IgnoreCase)
+                            .Success)
                         {
                             authRequest.URI = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_CNONCE_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_CNONCE_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Cnonce = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_NONCECOUNT_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_NONCECOUNT_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             Int32.TryParse(headerValue, out authRequest.NonceCount);
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_QOP_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_QOP_KEY + "$", RegexOptions.IgnoreCase)
+                            .Success)
                         {
                             authRequest.Qop = headerValue.ToLower();
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_OPAQUE_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_OPAQUE_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Opaque = headerValue;
                         }
-                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_ALGORITHM_KEY + "$", RegexOptions.IgnoreCase).Success)
+                        else if (Regex.Match(headerName, "^" + AuthHeaders.AUTH_ALGORITHM_KEY + "$",
+                            RegexOptions.IgnoreCase).Success)
                         {
                             authRequest.Algorithhm = headerValue;
                         }
@@ -181,7 +202,8 @@ namespace SIPSorcery.SIP
             return authRequest;
         }
 
-        public SIPAuthorisationDigest(SIPAuthorisationHeadersEnum authorisationType, string realm, string username, string password, string uri, string nonce, string request)
+        public SIPAuthorisationDigest(SIPAuthorisationHeadersEnum authorisationType, string realm, string username,
+            string password, string uri, string nonce, string request)
         {
             AuthorisationType = authorisationType;
             Realm = realm;
@@ -204,13 +226,23 @@ namespace SIPSorcery.SIP
         {
             string authHeader = AuthHeaders.AUTH_DIGEST_KEY + " ";
 
-            authHeader += (Username != null && Username.Trim().Length != 0) ? AuthHeaders.AUTH_USERNAME_KEY + "=\"" + Username + "\"" : null;
-            authHeader += (authHeader.IndexOf('=') != -1) ? "," + AuthHeaders.AUTH_REALM_KEY + "=\"" + Realm + "\"" : AuthHeaders.AUTH_REALM_KEY + "=\"" + Realm + "\"";
+            authHeader += (Username != null && Username.Trim().Length != 0)
+                ? AuthHeaders.AUTH_USERNAME_KEY + "=\"" + Username + "\""
+                : null;
+            authHeader += (authHeader.IndexOf('=') != -1)
+                ? "," + AuthHeaders.AUTH_REALM_KEY + "=\"" + Realm + "\""
+                : AuthHeaders.AUTH_REALM_KEY + "=\"" + Realm + "\"";
             authHeader += (Nonce != null) ? "," + AuthHeaders.AUTH_NONCE_KEY + "=\"" + Nonce + "\"" : null;
-            authHeader += (URI != null && URI.Trim().Length != 0) ? "," + AuthHeaders.AUTH_URI_KEY + "=\"" + URI + "\"" : null;
-            authHeader += (Response != null && Response.Length != 0) ? "," + AuthHeaders.AUTH_RESPONSE_KEY + "=\"" + Response + "\"" : null;
+            authHeader += (URI != null && URI.Trim().Length != 0)
+                ? "," + AuthHeaders.AUTH_URI_KEY + "=\"" + URI + "\""
+                : null;
+            authHeader += (Response != null && Response.Length != 0)
+                ? "," + AuthHeaders.AUTH_RESPONSE_KEY + "=\"" + Response + "\""
+                : null;
             authHeader += (Cnonce != null) ? "," + AuthHeaders.AUTH_CNONCE_KEY + "=\"" + Cnonce + "\"" : null;
-            authHeader += (NonceCount != 0) ? "," + AuthHeaders.AUTH_NONCECOUNT_KEY + "=" + GetPaddedNonceCount(NonceCount) : null;
+            authHeader += (NonceCount != 0)
+                ? "," + AuthHeaders.AUTH_NONCECOUNT_KEY + "=" + GetPaddedNonceCount(NonceCount)
+                : null;
             authHeader += (Qop != null) ? "," + AuthHeaders.AUTH_QOP_KEY + "=" + Qop : null;
             authHeader += (Opaque != null) ? "," + AuthHeaders.AUTH_OPAQUE_KEY + "=\"" + Opaque + "\"" : null;
             authHeader += (Algorithhm != null) ? "," + AuthHeaders.AUTH_ALGORITHM_KEY + "=" + Algorithhm : null;
@@ -264,11 +296,11 @@ namespace SIPSorcery.SIP
             string nonce,
             string nonceCount,
             string cnonce,
-            string qop,         // qop-value: "", "auth", "auth-int".
+            string qop, // qop-value: "", "auth", "auth-int".
             string method,
             string digestURL,
             string hEntity
-            )
+        )
         {
             string HA1 = DigestCalcHA1(username, realm, password);
             string HA2 = DigestCalcHA2(method, uri);
@@ -277,19 +309,19 @@ namespace SIPSorcery.SIP
             if (nonceCount != null && cnonce != null && qop != null)
             {
                 unhashedDigest = String.Format("{0}:{1}:{2}:{3}:{4}:{5}",
-                HA1,
-                nonce,
-                nonceCount,
-                cnonce,
-                qop,
-                HA2);
+                    HA1,
+                    nonce,
+                    nonceCount,
+                    cnonce,
+                    qop,
+                    HA2);
             }
             else
             {
                 unhashedDigest = String.Format("{0}:{1}:{2}",
-                HA1,
-                nonce,
-                HA2);
+                    HA1,
+                    nonce,
+                    HA2);
             }
 
             return GetMD5HashBinHex(unhashedDigest);
@@ -304,6 +336,7 @@ namespace SIPSorcery.SIP
             {
                 HA1 += String.Format("{0:x02}", bHA1[i]);
             }
+
             return HA1;
         }
     }

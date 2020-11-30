@@ -27,8 +27,12 @@ namespace SIPSorcery.Net.Sctp
 {
     public class FailChunk : Chunk
     {
-        public FailChunk(ChunkType type, byte flags, int length, ByteBuffer pkt) : base(type, flags, length, pkt) { }
+        public FailChunk(ChunkType type, byte flags, int length, ByteBuffer pkt) : base(type, flags, length, pkt)
+        {
+        }
 
-        protected override void putFixedParams(ByteBuffer ret) { }
+        protected override void putFixedParams(ByteBuffer ret)
+        {
+        }
     }
 }

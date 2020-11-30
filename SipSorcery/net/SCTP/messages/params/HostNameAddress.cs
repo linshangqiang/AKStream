@@ -30,7 +30,9 @@ namespace SIPSorcery.Net.Sctp
     {
         string hostname;
 
-        public HostNameAddress(int t, string n) : base(t, n) { }
+        public HostNameAddress(int t, string n) : base(t, n)
+        {
+        }
 
         public override void readBody(ByteBuffer body, int blen)
         {
@@ -42,8 +44,10 @@ namespace SIPSorcery.Net.Sctp
             {
                 blen--;
             }
+
             hostname = Encoding.ASCII.GetString(data, 0, blen);
         }
+
         public override void writeBody(ByteBuffer body)
         {
             // gonz up a C style string.

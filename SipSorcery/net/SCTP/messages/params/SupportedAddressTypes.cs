@@ -29,7 +29,9 @@ namespace SIPSorcery.Net.Sctp
     {
         int[] supported;
 
-        public SupportedAddressTypes(int t, string n) : base(t, n) { }
+        public SupportedAddressTypes(int t, string n) : base(t, n)
+        {
+        }
 
         public override void readBody(ByteBuffer body, int blen)
         {
@@ -46,7 +48,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 for (int i = 0; i < supported.Length; i++)
                 {
-                    body.Put((ushort)supported[i]);
+                    body.Put((ushort) supported[i]);
                 }
             }
         }

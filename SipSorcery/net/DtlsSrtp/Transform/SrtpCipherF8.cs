@@ -61,6 +61,7 @@
  * @author Werner Dittmann <werner.dittmann@t-online.de>
  */
 
+using System;
 using System.IO;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -99,7 +100,7 @@ namespace SIPSorcery.Net
              * First copy the salt into the mask field, then fill with 0x55 to get a
              * full key.
              */
-            System.Array.Copy(salt, 0, saltMask, 0, salt.Length);
+            Array.Copy(salt, 0, saltMask, 0, salt.Length);
             for (int i = salt.Length; i < saltMask.Length; ++i)
             {
                 saltMask[i] = 0x55;
@@ -111,7 +112,7 @@ namespace SIPSorcery.Net
              */
             for (int i = 0; i < key.Length; i++)
             {
-                maskedKey[i] = (byte)(key[i] ^ saltMask[i]);
+                maskedKey[i] = (byte) (key[i] ^ saltMask[i]);
             }
 
             /*
@@ -124,7 +125,7 @@ namespace SIPSorcery.Net
         }
 
         public static void Process(IBlockCipher cipher, MemoryStream data, int off, int len,
-                byte[] iv, IBlockCipher f8Cipher)
+            byte[] iv, IBlockCipher f8Cipher)
         {
             F8Context f8ctx = new F8Context();
 
@@ -141,7 +142,7 @@ namespace SIPSorcery.Net
             f8ctx.J = 0; // initialize the counter
             f8ctx.S = new byte[BLKLEN]; // get the key stream buffer
 
-            Arrays.Fill(f8ctx.S, (byte)0);
+            Arrays.Fill(f8ctx.S, (byte) 0);
 
             int inLen = len;
 
@@ -176,7 +177,7 @@ namespace SIPSorcery.Net
          *            length of the input data
          */
         public static void ProcessBlock(IBlockCipher cipher, F8Context f8ctx,
-                MemoryStream _in, int inOff, MemoryStream _out, int outOff, int len)
+            MemoryStream _in, int inOff, MemoryStream _out, int outOff, int len)
         {
             /*
              * XOR the previous key stream with IV'
@@ -191,10 +192,10 @@ namespace SIPSorcery.Net
              * Now XOR (S(n-1) xor IV') with the current counter, then increment 
              * the counter
              */
-            f8ctx.S[12] ^= (byte)(f8ctx.J >> 24);
-            f8ctx.S[13] ^= (byte)(f8ctx.J >> 16);
-            f8ctx.S[14] ^= (byte)(f8ctx.J >> 8);
-            f8ctx.S[15] ^= (byte)(f8ctx.J);
+            f8ctx.S[12] ^= (byte) (f8ctx.J >> 24);
+            f8ctx.S[13] ^= (byte) (f8ctx.J >> 16);
+            f8ctx.S[14] ^= (byte) (f8ctx.J >> 8);
+            f8ctx.S[15] ^= (byte) (f8ctx.J);
             f8ctx.J++;
 
             /*
@@ -211,7 +212,7 @@ namespace SIPSorcery.Net
                 _in.Position = inOff + i;
                 var inByte = _in.ReadByte();
                 _out.Position = outOff + i;
-                _out.WriteByte((byte)(inByte ^ f8ctx.S[i]));
+                _out.WriteByte((byte) (inByte ^ f8ctx.S[i]));
             }
         }
     }

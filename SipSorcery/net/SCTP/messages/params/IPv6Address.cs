@@ -30,7 +30,9 @@ namespace SIPSorcery.Net.Sctp
     {
         IPAddress addr;
 
-        public IPv6Address(int t, string n) : base(t, n) { }
+        public IPv6Address(int t, string n) : base(t, n)
+        {
+        }
 
         public override void readBody(ByteBuffer body, int blen)
         {

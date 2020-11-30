@@ -3,12 +3,143 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
 namespace LibCommon
 {
+    public class IPInfo
+    {
+        private string _ipV4;
+        private string _ipV6;
+
+        public string IpV4
+        {
+            get => _ipV4;
+            set => _ipV4 = value;
+        }
+
+        public string IpV6
+        {
+            get => _ipV6;
+            set => _ipV6 = value;
+        }
+    }
+
     public static class UtilsHelper
     {
+        public static IPInfo GetIpAddressByMacAddress(string mac, bool getIPV6 = false)
+        {
+            bool found = false;
+            string tmpMac = mac.Replace("-", "").Replace(":", "").ToUpper().Trim();
+            IPInfo ipInfo = new IPInfo();
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface adapter in nics)
+            {
+                if (found) break;
+                if (adapter.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
+                    adapter.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                {
+                    string macadd = adapter.GetPhysicalAddress().ToString();
+                    if (macadd.ToUpper().Trim().Equals(tmpMac))
+                    {
+                        //获取以太网卡网络接口信息
+                        IPInterfaceProperties ip = adapter.GetIPProperties();
+                        //获取单播地址集
+                        UnicastIPAddressInformationCollection ipCollection = ip.UnicastAddresses;
+                        foreach (UnicastIPAddressInformation ipadd in ipCollection)
+                        {
+                            if (ipadd.Address.AddressFamily == AddressFamily.InterNetwork)
+                            {
+                                //判断是否为ipv4
+                                ipInfo.IpV4 = ipadd.Address.ToString().Trim();
+                            }
+
+                            if (getIPV6)
+                            {
+                                if (ipadd.Address.AddressFamily == AddressFamily.InterNetworkV6)
+                                {
+                                    //判断是否为ipv6
+                                    ipInfo.IpV6 = ipadd.Address.ToString().Trim();
+                                }
+                            }
+
+                            if (getIPV6)
+                            {
+                                if (!string.IsNullOrEmpty(ipInfo.IpV4) && !string.IsNullOrEmpty(ipInfo.IpV6))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(ipInfo.IpV4))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (found)
+            {
+                return ipInfo;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 写入Json配置文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="obj"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool WriteJsonConfig<T>(string filePath, T obj)
+        {
+            try
+            {
+                var jsonStr = JsonHelper.ToJson(obj);
+                File.WriteAllText(filePath, jsonStr);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 读取json配置文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static object ReadJsonConfig<T>(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    string tmpStr = File.ReadAllText(filePath);
+                    return JsonHelper.FromJson<T>(tmpStr);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+
         /// <summary>
         /// 是否为Url
         /// </summary>

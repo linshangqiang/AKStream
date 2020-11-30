@@ -17,12 +17,10 @@
 // Modified by Andrés Leone Gámez
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Security;
@@ -82,12 +80,17 @@ namespace SIPSorcery.Net.Sctp
 		 */
         public enum State
         {
-            COOKIEWAIT, COOKIEECHOED, ESTABLISHED,
-            SHUTDOWNPENDING, SHUTDOWNSENT, SHUTDOWNRECEIVED,
-            SHUTDOWNACKSENT, CLOSED
+            COOKIEWAIT,
+            COOKIEECHOED,
+            ESTABLISHED,
+            SHUTDOWNPENDING,
+            SHUTDOWNSENT,
+            SHUTDOWNRECEIVED,
+            SHUTDOWNACKSENT,
+            CLOSED
         };
 
-        private byte[] _supportedExtensions = { (byte)ChunkType.RE_CONFIG };
+        private byte[] _supportedExtensions = {(byte) ChunkType.RE_CONFIG};
         /*
 		 For what it is worth, here's the logic as to why we don't have any supported extensions.
 		 { 
@@ -102,7 +105,9 @@ namespace SIPSorcery.Net.Sctp
         private static ILogger logger = Log.Logger;
 
         public static int COOKIESIZE = 32;
+
         private static long VALIDCOOKIELIFE = 60000;
+
         /*
 		 RTO.Initial - 3 seconds
 		 RTO.Min - 1 second
@@ -153,10 +158,14 @@ namespace SIPSorcery.Net.Sctp
             public byte[] cookieData;
             public long cookieTime;
         };
+
         private List<CookieHolder> _cookies = new List<CookieHolder>();
 
         // default is server
-        public Association(DatagramTransport transport, AssociationListener al, int srcPort, int dstPort) : this(transport, al, false, srcPort, dstPort) { }
+        public Association(DatagramTransport transport, AssociationListener al, int srcPort, int dstPort) : this(
+            transport, al, false, srcPort, dstPort)
+        {
+        }
 
         public Association(DatagramTransport transport, AssociationListener al, bool client, int srcPort, int dstPort)
         {
@@ -179,6 +188,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogError("Created an Association with a null transport somehow...");
             }
+
             __assocNo++;
             /*
 			the method used to determine which
@@ -194,13 +204,16 @@ namespace SIPSorcery.Net.Sctp
         }
 
         protected byte[] getSupportedExtensions()
-        { // this lets others switch features off.
+        {
+            // this lets others switch features off.
             return _supportedExtensions;
         }
+
         public uint getNearTSN()
         {
             return _nearTSN;
         }
+
         byte[] getUnionSupportedExtensions(byte[] far)
         {
             ByteBuffer unionbb = new ByteBuffer(new byte[far.Length]);
@@ -217,6 +230,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             byte[] res = new byte[unionbb.Position];
             unionbb.Position = 0;
             unionbb.GetBytes(res, res.Length);
@@ -233,11 +247,13 @@ namespace SIPSorcery.Net.Sctp
             {
                 c.validate();
             }
+
             if (cl[0].getType() == ChunkType.INIT)
             {
                 _srcPort = rec.getDestPort();
                 _destPort = rec.getSrcPort();
             }
+
             foreach (Chunk c in cl)
             {
                 if (!deal(c, replies))
@@ -245,28 +261,28 @@ namespace SIPSorcery.Net.Sctp
                     break; // drop the rest of the packet.
                 }
             }
+
             // find the highest sack.
             Chunk hisack = null;
             foreach (var c in replies)
             {
                 if (c.getType() == ChunkType.SACK)
                 {
-                    if (hisack == null || ((SackChunk)c).getCumuTSNAck() > ((SackChunk)hisack).getCumuTSNAck())
+                    if (hisack == null || ((SackChunk) c).getCumuTSNAck() > ((SackChunk) hisack).getCumuTSNAck())
                     {
                         hisack = c;
                     }
                 }
             }
+
             // remove all sacks
-            replies.RemoveAll((Chunk c) =>
-            {
-                return c.getType() == ChunkType.SACK;
-            });
+            replies.RemoveAll((Chunk c) => { return c.getType() == ChunkType.SACK; });
             // insert the highest one first.
             if (hisack != null)
             {
                 replies.Insert(0, hisack);
             }
+
             try
             {
                 send(replies.ToArray());
@@ -323,6 +339,7 @@ namespace SIPSorcery.Net.Sctp
                             }
                         }
                     }
+
                     logger.LogDebug("SCTP message receive was empty, closing association listener.");
 
                     _transp.Close();
@@ -365,6 +382,7 @@ namespace SIPSorcery.Net.Sctp
                     _transp.Send(obb.Data, obb.offset, obb.Limit);
                 }
             }
+
             //else
             //{
             //    logger.LogDebug("Blocked empty packet send() - probably no response needed.");
@@ -388,6 +406,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 ret = (_state == State.CLOSED);
             }
+
             return ret;
         }
 
@@ -410,33 +429,37 @@ namespace SIPSorcery.Net.Sctp
                 case ChunkType.INIT:
                     if (acceptableStateForInboundInit())
                     {
-                        InitChunk init = (InitChunk)c;
+                        InitChunk init = (InitChunk) c;
                         reply = inboundInit(init);
                     }
                     else
                     {
                         // logger.LogDebug("Got an INIT when state was " + _state.ToString() + " - ignoring it for now ");
                     }
+
                     break;
                 case ChunkType.INITACK:
                     //logger.LogDebug("got initack " + c.ToString());
                     if (_state == State.COOKIEWAIT)
                     {
-                        InitAckChunk iack = (InitAckChunk)c;
+                        InitAckChunk iack = (InitAckChunk) c;
                         reply = iackDeal(iack);
                     }
                     else
                     {
                         //logger.LogDebug("Got an INITACK when not waiting for it - ignoring it");
                     }
+
                     break;
                 case ChunkType.COOKIE_ECHO:
                     // logger.LogDebug("got cookie echo " + c.ToString());
-                    reply = cookieEchoDeal((CookieEchoChunk)c);
+                    reply = cookieEchoDeal((CookieEchoChunk) c);
                     if (reply.Length > 0)
                     {
-                        ret = !typeof(ErrorChunk).IsAssignableFrom(reply[0].GetType()); // ignore any following data chunk. 
+                        ret = !typeof(ErrorChunk).IsAssignableFrom(reply[0]
+                            .GetType()); // ignore any following data chunk. 
                     }
+
                     break;
                 case ChunkType.COOKIE_ACK:
                     //logger.LogDebug("got cookie ack " + c.ToString());
@@ -444,10 +467,11 @@ namespace SIPSorcery.Net.Sctp
                     {
                         _state = State.ESTABLISHED;
                     }
+
                     break;
                 case ChunkType.DATA:
                     //logger.LogDebug("got data " + c.ToString());
-                    reply = dataDeal((DataChunk)c);
+                    reply = dataDeal((DataChunk) c);
                     break;
                 case ChunkType.ABORT:
                     // no reply we should just bail I think.
@@ -455,15 +479,15 @@ namespace SIPSorcery.Net.Sctp
                     _transp.Close();
                     break;
                 case ChunkType.HEARTBEAT:
-                    reply = ((HeartBeatChunk)c).mkReply();
+                    reply = ((HeartBeatChunk) c).mkReply();
                     break;
                 case ChunkType.SACK:
                     //logger.LogDebug("got tsak for TSN " + ((SackChunk)c).getCumuTSNAck());
-                    reply = sackDeal((SackChunk)c);
+                    reply = sackDeal((SackChunk) c);
                     // fix the outbound list here
                     break;
                 case ChunkType.RE_CONFIG:
-                    reply = reconfigState.deal((ReConfigChunk)c);
+                    reply = reconfigState.deal((ReConfigChunk) c);
                     break;
                 case ChunkType.ERROR:
                     logger.LogWarning($"SCTP error chunk received.");
@@ -475,27 +499,31 @@ namespace SIPSorcery.Net.Sctp
                             logger.LogWarning($"{knownErr.getName()}, {knownErr}");
                         }
                     }
+
                     break;
             }
+
             if (reply != null)
             {
                 foreach (Chunk r in reply)
                 {
                     replies.Add(r);
                 }
+
                 // theoretically could be multiple DATA in a single packet - 
                 // we'd send multiple SACKs in reply - ToDo fix that
-
             }
+
             if ((_state == State.ESTABLISHED) && (oldState != State.ESTABLISHED))
             {
                 if (null != _al)
                 {
                     _al.onAssociated(this);
                 }
-                reconfigState = new ReconfigState(this, _farTSN);
 
+                reconfigState = new ReconfigState(this, _farTSN);
             }
+
             if ((oldState == State.ESTABLISHED) && (_state != State.ESTABLISHED))
             {
                 if (null != _al)
@@ -503,6 +531,7 @@ namespace SIPSorcery.Net.Sctp
                     _al.onDisAssociated(this);
                 }
             }
+
             return ret;
         }
 
@@ -515,6 +544,7 @@ namespace SIPSorcery.Net.Sctp
                 ob.getChunkList().Add(r);
                 //todo - this needs to workout if all the chunks will fit...
             }
+
             ByteBuffer obb = ob.getByteBuffer();
             return obb;
         }
@@ -557,8 +587,10 @@ namespace SIPSorcery.Net.Sctp
                         {
                             break;
                         }
+
                         i++;
                     }
+
                     if (i == cd.Length)
                     {
                         same = cookie;
@@ -566,6 +598,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             return same;
         }
 
@@ -580,8 +613,9 @@ namespace SIPSorcery.Net.Sctp
             }
             else
             {
-                ret = (uint)((now - cookie.cookieTime) - VALIDCOOKIELIFE);
+                ret = (uint) ((now - cookie.cookieTime) - VALIDCOOKIELIFE);
             }
+
             return ret;
         }
 
@@ -629,7 +663,7 @@ namespace SIPSorcery.Net.Sctp
             byte[] data = iack.getCookie();
             CookieEchoChunk ce = new CookieEchoChunk();
             ce.setCookieData(data);
-            Chunk[] reply = new Chunk[1] { ce };
+            Chunk[] reply = new Chunk[1] {ce};
             this._state = State.COOKIEECHOED;
             return reply;
         }
@@ -679,7 +713,7 @@ namespace SIPSorcery.Net.Sctp
             Chunk[] reply = null;
             _peerVerTag = init.getInitiateTag();
             _winCredit = init.getAdRecWinCredit();
-            _farTSN = (uint)(init.getInitialTSN() - 1);
+            _farTSN = (uint) (init.getInitialTSN() - 1);
 
             _maxOutStreams = Math.Min(init.getNumInStreams(), MAXSTREAMS);
             _maxInStreams = Math.Min(init.getNumOutStreams(), MAXSTREAMS);
@@ -690,7 +724,7 @@ namespace SIPSorcery.Net.Sctp
             iac.setInitialTSN(_nearTSN);
             iac.setInitiateTag(_myVerTag);
             CookieHolder cookie = new CookieHolder();
-            cookie.cookieData = new byte[Association.COOKIESIZE];
+            cookie.cookieData = new byte[COOKIESIZE];
             cookie.cookieTime = TimeExtension.CurrentTimeMillis();
             _random.NextBytes(cookie.cookieData);
             iac.setCookie(cookie.cookieData);
@@ -701,6 +735,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 iac.setSupportedExtensions(this.getUnionSupportedExtensions(fse));
             }
+
             reply = new Chunk[1];
             reply[0] = iac;
             //logger.LogDebug("SCTP received INIT:" + init.ToString());
@@ -721,6 +756,7 @@ namespace SIPSorcery.Net.Sctp
                 _streams.Add(sno, _in);
                 _al.onRawStream(_in);
             }
+
             Chunk[] repa;
             // todo dcep logic belongs in behave - not here.
             if (dc.getDCEP() != null)
@@ -751,10 +787,12 @@ namespace SIPSorcery.Net.Sctp
                     rep.Add(r);
                 }
             }
+
             if (closer != null)
             {
                 rep.Add(closer);
             }
+
             _in.inbound(dc);
             _farTSN = tsn;
         }
@@ -778,6 +816,7 @@ namespace SIPSorcery.Net.Sctp
                 {
                     _holdingPen.Add(tsn, dc);
                 }
+
                 // now see if we can deliver anything new to the streams
                 bool gap = false;
                 for (uint t = _farTSN + 1; !gap; t++)
@@ -800,6 +839,7 @@ namespace SIPSorcery.Net.Sctp
                 logger.LogWarning("Already seen . " + tsn + " expecting " + (_farTSN));
                 duplicates.Add(tsn);
             }
+
             List<uint> l = new List<uint>();
             l.AddRange(_holdingPen.Keys);
             l.Sort();
@@ -829,13 +869,13 @@ namespace SIPSorcery.Net.Sctp
                     int seqOut = s.getNextMessageSeqOut();
                     s.setNextMessageSeqOut(seqOut + 1);
                 }
+
                 rep = new Chunk[1];
                 DataChunk ack = dc.mkAck(dcep);
                 s.outbound(ack);
                 ack.setTsn(_nearTSN++);
                 // check rollover - will break at maxint.
                 rep[0] = ack;
-
             }
             else
             {
@@ -850,6 +890,7 @@ namespace SIPSorcery.Net.Sctp
                     s.setNextMessageSeqOut(seqOut + 1);
                 }
             }
+
             return rep;
         }
 
@@ -937,6 +978,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogDebug("Got an COOKIE_ECHO when not closed - ignoring it");
             }
+
             return reply;
         }
 
@@ -945,7 +987,7 @@ namespace SIPSorcery.Net.Sctp
             SackChunk ret = new SackChunk();
             ret.setCumuTSNAck(_farTSN);
             int stashcap = calcStashCap();
-            ret.setArWin((uint)(MAXBUFF - stashcap));
+            ret.setArWin((uint) (MAXBUFF - stashcap));
             ret.setGaps(pen);
             ret.setDuplicates(dups);
             //logger.LogDebug("made SACK " + ret.ToString());
@@ -959,6 +1001,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 ret += s.stashCap();
             }
+
             return ret;
         }
 
@@ -971,6 +1014,7 @@ namespace SIPSorcery.Net.Sctp
         {
             return _farTSN;
         }
+
         public ReConfigChunk addToCloseList(SCTPStream st)
         {
             return reconfigState.makeClose(st);
@@ -1015,8 +1059,10 @@ namespace SIPSorcery.Net.Sctp
             {
                 ret[i++] = k;
             }
+
             return ret;
         }
+
         public SCTPStream getStream(int s)
         {
             SCTPStream stream;
@@ -1029,6 +1075,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 return null;
             }
+
             var st = _streams[s];
             _streams.Remove(s);
             return st;
@@ -1046,15 +1093,17 @@ namespace SIPSorcery.Net.Sctp
                         logger.LogError("StreamNumberInUseException");
                         return null;
                     }
+
                     sout = mkStream(sno);
                     sout.setLabel(label);
                     _streams.Add(sno, sout);
-                }// todo - move this to behave
+                } // todo - move this to behave
+
                 DataChunk DataChannelOpen = DataChunk.mkDataChannelOpen(label);
                 sout.outbound(DataChannelOpen);
                 DataChannelOpen.setTsn(_nearTSN++);
                 logger.LogDebug($"SCTP data channel open chunk {DataChannelOpen}.");
-                Chunk[] hack = { DataChannelOpen };
+                Chunk[] hack = {DataChannelOpen};
                 try
                 {
                     send(hack);
@@ -1069,6 +1118,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 throw new UnreadyAssociationException();
             }
+
             return sout;
         }
 
@@ -1091,6 +1141,7 @@ namespace SIPSorcery.Net.Sctp
                     ok = false;
                     break;
             }
+
             return ok;
         }
 

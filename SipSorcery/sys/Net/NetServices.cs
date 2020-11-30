@@ -34,10 +34,22 @@ namespace SIPSorcery.Sys
     {
         private const int RTP_RECEIVE_BUFFER_SIZE = 1000000;
         private const int RTP_SEND_BUFFER_SIZE = 1000000;
-        private const int MAXIMUM_UDP_PORT_BIND_ATTEMPTS = 25;          // The maximum number of re-attempts that will be made when trying to bind a UDP socket.
-        private const string INTERNET_IPADDRESS = "8.8.8.8";              // IP address to use when getting default IP address from OS. No connection is established.
-        private const int NETWORK_TEST_PORT = 5060;                       // Port to use when doing a Udp.Connect to determine local IP address (port 0 does not work on MacOS).
-        private const int LOCAL_ADDRESS_CACHE_LIFETIME_SECONDS = 300;   // The amount of time to leave the result of a local IP address determination in the cache.
+
+        private const int
+            MAXIMUM_UDP_PORT_BIND_ATTEMPTS =
+                25; // The maximum number of re-attempts that will be made when trying to bind a UDP socket.
+
+        private const string
+            INTERNET_IPADDRESS =
+                "8.8.8.8"; // IP address to use when getting default IP address from OS. No connection is established.
+
+        private const int
+            NETWORK_TEST_PORT =
+                5060; // Port to use when doing a Udp.Connect to determine local IP address (port 0 does not work on MacOS).
+
+        private const int
+            LOCAL_ADDRESS_CACHE_LIFETIME_SECONDS =
+                300; // The amount of time to leave the result of a local IP address determination in the cache.
 
         private static ILogger logger = Log.Logger;
 
@@ -48,6 +60,7 @@ namespace SIPSorcery.Sys
         /// To date the only case this has cropped up for is Mac OS as per https://github.com/sipsorcery/sipsorcery/issues/207.
         /// </summary>
         private static bool? _supportsDualModeIPv4PacketInfo = null;
+
         public static bool SupportsDualModeIPv4PacketInfo
         {
             get
@@ -75,7 +88,8 @@ namespace SIPSorcery.Sys
         /// 
         /// TODO:  Clear this cache if the state of the local network interfaces change.
         /// </summary>
-        private static ConcurrentDictionary<IPAddress, Tuple<IPAddress, DateTime>> m_localAddressTable = new ConcurrentDictionary<IPAddress, Tuple<IPAddress, DateTime>>();
+        private static ConcurrentDictionary<IPAddress, Tuple<IPAddress, DateTime>> m_localAddressTable =
+            new ConcurrentDictionary<IPAddress, Tuple<IPAddress, DateTime>>();
 
         /// <summary>
         /// The list of IP addresses that this machine can use.
@@ -87,7 +101,7 @@ namespace SIPSorcery.Sys
                 // TODO: Reset if the local network interfaces change.
                 if (_localIPAddresses == null)
                 {
-                    _localIPAddresses = NetServices.GetAllLocalIPAddresses();
+                    _localIPAddresses = GetAllLocalIPAddresses();
                 }
 
                 return _localIPAddresses;
@@ -98,6 +112,7 @@ namespace SIPSorcery.Sys
                 //return Dns.GetHostAddresses(string.Empty).ToList();
             }
         }
+
         private static List<IPAddress> _localIPAddresses = null;
 
         /// <summary>
@@ -116,6 +131,7 @@ namespace SIPSorcery.Sys
                 return _internetDefaultAddress;
             }
         }
+
         private static IPAddress _internetDefaultAddress = null;
 
         /// <summary>
@@ -124,13 +140,17 @@ namespace SIPSorcery.Sys
         /// <param name="bindAddress">The bind address to use.</param>
         private static void CheckBindAddressAndThrow(IPAddress bindAddress)
         {
-            if (bindAddress != null && bindAddress.AddressFamily == AddressFamily.InterNetworkV6 && !Socket.OSSupportsIPv6)
+            if (bindAddress != null && bindAddress.AddressFamily == AddressFamily.InterNetworkV6 &&
+                !Socket.OSSupportsIPv6)
             {
-                throw new ApplicationException("A UDP socket cannot be created on an IPv6 address due to lack of OS support.");
+                throw new ApplicationException(
+                    "A UDP socket cannot be created on an IPv6 address due to lack of OS support.");
             }
-            else if (bindAddress != null && bindAddress.AddressFamily == AddressFamily.InterNetwork && !Socket.OSSupportsIPv4)
+            else if (bindAddress != null && bindAddress.AddressFamily == AddressFamily.InterNetwork &&
+                     !Socket.OSSupportsIPv4)
             {
-                throw new ApplicationException("A UDP socket cannot be created on an IPv4 address due to lack of OS support.");
+                throw new ApplicationException(
+                    "A UDP socket cannot be created on an IPv4 address due to lack of OS support.");
             }
         }
 
@@ -146,16 +166,20 @@ namespace SIPSorcery.Sys
         /// even numbered port.</param>
         /// <param name="useDualMode">If true then IPv6 sockets will be created as dual mode IPv4/IPv6 on supporting systems.</param>
         /// <returns>A bound socket if successful or throws an ApplicationException if unable to bind.</returns>
-        public static Socket CreateBoundUdpSocket(int port, IPAddress bindAddress, bool requireEvenPort = false, bool useDualMode = true)
+        public static Socket CreateBoundUdpSocket(int port, IPAddress bindAddress, bool requireEvenPort = false,
+            bool useDualMode = true)
         {
             if (requireEvenPort && port != 0 && port % 2 != 0)
             {
-                throw new ArgumentException("Cannot specify both require even port and a specific non-even port to bind on. Set port to 0.");
+                throw new ArgumentException(
+                    "Cannot specify both require even port and a specific non-even port to bind on. Set port to 0.");
             }
 
             if (bindAddress == null)
             {
-                bindAddress = (Socket.OSSupportsIPv6 && SupportsDualModeIPv4PacketInfo) ? IPAddress.IPv6Any : IPAddress.Any;
+                bindAddress = (Socket.OSSupportsIPv6 && SupportsDualModeIPv4PacketInfo)
+                    ? IPAddress.IPv6Any
+                    : IPAddress.Any;
             }
 
             IPEndPoint logEp = new IPEndPoint(bindAddress, port);
@@ -178,14 +202,16 @@ namespace SIPSorcery.Sys
 
                     if (requireEvenPort && boundPort % 2 != 0 && boundPort == IPEndPoint.MaxPort)
                     {
-                        logger.LogDebug($"CreateBoundUdpSocket even port required, closing socket on {socket.LocalEndPoint}, max port reached request new bind.");
+                        logger.LogDebug(
+                            $"CreateBoundUdpSocket even port required, closing socket on {socket.LocalEndPoint}, max port reached request new bind.");
                         success = false;
                     }
                     else
                     {
                         if (requireEvenPort && boundPort % 2 != 0)
                         {
-                            logger.LogDebug($"CreateBoundUdpSocket even port required, closing socket on {socket.LocalEndPoint} and retrying on {boundPort + 1}.");
+                            logger.LogDebug(
+                                $"CreateBoundUdpSocket even port required, closing socket on {socket.LocalEndPoint} and retrying on {boundPort + 1}.");
 
                             // Close the socket, create a new one and try binding on the next consecutive port.
                             socket.Close();
@@ -196,7 +222,8 @@ namespace SIPSorcery.Sys
                         {
                             if (addressFamily == AddressFamily.InterNetworkV6)
                             {
-                                logger.LogDebug($"CreateBoundUdpSocket successfully bound on {socket.LocalEndPoint}, dual mode {socket.DualMode}.");
+                                logger.LogDebug(
+                                    $"CreateBoundUdpSocket successfully bound on {socket.LocalEndPoint}, dual mode {socket.DualMode}.");
                             }
                             else
                             {
@@ -212,14 +239,16 @@ namespace SIPSorcery.Sys
                     if (sockExcp.SocketErrorCode == SocketError.AddressAlreadyInUse)
                     {
                         // Try again if the port is already in use.
-                        logger.LogWarning($"Address already in use exception attempting to bind UDP socket, attempt {bindAttempts}.");
+                        logger.LogWarning(
+                            $"Address already in use exception attempting to bind UDP socket, attempt {bindAttempts}.");
                         success = false;
                     }
                     else if (sockExcp.SocketErrorCode == SocketError.AccessDenied)
                     {
                         // This exception seems to be interchangeable with address already in use. Perhaps a race condition with another process
                         // attempting to bind at the same time.
-                        logger.LogWarning($"Access denied exception attempting to bind UDP socket, attempt {bindAttempts}.");
+                        logger.LogWarning(
+                            $"Access denied exception attempting to bind UDP socket, attempt {bindAttempts}.");
                         success = false;
                     }
                     else
@@ -230,7 +259,8 @@ namespace SIPSorcery.Sys
                 }
                 catch (Exception excp)
                 {
-                    logger.LogError($"Exception in NetServices.CreateBoundUdpSocket attempting the initial socket bind on address {bindAddress}. {excp}");
+                    logger.LogError(
+                        $"Exception in NetServices.CreateBoundUdpSocket attempting the initial socket bind on address {bindAddress}. {excp}");
                     throw;
                 }
                 finally
@@ -282,7 +312,8 @@ namespace SIPSorcery.Sys
                 {
                     logger.LogDebug($"WSL detected, carrying out bind check on 0.0.0.0:{port}.");
 
-                    using (Socket testSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+                    using (Socket testSocket =
+                        new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
                     {
                         testSocket.Bind(new IPEndPoint(IPAddress.Any, port));
                         testSocket.Close();
@@ -315,6 +346,7 @@ namespace SIPSorcery.Sys
                     sock.DualMode = SupportsDualModeIPv4PacketInfo;
                 }
             }
+
             return sock;
         }
 
@@ -332,11 +364,14 @@ namespace SIPSorcery.Sys
         /// a single attempt will be made to bind on the port.</param>
         /// <param name="rtpSocket">An output parameter that will contain the allocated RTP socket.</param>
         /// <param name="controlSocket">An output parameter that will contain the allocated control (RTCP) socket.</param>
-        public static void CreateRtpSocket(bool createControlSocket, IPAddress bindAddress, int bindPort, out Socket rtpSocket, out Socket controlSocket)
+        public static void CreateRtpSocket(bool createControlSocket, IPAddress bindAddress, int bindPort,
+            out Socket rtpSocket, out Socket controlSocket)
         {
             if (bindAddress == null)
             {
-                bindAddress = (Socket.OSSupportsIPv6 && SupportsDualModeIPv4PacketInfo) ? IPAddress.IPv6Any : IPAddress.Any;
+                bindAddress = (Socket.OSSupportsIPv6 && SupportsDualModeIPv4PacketInfo)
+                    ? IPAddress.IPv6Any
+                    : IPAddress.Any;
             }
 
             CheckBindAddressAndThrow(bindAddress);
@@ -374,7 +409,9 @@ namespace SIPSorcery.Sys
                         }
                     }
                 }
-                catch (ApplicationException) { }
+                catch (ApplicationException)
+                {
+                }
 
                 if ((rtpSocket != null && (!createControlSocket || controlSocket != null)) || bindPort != 0)
                 {
@@ -390,7 +427,8 @@ namespace SIPSorcery.Sys
                     rtpSocket = null;
                     controlSocket = null;
 
-                    logger.LogWarning($"CreateRtpSocket failed to create and bind RTP socket(s) on {bindEP}, bind attempt {bindAttempts}.");
+                    logger.LogWarning(
+                        $"CreateRtpSocket failed to create and bind RTP socket(s) on {bindEP}, bind attempt {bindAttempts}.");
                 }
             }
 
@@ -398,18 +436,21 @@ namespace SIPSorcery.Sys
             {
                 if (rtpSocket.LocalEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
                 {
-                    logger.LogDebug($"Successfully bound RTP socket {rtpSocket.LocalEndPoint} (dual mode {rtpSocket.DualMode}) and control socket {controlSocket.LocalEndPoint} (dual mode {controlSocket.DualMode}).");
+                    logger.LogDebug(
+                        $"Successfully bound RTP socket {rtpSocket.LocalEndPoint} (dual mode {rtpSocket.DualMode}) and control socket {controlSocket.LocalEndPoint} (dual mode {controlSocket.DualMode}).");
                 }
                 else
                 {
-                    logger.LogDebug($"Successfully bound RTP socket {rtpSocket.LocalEndPoint} and control socket {controlSocket.LocalEndPoint}.");
+                    logger.LogDebug(
+                        $"Successfully bound RTP socket {rtpSocket.LocalEndPoint} and control socket {controlSocket.LocalEndPoint}.");
                 }
             }
             else if (!createControlSocket && rtpSocket != null)
             {
                 if (rtpSocket.LocalEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
                 {
-                    logger.LogDebug($"Successfully bound RTP socket {rtpSocket.LocalEndPoint} (dual mode {rtpSocket.DualMode}).");
+                    logger.LogDebug(
+                        $"Successfully bound RTP socket {rtpSocket.LocalEndPoint} (dual mode {rtpSocket.DualMode}).");
                 }
                 else
                 {
@@ -418,7 +459,8 @@ namespace SIPSorcery.Sys
             }
             else
             {
-                throw new ApplicationException($"Failed to create and bind RTP socket using bind address {bindAddress}.");
+                throw new ApplicationException(
+                    $"Failed to create and bind RTP socket using bind address {bindAddress}.");
             }
         }
 
@@ -455,12 +497,14 @@ namespace SIPSorcery.Sys
                 }
                 catch (PlatformNotSupportedException platExcp)
                 {
-                    logger.LogWarning($"A socket 'receive from' attempt on a dual mode socket failed (dual mode RTP sockets will not be used) with a platform exception {platExcp.Message}");
+                    logger.LogWarning(
+                        $"A socket 'receive from' attempt on a dual mode socket failed (dual mode RTP sockets will not be used) with a platform exception {platExcp.Message}");
                     hasDualModeReceiveSupport = false;
                 }
                 catch (Exception excp)
                 {
-                    logger.LogWarning($"A socket 'receive from' attempt on a dual mode socket failed (dual mode RTP sockets will not be used) with {excp.Message}");
+                    logger.LogWarning(
+                        $"A socket 'receive from' attempt on a dual mode socket failed (dual mode RTP sockets will not be used) with {excp.Message}");
                     hasDualModeReceiveSupport = false;
                 }
                 finally
@@ -561,6 +605,7 @@ namespace SIPSorcery.Sys
                         {
                             localAddresses.Add(unicastAddr.Address);
                         }
+
                         break;
                     }
                 }

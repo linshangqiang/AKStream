@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using SIPSorcery.Sys;
 using SIPSorceryMedia.Abstractions.V1;
 
 namespace SIPSorcery.Net
@@ -67,19 +68,27 @@ namespace SIPSorcery.Net
 
         public const string m_CRLF = "\r\n";
 
-        private static ILogger logger = SIPSorcery.Sys.Log.Logger;
+        private static ILogger logger = Log.Logger;
 
         public SDPConnectionInformation Connection;
 
         // Media Announcement fields.
-        public SDPMediaTypesEnum Media = SDPMediaTypesEnum.audio;   // Media type for the stream.
-        public int Port;                        // For UDP transports should be in the range 1024 to 65535 and for RTP compliance should be even (only even ports used for data).
-        public string Transport = "RTP/AVP";    // Defined types RTP/AVP (RTP Audio Visual Profile) and udp.
-        public string IceUfrag;                 // If ICE is being used the username for the STUN requests.
-        public string IcePwd;                   // If ICE is being used the password for the STUN requests.
-        public string IceOptions;               // Optional attribute to specify support ICE options, e.g. "trickle".
-        public bool IceEndOfCandidates;         // If ICE candidate trickling is being used this needs to be set if all candidates have been gathered.
-        public string DtlsFingerprint;          // If DTLS handshake is being used this is the fingerprint or our DTLS certificate.
+        public SDPMediaTypesEnum Media = SDPMediaTypesEnum.audio; // Media type for the stream.
+
+        public int
+            Port; // For UDP transports should be in the range 1024 to 65535 and for RTP compliance should be even (only even ports used for data).
+
+        public string Transport = "RTP/AVP"; // Defined types RTP/AVP (RTP Audio Visual Profile) and udp.
+        public string IceUfrag; // If ICE is being used the username for the STUN requests.
+        public string IcePwd; // If ICE is being used the password for the STUN requests.
+        public string IceOptions; // Optional attribute to specify support ICE options, e.g. "trickle".
+
+        public bool
+            IceEndOfCandidates; // If ICE candidate trickling is being used this needs to be set if all candidates have been gathered.
+
+        public string
+            DtlsFingerprint; // If DTLS handshake is being used this is the fingerprint or our DTLS certificate.
+
         public int MLineIndex = 0;
 
         /// <summary>
@@ -128,10 +137,14 @@ namespace SIPSorcery.Net
         /// List of media formats for "application media announcements. Application media announcements have different
         /// semantics to audio/video announcements. They can also use aribtrary strings as the format ID.
         /// </summary>
-        public Dictionary<string, SDPApplicationMediaFormat> ApplicationMediaFormats = new Dictionary<string, SDPApplicationMediaFormat>();
+        public Dictionary<string, SDPApplicationMediaFormat> ApplicationMediaFormats =
+            new Dictionary<string, SDPApplicationMediaFormat>();
 
-        public List<string> ExtraMediaAttributes = new List<string>();          // Attributes that were not recognised.
-        public List<SDPSecurityDescription> SecurityDescriptions = new List<SDPSecurityDescription>(); //2018-12-21 rj2: add a=crypto parsing etc.
+        public List<string> ExtraMediaAttributes = new List<string>(); // Attributes that were not recognised.
+
+        public List<SDPSecurityDescription>
+            SecurityDescriptions = new List<SDPSecurityDescription>(); //2018-12-21 rj2: add a=crypto parsing etc.
+
         public List<string> IceCandidates;
 
         /// <summary>
@@ -140,7 +153,8 @@ namespace SIPSorcery.Net
         public MediaStreamStatusEnum? MediaStreamStatus { get; set; }
 
         public SDPMediaAnnouncement()
-        { }
+        {
+        }
 
         public SDPMediaAnnouncement(int port)
         {
@@ -167,7 +181,8 @@ namespace SIPSorcery.Net
             }
         }
 
-        public SDPMediaAnnouncement(SDPMediaTypesEnum mediaType, int port, List<SDPApplicationMediaFormat> appMediaFormats)
+        public SDPMediaAnnouncement(SDPMediaTypesEnum mediaType, int port,
+            List<SDPApplicationMediaFormat> appMediaFormats)
         {
             Media = mediaType;
             Port = port;
@@ -226,9 +241,15 @@ namespace SIPSorcery.Net
                 announcement += "b=" + bandwidthAttribute + m_CRLF;
             }
 
-            announcement += !string.IsNullOrWhiteSpace(IceUfrag) ? "a=" + SDP.ICE_UFRAG_ATTRIBUTE_PREFIX + ":" + IceUfrag + m_CRLF : null;
-            announcement += !string.IsNullOrWhiteSpace(IcePwd) ? "a=" + SDP.ICE_PWD_ATTRIBUTE_PREFIX + ":" + IcePwd + m_CRLF : null;
-            announcement += !string.IsNullOrWhiteSpace(DtlsFingerprint) ? "a=" + SDP.DTLS_FINGERPRINT_ATTRIBUTE_PREFIX + ":" + DtlsFingerprint + m_CRLF : null;
+            announcement += !string.IsNullOrWhiteSpace(IceUfrag)
+                ? "a=" + SDP.ICE_UFRAG_ATTRIBUTE_PREFIX + ":" + IceUfrag + m_CRLF
+                : null;
+            announcement += !string.IsNullOrWhiteSpace(IcePwd)
+                ? "a=" + SDP.ICE_PWD_ATTRIBUTE_PREFIX + ":" + IcePwd + m_CRLF
+                : null;
+            announcement += !string.IsNullOrWhiteSpace(DtlsFingerprint)
+                ? "a=" + SDP.DTLS_FINGERPRINT_ATTRIBUTE_PREFIX + ":" + DtlsFingerprint + m_CRLF
+                : null;
 
             if (IceCandidates?.Count() > 0)
             {
@@ -248,7 +269,9 @@ namespace SIPSorcery.Net
                 announcement += $"a={SDP.END_ICE_CANDIDATES_ATTRIBUTE}" + m_CRLF;
             }
 
-            announcement += !string.IsNullOrWhiteSpace(MediaID) ? "a=" + SDP.MEDIA_ID_ATTRIBUTE_PREFIX + ":" + MediaID + m_CRLF : null;
+            announcement += !string.IsNullOrWhiteSpace(MediaID)
+                ? "a=" + SDP.MEDIA_ID_ATTRIBUTE_PREFIX + ":" + MediaID + m_CRLF
+                : null;
 
             announcement += GetFormatListAttributesToString();
 
@@ -264,7 +287,8 @@ namespace SIPSorcery.Net
 
             if (MediaStreamStatus != null)
             {
-                announcement += MediaStreamStatusType.GetAttributeForMediaStreamStatus(MediaStreamStatus.Value) + m_CRLF;
+                announcement += MediaStreamStatusType.GetAttributeForMediaStreamStatus(MediaStreamStatus.Value) +
+                                m_CRLF;
             }
 
             if (SsrcGroupID != null && SsrcAttributes.Count > 0)
@@ -274,6 +298,7 @@ namespace SIPSorcery.Net
                 {
                     announcement += $" {ssrcAttr.SSRC}";
                 }
+
                 announcement += m_CRLF;
             }
 
@@ -283,7 +308,9 @@ namespace SIPSorcery.Net
                 {
                     if (!string.IsNullOrWhiteSpace(ssrcAttr.Cname))
                     {
-                        announcement += $"{MEDIA_FORMAT_SSRC_ATTRIBUE_PREFIX}{ssrcAttr.SSRC} {SDPSsrcAttribute.MEDIA_CNAME_ATTRIBUE_PREFIX}:{ssrcAttr.Cname}" + m_CRLF;
+                        announcement +=
+                            $"{MEDIA_FORMAT_SSRC_ATTRIBUE_PREFIX}{ssrcAttr.SSRC} {SDPSsrcAttribute.MEDIA_CNAME_ATTRIBUE_PREFIX}:{ssrcAttr.Cname}" +
+                            m_CRLF;
                     }
                     else
                     {
@@ -351,12 +378,14 @@ namespace SIPSorcery.Net
                     {
                         if (appFormat.Value.Rtpmap != null)
                         {
-                            sb.Append($"{SDPMediaAnnouncement.MEDIA_FORMAT_ATTRIBUE_PREFIX}{appFormat.Key} {appFormat.Value.Rtpmap}{m_CRLF}");
+                            sb.Append(
+                                $"{MEDIA_FORMAT_ATTRIBUE_PREFIX}{appFormat.Key} {appFormat.Value.Rtpmap}{m_CRLF}");
                         }
 
                         if (appFormat.Value.Fmtp != null)
                         {
-                            sb.Append($"{SDPMediaAnnouncement.MEDIA_FORMAT_PARAMETERS_ATTRIBUE_PREFIX}{appFormat.Key} {appFormat.Value.Fmtp}{m_CRLF}");
+                            sb.Append(
+                                $"{MEDIA_FORMAT_PARAMETERS_ATTRIBUE_PREFIX}{appFormat.Key} {appFormat.Value.Fmtp}{m_CRLF}");
                         }
                     }
 
@@ -379,16 +408,19 @@ namespace SIPSorcery.Net
                         {
                             // Well known media formats are not required to add an rtpmap but we do so any way as some SIP
                             // stacks don't work without it.
-                            formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.ID + " " + mediaFormat.Name() + "/" + mediaFormat.ClockRate() + m_CRLF;
+                            formatAttributes += MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.ID + " " +
+                                                mediaFormat.Name() + "/" + mediaFormat.ClockRate() + m_CRLF;
                         }
                         else
                         {
-                            formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.ID + " " + mediaFormat.Rtpmap + m_CRLF;
+                            formatAttributes += MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.ID + " " +
+                                                mediaFormat.Rtpmap + m_CRLF;
                         }
 
                         if (mediaFormat.Fmtp != null)
                         {
-                            formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_PARAMETERS_ATTRIBUE_PREFIX + mediaFormat.ID + " " + mediaFormat.Fmtp + m_CRLF;
+                            formatAttributes += MEDIA_FORMAT_PARAMETERS_ATTRIBUE_PREFIX + mediaFormat.ID + " " +
+                                                mediaFormat.Fmtp + m_CRLF;
                         }
                     }
                 }
@@ -411,6 +443,7 @@ namespace SIPSorcery.Net
             {
                 return false;
             }
+
             foreach (SDPSecurityDescription secdesc in this.SecurityDescriptions)
             {
                 if (secdesc.CryptoSuite == cryptoSuite)
@@ -428,6 +461,7 @@ namespace SIPSorcery.Net
             {
                 return null;
             }
+
             foreach (SDPSecurityDescription secdesc in this.SecurityDescriptions)
             {
                 if (secdesc.CryptoSuite == cryptoSuite)

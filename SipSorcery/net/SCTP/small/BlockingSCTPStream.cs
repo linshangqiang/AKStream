@@ -17,7 +17,6 @@
 // Modified by Andrés Leone Gámez
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -31,11 +30,15 @@ namespace SIPSorcery.Net.Sctp
 {
     public class BlockingSCTPStream : SCTPStream
     {
-        private ConcurrentDictionary<int, SCTPMessage> undeliveredOutboundMessages = new ConcurrentDictionary<int, SCTPMessage>();
+        private ConcurrentDictionary<int, SCTPMessage> undeliveredOutboundMessages =
+            new ConcurrentDictionary<int, SCTPMessage>();
+
         private static ILogger logger = Log.Logger;
         private SemaphoreSlim semaphore = new SemaphoreSlim(1);
 
-        public BlockingSCTPStream(Association a, int id) : base(a, id) { }
+        public BlockingSCTPStream(Association a, int id) : base(a, id)
+        {
+        }
 
         public override void send(string message)
         {
@@ -59,6 +62,7 @@ namespace SIPSorcery.Net.Sctp
                     logger.LogError("SCTPMessage cannot be null, but it is");
                     return;
                 }
+
                 undeliveredOutboundMessages.AddOrUpdate(m.getSeq(), m, (id, b) => m);
                 a.sendAndBlock(m);
             }
@@ -80,6 +84,7 @@ namespace SIPSorcery.Net.Sctp
                     logger.LogError("SCTPMessage cannot be null, but it is");
                     return;
                 }
+
                 a.sendAndBlock(m);
             }
             finally

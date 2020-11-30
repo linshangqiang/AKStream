@@ -40,6 +40,7 @@ namespace SIPSorcery.SIP
         /// RecvSocketArgs is used for TCP channel receives. 
         /// </summary>
         public Socket StreamSocket;
+
         public SocketAsyncEventArgs RecvSocketArgs;
 
         /// <summary>
@@ -122,7 +123,8 @@ namespace SIPSorcery.SIP
             RecvEndPosn += bytesRead;
 
             int bytesSkipped = 0;
-            byte[] sipMsgBuffer = SIPMessageBuffer.ParseSIPMessageFromStream(buffer, RecvStartPosn, RecvEndPosn, out bytesSkipped);
+            byte[] sipMsgBuffer =
+                SIPMessageBuffer.ParseSIPMessageFromStream(buffer, RecvStartPosn, RecvEndPosn, out bytesSkipped);
 
             while (sipMsgBuffer != null)
             {
@@ -130,8 +132,10 @@ namespace SIPSorcery.SIP
                 if (SIPMessageReceived != null)
                 {
                     LastTransmission = DateTime.Now;
-                    SIPEndPoint localEndPoint = new SIPEndPoint(ConnectionProtocol, StreamSocket.LocalEndPoint as IPEndPoint, recvChannel.ID, ConnectionID);
-                    SIPEndPoint remoteEndPoint = new SIPEndPoint(ConnectionProtocol, RemoteEndPoint, recvChannel.ID, ConnectionID);
+                    SIPEndPoint localEndPoint = new SIPEndPoint(ConnectionProtocol,
+                        StreamSocket.LocalEndPoint as IPEndPoint, recvChannel.ID, ConnectionID);
+                    SIPEndPoint remoteEndPoint =
+                        new SIPEndPoint(ConnectionProtocol, RemoteEndPoint, recvChannel.ID, ConnectionID);
                     SIPMessageReceived(recvChannel, localEndPoint, remoteEndPoint, sipMsgBuffer);
                 }
 
@@ -146,7 +150,9 @@ namespace SIPSorcery.SIP
                 else
                 {
                     // Try and extract another SIP message from the receive buffer.
-                    sipMsgBuffer = SIPMessageBuffer.ParseSIPMessageFromStream(buffer, RecvStartPosn, RecvEndPosn, out bytesSkipped);
+                    sipMsgBuffer =
+                        SIPMessageBuffer.ParseSIPMessageFromStream(buffer, RecvStartPosn, RecvEndPosn,
+                            out bytesSkipped);
                 }
             }
         }

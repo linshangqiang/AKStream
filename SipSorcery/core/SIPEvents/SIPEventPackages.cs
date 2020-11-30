@@ -22,18 +22,36 @@ namespace SIPSorcery.SIP
     public class SIPEventConsts
     {
         public const string DIALOG_XML_NAMESPACE_URN = "urn:ietf:params:xml:ns:dialog-info";
-        public const string PIDF_XML_NAMESPACE_URN = "urn:ietf:params:xml:ns:pidf";             // Presence Information Data Format XML namespace.
-        public const string SIPSORCERY_DIALOG_XML_NAMESPACE_PREFIX = "ss";                      // Used for custom sipsorcery elements in dialog event notification payloads.
-        public const string SIPSORCERY_DIALOG_XML_NAMESPACE_URN = "sipsorcery:dialog-info";     // Used for custom sipsorcery elements in dialog event notification payloads.
+
+        public const string
+            PIDF_XML_NAMESPACE_URN = "urn:ietf:params:xml:ns:pidf"; // Presence Information Data Format XML namespace.
+
+        public const string
+            SIPSORCERY_DIALOG_XML_NAMESPACE_PREFIX =
+                "ss"; // Used for custom sipsorcery elements in dialog event notification payloads.
+
+        public const string
+            SIPSORCERY_DIALOG_XML_NAMESPACE_URN =
+                "sipsorcery:dialog-info"; // Used for custom sipsorcery elements in dialog event notification payloads.
     }
 
     public struct SIPEventPackage
     {
         public static SIPEventPackage None = new SIPEventPackage(null);
-        public static SIPEventPackage Dialog = new SIPEventPackage("dialog");                   // RFC4235 "An INVITE-Initiated Dialog Event Package for the Session Initiation Protocol (SIP)".
-        public static SIPEventPackage MessageSummary = new SIPEventPackage("message-summary");  // RFC3842 "A Message Summary and Message Waiting Indication Event Package for the Session Initiation Protocol (SIP)"
-        public static SIPEventPackage Presence = new SIPEventPackage("presence");               // RFC3856.
-        public static SIPEventPackage Refer = new SIPEventPackage("refer");                     // RFC3515 "The Session Initiation Protocol (SIP) Refer Method".
+
+        public static SIPEventPackage
+            Dialog = new SIPEventPackage(
+                "dialog"); // RFC4235 "An INVITE-Initiated Dialog Event Package for the Session Initiation Protocol (SIP)".
+
+        public static SIPEventPackage
+            MessageSummary =
+                new SIPEventPackage(
+                    "message-summary"); // RFC3842 "A Message Summary and Message Waiting Indication Event Package for the Session Initiation Protocol (SIP)"
+
+        public static SIPEventPackage Presence = new SIPEventPackage("presence"); // RFC3856.
+
+        public static SIPEventPackage
+            Refer = new SIPEventPackage("refer"); // RFC3515 "The Session Initiation Protocol (SIP) Refer Method".
 
         private string m_value;
 
@@ -49,7 +67,7 @@ namespace SIPSorcery.SIP
                 return false;
             }
             else if (value.ToLower() == "dialog" || value.ToLower() == "message-summary" ||
-                value.ToLower() == "presence" || value.ToLower() == "refer")
+                     value.ToLower() == "presence" || value.ToLower() == "refer")
             {
                 return true;
             }
@@ -71,13 +89,13 @@ namespace SIPSorcery.SIP
                 switch (trimmedValue)
                 {
                     case "dialog":
-                        return SIPEventPackage.Dialog;
+                        return Dialog;
                     case "message-summary":
-                        return SIPEventPackage.MessageSummary;
+                        return MessageSummary;
                     case "presence":
-                        return SIPEventPackage.Presence;
+                        return Presence;
                     case "refer":
-                        return SIPEventPackage.Refer;
+                        return Refer;
                     default:
                         throw new ArgumentException("The value is not valid for a SIPEventPackage.");
                 }
@@ -91,7 +109,7 @@ namespace SIPSorcery.SIP
 
         public override bool Equals(object obj)
         {
-            return AreEqual(this, (SIPEventPackage)obj);
+            return AreEqual(this, (SIPEventPackage) obj);
         }
 
         public static bool AreEqual(SIPEventPackage x, SIPEventPackage y)
@@ -159,8 +177,9 @@ namespace SIPSorcery.SIP
                 return false;
             }
             else if (value.ToLower() == "cancelled" || value.ToLower() == "error" || value.ToLower() == "local-bye" ||
-                value.ToLower() == "rejected" || value.ToLower() == "replaced" || value.ToLower() == "remote-bye" ||
-                value.ToLower() == "timeout")
+                     value.ToLower() == "rejected" || value.ToLower() == "replaced" ||
+                     value.ToLower() == "remote-bye" ||
+                     value.ToLower() == "timeout")
             {
                 return true;
             }
@@ -182,19 +201,19 @@ namespace SIPSorcery.SIP
                 switch (trimmedValue)
                 {
                     case "cancelled":
-                        return SIPEventDialogStateEvent.Cancelled;
+                        return Cancelled;
                     case "error":
-                        return SIPEventDialogStateEvent.Error;
+                        return Error;
                     case "local-bye":
-                        return SIPEventDialogStateEvent.LocalBye;
+                        return LocalBye;
                     case "rejected":
-                        return SIPEventDialogStateEvent.Rejected;
+                        return Rejected;
                     case "replaced":
-                        return SIPEventDialogStateEvent.Replaced;
+                        return Replaced;
                     case "remote-bye":
-                        return SIPEventDialogStateEvent.RemoteBye;
+                        return RemoteBye;
                     case "timeout":
-                        return SIPEventDialogStateEvent.Timeout;
+                        return Timeout;
                     default:
                         throw new ArgumentException("The value is not valid for a SIPEventDialogStateEvent.");
                 }
@@ -208,7 +227,7 @@ namespace SIPSorcery.SIP
 
         public override bool Equals(object obj)
         {
-            return AreEqual(this, (SIPEventDialogStateEvent)obj);
+            return AreEqual(this, (SIPEventDialogStateEvent) obj);
         }
 
         public static bool AreEqual(SIPEventDialogStateEvent x, SIPEventDialogStateEvent y)

@@ -50,7 +50,8 @@ namespace SIPSorcery.SIP
         }
 
         private SIPRequest()
-        { }
+        {
+        }
 
         public SIPRequest(SIPMethodsEnum method, string uri)
         {
@@ -94,7 +95,8 @@ namespace SIPSorcery.SIP
                     string uriStr = statusLine.Substring(0, secondSpacePosn);
 
                     sipRequest.URI = SIPURI.ParseSIPURI(uriStr);
-                    sipRequest.SIPVersion = statusLine.Substring(secondSpacePosn, statusLine.Length - secondSpacePosn).Trim();
+                    sipRequest.SIPVersion = statusLine.Substring(secondSpacePosn, statusLine.Length - secondSpacePosn)
+                        .Trim();
                     sipRequest.Header = SIPHeader.ParseSIPHeaders(sipMessage.SIPHeaders);
                     sipRequest.Body = sipMessage.Body;
 
@@ -122,7 +124,7 @@ namespace SIPSorcery.SIP
             try
             {
                 SIPMessageBuffer sipMessageBuffer = SIPMessageBuffer.ParseSIPMessage(sipMessageStr, null, null);
-                return SIPRequest.ParseSIPRequest(sipMessageBuffer);
+                return ParseSIPRequest(sipMessageBuffer);
             }
             catch (SIPValidationException)
             {
@@ -195,7 +197,9 @@ namespace SIPSorcery.SIP
             string routeStr = (Header.Routes != null) ? Header.Routes.ToString() : null;
             string toTagStr = (Header.To != null) ? Header.To.ToTag : null;
             string fromTagStr = (Header.From != null) ? Header.From.FromTag : null;
-            string topViaStr = (Header.Vias != null && Header.Vias.TopViaHeader != null) ? Header.Vias.TopViaHeader.ToString() : null;
+            string topViaStr = (Header.Vias != null && Header.Vias.TopViaHeader != null)
+                ? Header.Vias.TopViaHeader.ToString()
+                : null;
 
             return CallProperties.CreateBranchId(
                 SIPConstants.SIP_BRANCH_MAGICCOOKIE,

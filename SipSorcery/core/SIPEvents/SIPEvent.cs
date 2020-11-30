@@ -20,7 +20,8 @@ namespace SIPSorcery.SIP
     public class SIPEvent
     {
         public SIPEvent()
-        { }
+        {
+        }
 
         public virtual void Load(string eventStr)
         {

@@ -28,9 +28,13 @@ namespace SIPSorcery.Net.Sctp
     public class CookieAckChunk : Chunk
     {
         public CookieAckChunk(ChunkType type, byte flags, int length, ByteBuffer pkt)
-            : base(type, flags, length, pkt) { }
+            : base(type, flags, length, pkt)
+        {
+        }
 
-        public CookieAckChunk() : base(ChunkType.COOKIE_ACK) { }
+        public CookieAckChunk() : base(ChunkType.COOKIE_ACK)
+        {
+        }
 
         protected override void putFixedParams(ByteBuffer ret)
         {

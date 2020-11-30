@@ -30,7 +30,8 @@ namespace SIPSorcery.SIP.App
         /// <summary>
         /// Authenticates a SIP request.
         /// </summary>
-        public static SIPRequestAuthenticationResult AuthenticateSIPRequest(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint, SIPRequest sipRequest, SIPAccount sipAccount)
+        public static SIPRequestAuthenticationResult AuthenticateSIPRequest(SIPEndPoint localSIPEndPoint,
+            SIPEndPoint remoteEndPoint, SIPRequest sipRequest, SIPAccount sipAccount)
         {
             try
             {
@@ -40,7 +41,8 @@ namespace SIPSorcery.SIP.App
                 }
                 else if (sipAccount.IsDisabled)
                 {
-                    logger.LogWarning("SIP account " + sipAccount.SIPUsername + "@" + sipAccount.SIPDomain + " is disabled for " + sipRequest.Method + ".");
+                    logger.LogWarning("SIP account " + sipAccount.SIPUsername + "@" + sipAccount.SIPDomain +
+                                      " is disabled for " + sipRequest.Method + ".");
 
                     return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Forbidden, null);
                 }
@@ -52,7 +54,9 @@ namespace SIPSorcery.SIP.App
                         // Check for IP address authentication.
                         if (!sipAccount.IPAddressACL.IsNullOrBlank())
                         {
-                            SIPEndPoint uaEndPoint = (!sipRequest.Header.ProxyReceivedFrom.IsNullOrBlank()) ? SIPEndPoint.ParseSIPEndPoint(sipRequest.Header.ProxyReceivedFrom) : remoteEndPoint;
+                            SIPEndPoint uaEndPoint = (!sipRequest.Header.ProxyReceivedFrom.IsNullOrBlank())
+                                ? SIPEndPoint.ParseSIPEndPoint(sipRequest.Header.ProxyReceivedFrom)
+                                : remoteEndPoint;
                             if (Regex.Match(uaEndPoint.GetIPEndPoint().ToString(), sipAccount.IPAddressACL).Success)
                             {
                                 // Successfully authenticated
@@ -60,7 +64,9 @@ namespace SIPSorcery.SIP.App
                             }
                         }
 
-                        SIPAuthenticationHeader authHeader = new SIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate, sipAccount.SIPDomain, GetNonce());
+                        SIPAuthenticationHeader authHeader =
+                            new SIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate,
+                                sipAccount.SIPDomain, GetNonce());
                         return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised, authHeader);
                     }
                     else
@@ -68,7 +74,9 @@ namespace SIPSorcery.SIP.App
                         // Check for IP address authentication.
                         if (!sipAccount.IPAddressACL.IsNullOrBlank())
                         {
-                            SIPEndPoint uaEndPoint = (!sipRequest.Header.ProxyReceivedFrom.IsNullOrBlank()) ? SIPEndPoint.ParseSIPEndPoint(sipRequest.Header.ProxyReceivedFrom) : remoteEndPoint;
+                            SIPEndPoint uaEndPoint = (!sipRequest.Header.ProxyReceivedFrom.IsNullOrBlank())
+                                ? SIPEndPoint.ParseSIPEndPoint(sipRequest.Header.ProxyReceivedFrom)
+                                : remoteEndPoint;
                             if (Regex.Match(uaEndPoint.GetIPEndPoint().ToString(), sipAccount.IPAddressACL).Success)
                             {
                                 // Successfully authenticated
@@ -83,15 +91,20 @@ namespace SIPSorcery.SIP.App
                         // Check for stale nonces.
                         if (IsNonceStale(requestNonce))
                         {
-                            logger.LogWarning("Authentication failed stale nonce for realm=" + sipAccount.SIPDomain + ", username=" + sipAccount.SIPUsername + ", uri=" + uri + ", nonce=" + requestNonce + ", method=" + sipRequest.Method + ".");
+                            logger.LogWarning("Authentication failed stale nonce for realm=" + sipAccount.SIPDomain +
+                                              ", username=" + sipAccount.SIPUsername + ", uri=" + uri + ", nonce=" +
+                                              requestNonce + ", method=" + sipRequest.Method + ".");
 
-                            SIPAuthenticationHeader authHeader = new SIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate, sipAccount.SIPDomain, GetNonce());
-                            return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised, authHeader);
+                            SIPAuthenticationHeader authHeader = new SIPAuthenticationHeader(
+                                SIPAuthorisationHeadersEnum.WWWAuthenticate, sipAccount.SIPDomain, GetNonce());
+                            return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised,
+                                authHeader);
                         }
                         else
                         {
                             SIPAuthorisationDigest checkAuthReq = reqAuthHeader.SIPDigest;
-                            checkAuthReq.SetCredentials(sipAccount.SIPUsername, sipAccount.SIPPassword, uri, sipRequest.Method.ToString());
+                            checkAuthReq.SetCredentials(sipAccount.SIPUsername, sipAccount.SIPPassword, uri,
+                                sipRequest.Method.ToString());
                             string digest = checkAuthReq.Digest;
 
                             if (digest == response)
@@ -101,10 +114,15 @@ namespace SIPSorcery.SIP.App
                             }
                             else
                             {
-                                logger.LogWarning("Authentication token check failed for realm=" + sipAccount.SIPDomain + ", username=" + sipAccount.SIPUsername + ", uri=" + uri + ", nonce=" + requestNonce + ", method=" + sipRequest.Method + ".");
-                                
-                                SIPAuthenticationHeader authHeader = new SIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate, sipAccount.SIPDomain, GetNonce());
-                                return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised, authHeader);
+                                logger.LogWarning("Authentication token check failed for realm=" +
+                                                  sipAccount.SIPDomain + ", username=" + sipAccount.SIPUsername +
+                                                  ", uri=" + uri + ", nonce=" + requestNonce + ", method=" +
+                                                  sipRequest.Method + ".");
+
+                                SIPAuthenticationHeader authHeader = new SIPAuthenticationHeader(
+                                    SIPAuthorisationHeadersEnum.WWWAuthenticate, sipAccount.SIPDomain, GetNonce());
+                                return new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised,
+                                    authHeader);
                             }
                         }
                     }
@@ -119,7 +137,8 @@ namespace SIPSorcery.SIP.App
 
         public static string GetNonce()
         {
-            if (m_currentNoncePrefix == null || DateTime.Now.Subtract(m_lastNoncePrefixUpdate).TotalSeconds > NONCE_REFRESH_SECONDS)
+            if (m_currentNoncePrefix == null ||
+                DateTime.Now.Subtract(m_lastNoncePrefixUpdate).TotalSeconds > NONCE_REFRESH_SECONDS)
             {
                 m_lastNoncePrefixUpdate = DateTime.Now;
                 m_previousNoncePrefix = m_currentNoncePrefix;

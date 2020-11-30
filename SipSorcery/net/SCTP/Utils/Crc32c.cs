@@ -5,6 +5,7 @@
  * 
  * Max Vysokikh, 2016
  */
+
 namespace SCTP4CS.Utils
 {
     public class Crc32

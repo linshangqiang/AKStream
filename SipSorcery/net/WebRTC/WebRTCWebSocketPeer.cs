@@ -30,7 +30,7 @@ namespace SIPSorcery.Net
     /// </summary>
     public class WebRTCWebSocketPeer : WebSocketBehavior
     {
-        private ILogger logger = SIPSorcery.Sys.Log.Logger;
+        private ILogger logger = Sys.Log.Logger;
 
         private RTCPeerConnection _pc;
         public RTCPeerConnection RTCPeerConnection => _pc;
@@ -38,7 +38,7 @@ namespace SIPSorcery.Net
         /// <summary>
         /// Optional property to allow the peer connection SDP offer options to be set.
         /// </summary>
-        public RTCOfferOptions OfferOptions {get; set;}
+        public RTCOfferOptions OfferOptions { get; set; }
 
         /// <summary>
         /// Optional filter that can be applied to remote ICE candidates. The filter is 
@@ -50,7 +50,8 @@ namespace SIPSorcery.Net
         public Func<Task<RTCPeerConnection>> CreatePeerConnection;
 
         public WebRTCWebSocketPeer()
-        { }
+        {
+        }
 
         protected override void OnMessage(MessageEventArgs e)
         {
@@ -61,14 +62,15 @@ namespace SIPSorcery.Net
                 logger.LogDebug("Got remote ICE candidate.");
 
                 bool useCandidate = true;
-                if(FilterRemoteICECandidates != null && !string.IsNullOrWhiteSpace(iceCandidateInit.candidate))
+                if (FilterRemoteICECandidates != null && !string.IsNullOrWhiteSpace(iceCandidateInit.candidate))
                 {
                     useCandidate = FilterRemoteICECandidates(iceCandidateInit);
                 }
 
                 if (!useCandidate)
                 {
-                    logger.LogDebug($"WebRTCWebSocketPeer excluding ICE candidate due to filter: {iceCandidateInit.candidate}");
+                    logger.LogDebug(
+                        $"WebRTCWebSocketPeer excluding ICE candidate due to filter: {iceCandidateInit.candidate}");
                 }
                 else
                 {

@@ -26,25 +26,23 @@ namespace SIPSorcery.Sys
 
         static Log()
         {
-            SIPSorcery.LogFactory.Instance.OnFactorySet += Reset;
+            LogFactory.Instance.OnFactorySet += Reset;
         }
 
         private static ILogger _logger;
+
         internal static ILogger Logger
         {
             get
             {
                 if (_logger == null)
                 {
-                    _logger = SIPSorcery.LogFactory.CreateLogger(LOG_CATEGORY);
+                    _logger = LogFactory.CreateLogger(LOG_CATEGORY);
                 }
 
                 return _logger;
             }
-            set
-            {
-                _logger = value;
-            }
+            set { _logger = value; }
         }
 
         /// <summary>

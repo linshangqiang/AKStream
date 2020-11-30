@@ -24,5 +24,7 @@ using System;
  */
 public class SctpPacketFormatException : Exception
 {
-    public SctpPacketFormatException(string message) : base(message) { }
+    public SctpPacketFormatException(string message) : base(message)
+    {
+    }
 }

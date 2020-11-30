@@ -50,9 +50,13 @@ namespace SIPSorcery.Net.Sctp
         uint reqSeqNo;
         int[] streams;
 
-        public IncomingSSNResetRequestParameter(int t, string n) : base(t, n) { }
+        public IncomingSSNResetRequestParameter(int t, string n) : base(t, n)
+        {
+        }
 
-        public IncomingSSNResetRequestParameter() : base(14, "IncomingSSNResetRequestParameter") { }
+        public IncomingSSNResetRequestParameter() : base(14, "IncomingSSNResetRequestParameter")
+        {
+        }
 
         public IncomingSSNResetRequestParameter(uint reqNo) : this()
         {
@@ -66,6 +70,7 @@ namespace SIPSorcery.Net.Sctp
                 logger.LogError("Huh ? No body to this " + this.getName());
                 return;
             }
+
             reqSeqNo = body.GetUInt();
             if (blen > 4)
             {
@@ -89,7 +94,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 for (int i = 0; i < streams.Length; i++)
                 {
-                    body.Put((ushort)streams[i]);
+                    body.Put((ushort) streams[i]);
                 }
             }
         }
@@ -106,12 +111,14 @@ namespace SIPSorcery.Net.Sctp
                 {
                     ret.Append("" + s);
                 }
+
                 ret.Append("}");
             }
             else
             {
                 ret.Append("no streams");
             }
+
             return ret.ToString();
         }
 
@@ -129,6 +136,7 @@ namespace SIPSorcery.Net.Sctp
         {
             return this.reqSeqNo;
         }
+
         public void setStreams(int[] ss)
         {
             this.streams = ss;

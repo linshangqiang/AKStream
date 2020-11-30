@@ -24,5 +24,7 @@ using System;
  */
 public class InvalidSCTPPacketException : Exception
 {
-    public InvalidSCTPPacketException(string message) : base(message) { }
+    public InvalidSCTPPacketException(string message) : base(message)
+    {
+    }
 }

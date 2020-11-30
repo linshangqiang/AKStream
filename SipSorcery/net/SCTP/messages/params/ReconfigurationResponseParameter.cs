@@ -27,7 +27,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class ReconfigurationResponseParameter : KnownParam
     {
-
         /*
 		 0                   1                   2                   3
 		 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -55,7 +54,9 @@ namespace SIPSorcery.Net.Sctp
         public const int ERROR_REQUEST_ALREADY_IN_PROGESS = 4;
         public const int ERROR_BAD_SEQUENCE_NUMBER = 5;
         public const int IN_PROGRESS = 6;
-        static readonly string[] valuenames = new string[] {
+
+        static readonly string[] valuenames = new string[]
+        {
             "Success - Nothing to do",
             "Success - Performed",
             "Denied",
@@ -78,9 +79,13 @@ namespace SIPSorcery.Net.Sctp
 				 | 6      | In progress                         |
 				 +--------+-------------------------------------+
 		 */
-        public ReconfigurationResponseParameter(int t, string n) : base(t, n) { }
+        public ReconfigurationResponseParameter(int t, string n) : base(t, n)
+        {
+        }
 
-        public ReconfigurationResponseParameter() : this(16, "ReconfigurationResponseParameter") { }
+        public ReconfigurationResponseParameter() : this(16, "ReconfigurationResponseParameter")
+        {
+        }
 
         public override void readBody(ByteBuffer body, int blen)
         {
@@ -108,7 +113,8 @@ namespace SIPSorcery.Net.Sctp
         private string resultToName()
         {
             return ((result >= 0) && (result < valuenames.Length))
-                    ? valuenames[(int)result] : "invalid value";
+                ? valuenames[(int) result]
+                : "invalid value";
         }
 
         public override string ToString()
@@ -122,6 +128,7 @@ namespace SIPSorcery.Net.Sctp
                 ret.Append("senderNextTSN:").Append(this.senderNextTSN).Append(" ");
                 ret.Append("receiverNextTSN:").Append(this.receiverNextTSN).Append(" ");
             }
+
             return ret.ToString();
         }
 

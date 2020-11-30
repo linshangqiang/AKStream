@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SIPSorcery.Sys;
 
 namespace SIPSorcery.Net
 {
@@ -37,10 +38,14 @@ namespace SIPSorcery.Net
     /// </remarks>
     public class WebRTCNodeDssPeer
     {
-        private const int NODE_SERVER_POLL_PERIOD = 500;    // Period in milliseconds to poll the node server to check for new messages.
-        private const int CONNECTION_RETRY_PERIOD = 5000;   // Period in milliseconds to retry if the initial node-dss connection attempt fails.
+        private const int
+            NODE_SERVER_POLL_PERIOD = 500; // Period in milliseconds to poll the node server to check for new messages.
 
-        private ILogger logger = SIPSorcery.Sys.Log.Logger;
+        private const int
+            CONNECTION_RETRY_PERIOD =
+                5000; // Period in milliseconds to retry if the initial node-dss connection attempt fails.
+
+        private ILogger logger = Log.Logger;
 
         private Uri _nodeDssServerUri;
         private string _ourID;
@@ -93,21 +98,24 @@ namespace SIPSorcery.Net
         public async Task Start(CancellationTokenSource cancellation)
         {
             var peerConnectedCancellation = new CancellationTokenSource();
-            CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation.Token, peerConnectedCancellation.Token);
+            CancellationTokenSource linkedSource =
+                CancellationTokenSource.CreateLinkedTokenSource(cancellation.Token, peerConnectedCancellation.Token);
 
             var nodeDssClient = new HttpClient();
 
             _pc = await _createPeerConnection();
             _pc.onconnectionstatechange += (state) =>
             {
-                if (_isReceiving && !(state == RTCPeerConnectionState.@new || state == RTCPeerConnectionState.connecting))
+                if (_isReceiving &&
+                    !(state == RTCPeerConnectionState.@new || state == RTCPeerConnectionState.connecting))
                 {
                     logger.LogDebug("cancelling node DSS receive task.");
                     peerConnectedCancellation?.Cancel();
                 }
             };
 
-            logger.LogDebug($"node-dss starting receive task for server {_nodeDssServerUri}, our ID {_ourID} and their ID {_theirID}.");
+            logger.LogDebug(
+                $"node-dss starting receive task for server {_nodeDssServerUri}, our ID {_ourID} and their ID {_theirID}.");
 
             _ = Task.Run(() => ReceiveFromNSS(nodeDssClient, _pc, linkedSource.Token));
         }
@@ -151,11 +159,13 @@ namespace SIPSorcery.Net
                         res = await httpClient.GetAsync($"{_nodeDssServerUri}data/{_ourID}", ct);
                     }
                     catch (HttpRequestException e)
-                        when (e.InnerException is SocketException && (e.InnerException as SocketException).SocketErrorCode == SocketError.ConnectionRefused)
+                        when (e.InnerException is SocketException &&
+                              (e.InnerException as SocketException).SocketErrorCode == SocketError.ConnectionRefused)
                     {
                         if (isInitialReceive)
                         {
-                            logger.LogDebug($"node-dss server initial connection attempt failed, will retry in {CONNECTION_RETRY_PERIOD}ms.");
+                            logger.LogDebug(
+                                $"node-dss server initial connection attempt failed, will retry in {CONNECTION_RETRY_PERIOD}ms.");
                             await Task.Delay(CONNECTION_RETRY_PERIOD);
                             continue;
                         }
@@ -193,7 +203,8 @@ namespace SIPSorcery.Net
                     }
                     else
                     {
-                        throw new ApplicationException($"Get request to node DSS server failed with response code {res.StatusCode}.");
+                        throw new ApplicationException(
+                            $"Get request to node DSS server failed with response code {res.StatusCode}.");
                     }
 
                     isInitialReceive = false;

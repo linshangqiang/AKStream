@@ -26,12 +26,15 @@ namespace SIPSorcery.Net.Sctp
 {
     public class KnownError : Unknown
     {
-        public KnownError(int t, string n) : base(t, n) { }
+        public KnownError(int t, string n) : base(t, n)
+        {
+        }
 
         public byte[] getData()
         {
             return _data;
         }
+
         public void setData(byte[] data)
         {
             _data = data;

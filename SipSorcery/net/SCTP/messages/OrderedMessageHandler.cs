@@ -34,6 +34,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             return message;
         }
 

@@ -22,4 +22,6 @@ using System;
  *
  * @author Westhawk Ltd<thp@westhawk.co.uk>
  */
-public class MessageException : Exception { }
+public class MessageException : Exception
+{
+}

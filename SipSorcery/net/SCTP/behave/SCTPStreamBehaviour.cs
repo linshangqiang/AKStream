@@ -26,7 +26,6 @@ namespace SIPSorcery.Net.Sctp
 {
     internal interface SCTPStreamBehaviour
     {
-
         // Something has happend to the stream, this is our chance to respond.
         // typically this means sending nothing
         Chunk[] respond(SCTPStream a);

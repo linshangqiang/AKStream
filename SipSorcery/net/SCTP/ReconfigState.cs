@@ -28,10 +28,10 @@ namespace SIPSorcery.Net.Sctp
 {
     class ReconfigState
     {
-
         private static ILogger logger = Log.Logger;
 
         ReConfigChunk recentInbound = null;
+
         //ReConfigChunk recentOutboundRequest = null;
         ReConfigChunk sentReply = null;
         bool timerRunning = false;
@@ -70,12 +70,12 @@ namespace SIPSorcery.Net.Sctp
 
         private uint nextNearNo()
         {
-            return (uint)nearSeqno++;
+            return (uint) nearSeqno++;
         }
 
         private uint nextFarNo()
         {
-            return (uint)farSeqno++;
+            return (uint) farSeqno++;
         }
 
         public uint nextDue()
@@ -96,6 +96,7 @@ namespace SIPSorcery.Net.Sctp
                 // if not - is this a repeat
                 reply = getPrevious(rconf); // then send the same reply
             }
+
             if (reply == null)
             {
                 // not a repeat then
@@ -108,10 +109,12 @@ namespace SIPSorcery.Net.Sctp
                     {
                         streams = assoc.allStreams();
                     }
+
                     if (timerIsRunning())
                     {
                         markAsAcked(rconf);
                     }
+
                     // if we are behind, we are supposed to wait until we catch up.
                     if (oreset.getLastAssignedTSN() > assoc.getCumAckPt())
                     {
@@ -122,6 +125,7 @@ namespace SIPSorcery.Net.Sctp
                             // AC: All this call did was set an unused local variable. Removed for now.
                             //defstr.setDeferred(true);
                         }
+
                         ReconfigurationResponseParameter rep = new ReconfigurationResponseParameter();
                         rep.setSeq(oreset.getReqSeqNo());
                         rep.setResult(ReconfigurationResponseParameter.IN_PROGRESS);
@@ -133,8 +137,10 @@ namespace SIPSorcery.Net.Sctp
                         //logger.LogDebug("we are up-to-date ");
                         ReconfigurationResponseParameter rep = new ReconfigurationResponseParameter();
                         rep.setSeq(oreset.getReqSeqNo());
-                        int result = streams.Length > 0 ? ReconfigurationResponseParameter.SUCCESS_PERFORMED : ReconfigurationResponseParameter.SUCCESS_NOTHING_TO_DO;
-                        rep.setResult((uint)result); // assume all good
+                        int result = streams.Length > 0
+                            ? ReconfigurationResponseParameter.SUCCESS_PERFORMED
+                            : ReconfigurationResponseParameter.SUCCESS_NOTHING_TO_DO;
+                        rep.setResult((uint) result); // assume all good
                         foreach (int s in streams)
                         {
                             SCTPStream cstrm = assoc.delStream(s);
@@ -150,9 +156,11 @@ namespace SIPSorcery.Net.Sctp
                                 cstrm.reset();
                             }
                         }
+
                         reply.addParam(rep);
                     }
                 }
+
                 // ponder putting this in a second chunk ?
                 if (rconf.hasIncomingReset())
                 {
@@ -161,13 +169,15 @@ namespace SIPSorcery.Net.Sctp
 					Response Sequence Number of the Outgoing SSN Reset Request
 					Parameter MUST be the Re-configuration Request Sequence Number
 					of the Incoming SSN Reset Request Parameter. */
-                    OutgoingSSNResetRequestParameter rep = new OutgoingSSNResetRequestParameter(nextNearNo(), ireset.getReqNo(), assoc.getNearTSN());
+                    OutgoingSSNResetRequestParameter rep =
+                        new OutgoingSSNResetRequestParameter(nextNearNo(), ireset.getReqNo(), assoc.getNearTSN());
                     int[] streams = ireset.getStreams();
                     rep.setStreams(streams);
                     if (streams.Length == 0)
                     {
                         streams = assoc.allStreams();
                     }
+
                     foreach (int s in streams)
                     {
                         SCTPStream st = assoc.getStream(s);
@@ -176,11 +186,13 @@ namespace SIPSorcery.Net.Sctp
                             st.setClosing(true);
                         }
                     }
+
                     reply.addParam(rep);
                     // set outbound timer running here ???
                     //logger.LogDebug("Ireset " + ireset);
                 }
             }
+
             if (reply.hasParam())
             {
                 ret[0] = reply;
@@ -191,6 +203,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 ret = null;
             }
+
             return ret;
         }
 
@@ -208,10 +221,12 @@ namespace SIPSorcery.Net.Sctp
             {
                 listOfStreamsToReset.Enqueue(st);
             }
+
             if (!timerIsRunning())
             {
                 ret = makeSSNResets();
             }
+
             return ret;
         }
 
@@ -222,20 +237,28 @@ namespace SIPSorcery.Net.Sctp
             List<int> streamsL = new List<int>();
             lock (listOfStreamsToReset)
             {
-                foreach (var s in listOfStreamsToReset) if (s.InboundIsOpen()) streamsL.Add(s.getNum());
+                foreach (var s in listOfStreamsToReset)
+                    if (s.InboundIsOpen())
+                        streamsL.Add(s.getNum());
             }
+
             int[] streams = streamsL.ToArray();
             if (streams.Length > 0)
             {
-                OutgoingSSNResetRequestParameter rep = new OutgoingSSNResetRequestParameter(nextNearNo(), farSeqno - 1, assoc.getNearTSN());
+                OutgoingSSNResetRequestParameter rep =
+                    new OutgoingSSNResetRequestParameter(nextNearNo(), farSeqno - 1, assoc.getNearTSN());
                 rep.setStreams(streams);
                 reply.addParam(rep);
             }
+
             streamsL.Clear();
             lock (listOfStreamsToReset)
             {
-                foreach (var s in listOfStreamsToReset) if (s.OutboundIsOpen()) streamsL.Add(s.getNum());
+                foreach (var s in listOfStreamsToReset)
+                    if (s.OutboundIsOpen())
+                        streamsL.Add(s.getNum());
             }
+
             streams = streamsL.ToArray();
             if (streams.Length > 0)
             {
@@ -243,6 +266,7 @@ namespace SIPSorcery.Net.Sctp
                 rep.setStreams(streams);
                 reply.addParam(rep);
             }
+
             //logger.LogDebug("reconfig chunk is " + reply.ToString());
             return reply;
         }

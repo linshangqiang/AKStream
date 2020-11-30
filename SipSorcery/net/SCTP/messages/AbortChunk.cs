@@ -42,10 +42,11 @@ namespace SIPSorcery.Net.Sctp
 {
     public class AbortChunk : Chunk
     {
-
         private static ILogger logger = Log.Logger;
 
-        public AbortChunk() : base(ChunkType.ABORT) { }
+        public AbortChunk() : base(ChunkType.ABORT)
+        {
+        }
 
         public AbortChunk(ChunkType type, byte flags, int length, ByteBuffer pkt)
             : base(type, flags, length, pkt)
@@ -61,6 +62,8 @@ namespace SIPSorcery.Net.Sctp
             }
         }
 
-        protected override void putFixedParams(ByteBuffer ret) { }
+        protected override void putFixedParams(ByteBuffer ret)
+        {
+        }
     }
 }

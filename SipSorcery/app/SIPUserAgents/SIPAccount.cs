@@ -21,9 +21,14 @@ namespace SIPSorcery.SIP.App
 {
     // Real-time call control delegates.
     public delegate RtccCustomerAccount RtccGetCustomerDelegate(string owner, string accountCode);
+
     public delegate RtccRate RtccGetRateDelegate(string owner, string rateCode, string rateDestination, int ratePlan);
+
     public delegate decimal RtccGetBalanceDelegate(string accountCode);
-    public delegate decimal RtccReserveInitialCreditDelegate(string accountCode, string rateID, SIPCDR cdr, out int intialSeconds);
+
+    public delegate decimal RtccReserveInitialCreditDelegate(string accountCode, string rateID, SIPCDR cdr,
+        out int intialSeconds);
+
     public delegate void RtccUpdateCdrDelegate(string cdrID, SIPCDR cdr);
 
     public class RtccCustomerAccount
@@ -52,7 +57,14 @@ namespace SIPSorcery.SIP.App
 
         public Guid Id { get; set; }
         public string Owner { get; set; }
-        public string AdminMemberId { get; set; }    // If set it designates this asset as a belonging to a user with the matching adminid.
+
+        public string
+            AdminMemberId
+        {
+            get;
+            set;
+        } // If set it designates this asset as a belonging to a user with the matching adminid.
+
         public string SIPUsername { get; set; }
         public string SIPPassword { get; set; }
         public string SIPDomain { get; set; }
@@ -82,16 +94,21 @@ namespace SIPSorcery.SIP.App
             get { return IsUserDisabled || IsAdminDisabled; }
         }
 
-        public SIPAccount() { }
+        public SIPAccount()
+        {
+        }
 
-        public SIPAccount(string owner, string sipDomain, string sipUsername, string sipPassword, string outDialPlanName)
+        public SIPAccount(string owner, string sipDomain, string sipUsername, string sipPassword,
+            string outDialPlanName)
         {
             Id = Guid.NewGuid();
             Owner = owner;
             SIPDomain = sipDomain;
             SIPUsername = sipUsername;
             SIPPassword = sipPassword;
-            OutDialPlanName = (outDialPlanName != null && outDialPlanName.Trim().Length > 0) ? outDialPlanName.Trim() : null;
+            OutDialPlanName = (outDialPlanName != null && outDialPlanName.Trim().Length > 0)
+                ? outDialPlanName.Trim()
+                : null;
             Inserted = DateTimeOffset.UtcNow;
         }
     }

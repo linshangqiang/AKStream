@@ -53,6 +53,7 @@ namespace SIPSorcery.Net.Sctp
                     l.onMessage(s, dc.getDataAsString());
                 }
             }
+
             a.Clear();
         }
     }

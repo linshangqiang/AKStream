@@ -58,12 +58,41 @@ namespace SIPSorcery.Net
         private int authTagLength;
         private int saltKeyLength;
 
-        public int AuthKeyLength { get => authKeyLength; set => authKeyLength = value; }
-        public int AuthTagLength { get => authTagLength; set => authTagLength = value; }
-        public int AuthType { get => authType; set => authType = value; }
-        public int EncKeyLength { get => encKeyLength; set => encKeyLength = value; }
-        public int EncType { get => encType; set => encType = value; }
-        public int SaltKeyLength { get => saltKeyLength; set => saltKeyLength = value; }
+        public int AuthKeyLength
+        {
+            get => authKeyLength;
+            set => authKeyLength = value;
+        }
+
+        public int AuthTagLength
+        {
+            get => authTagLength;
+            set => authTagLength = value;
+        }
+
+        public int AuthType
+        {
+            get => authType;
+            set => authType = value;
+        }
+
+        public int EncKeyLength
+        {
+            get => encKeyLength;
+            set => encKeyLength = value;
+        }
+
+        public int EncType
+        {
+            get => encType;
+            set => encType = value;
+        }
+
+        public int SaltKeyLength
+        {
+            get => saltKeyLength;
+            set => saltKeyLength = value;
+        }
 
         /**
          * Construct a SRTPPolicy object based on given parameters.
@@ -78,11 +107,11 @@ namespace SIPSorcery.Net
          * @param saltKeyLength SRTP salt key length
          */
         public SrtpPolicy(int encType,
-                          int encKeyLength,
-                          int authType,
-                          int authKeyLength,
-                          int authTagLength,
-                          int saltKeyLength)
+            int encKeyLength,
+            int authType,
+            int authKeyLength,
+            int authTagLength,
+            int saltKeyLength)
         {
             this.encType = encType;
             this.encKeyLength = encKeyLength;

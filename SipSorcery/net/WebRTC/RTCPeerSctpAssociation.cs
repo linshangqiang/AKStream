@@ -33,6 +33,7 @@ namespace SIPSorcery.Net
         /// The underlying SCTP association.
         /// </summary>
         private ThreadedAssociation _sctpAssociation;
+
         private bool _isClient;
 
         /// <summary>
@@ -124,7 +125,8 @@ namespace SIPSorcery.Net
         /// <param name="payloadProtocolID">The payload protocol ID of the new stream.</param>
         public void onDCEPStream(SCTPStream s, string label, int payloadProtocolID)
         {
-            logger.LogDebug($"SCTP data channel stream opened for label {label}, ppid {payloadProtocolID}, stream id {s.getNum()}.");
+            logger.LogDebug(
+                $"SCTP data channel stream opened for label {label}, ppid {payloadProtocolID}, stream id {s.getNum()}.");
 
             bool isLocalStreamID = (_isClient) ? s.getNum() % 2 == 0 : s.getNum() % 2 != 0;
 

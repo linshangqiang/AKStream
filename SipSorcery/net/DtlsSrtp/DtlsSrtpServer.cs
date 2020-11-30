@@ -20,6 +20,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Tls;
@@ -122,15 +123,16 @@ namespace SIPSorcery.Net
         /// </summary>
         public event Action<AlertLevelsEnum, AlertTypesEnum, string> OnAlert;
 
-        public DtlsSrtpServer() : this((Certificate)null, null)
+        public DtlsSrtpServer() : this((Certificate) null, null)
         {
         }
 
-        public DtlsSrtpServer(System.Security.Cryptography.X509Certificates.X509Certificate2 certificate) : this(DtlsUtils.LoadCertificateChain(certificate), DtlsUtils.LoadPrivateKeyResource(certificate))
+        public DtlsSrtpServer(X509Certificate2 certificate) : this(DtlsUtils.LoadCertificateChain(certificate),
+            DtlsUtils.LoadPrivateKeyResource(certificate))
         {
         }
 
-        public DtlsSrtpServer(string certificatePath, string keyPath) : this(new string[] { certificatePath }, keyPath)
+        public DtlsSrtpServer(string certificatePath, string keyPath) : this(new string[] {certificatePath}, keyPath)
         {
         }
 
@@ -159,42 +161,27 @@ namespace SIPSorcery.Net
 
         public RTCDtlsFingerprint Fingerprint
         {
-            get
-            {
-                return mFingerPrint;
-            }
+            get { return mFingerPrint; }
         }
 
         public AsymmetricKeyParameter PrivateKey
         {
-            get
-            {
-                return mPrivateKey;
-            }
+            get { return mPrivateKey; }
         }
 
         public Certificate CertificateChain
         {
-            get
-            {
-                return mCertificateChain;
-            }
+            get { return mCertificateChain; }
         }
 
         protected override ProtocolVersion MaximumVersion
         {
-            get
-            {
-                return ProtocolVersion.DTLSv12;
-            }
+            get { return ProtocolVersion.DTLSv12; }
         }
 
         protected override ProtocolVersion MinimumVersion
         {
-            get
-            {
-                return ProtocolVersion.DTLSv10;
-            }
+            get { return ProtocolVersion.DTLSv10; }
         }
 
         public override int GetSelectedCipherSuite()
@@ -219,12 +206,13 @@ namespace SIPSorcery.Net
                 int cipherSuite = cipherSuites[i];
 
                 if (Arrays.Contains(this.mOfferedCipherSuites, cipherSuite)
-                        && (eccCipherSuitesEnabled || !TlsEccUtilities.IsEccCipherSuite(cipherSuite))
-                        && TlsUtilities.IsValidCipherSuiteForVersion(cipherSuite, mServerVersion))
+                    && (eccCipherSuitesEnabled || !TlsEccUtilities.IsEccCipherSuite(cipherSuite))
+                    && TlsUtilities.IsValidCipherSuiteForVersion(cipherSuite, mServerVersion))
                 {
                     return this.mSelectedCipherSuite = cipherSuite;
                 }
             }
+
             throw new TlsFatalAlert(AlertDescription.handshake_failure);
         }
 
@@ -234,8 +222,12 @@ namespace SIPSorcery.Net
 
             if (TlsUtilities.IsSignatureAlgorithmsExtensionAllowed(mServerVersion))
             {
-                byte[] hashAlgorithms = new byte[] { HashAlgorithm.sha512, HashAlgorithm.sha384, HashAlgorithm.sha256, HashAlgorithm.sha224, HashAlgorithm.sha1 };
-                byte[] signatureAlgorithms = new byte[] { SignatureAlgorithm.rsa, SignatureAlgorithm.ecdsa };
+                byte[] hashAlgorithms = new byte[]
+                {
+                    HashAlgorithm.sha512, HashAlgorithm.sha384, HashAlgorithm.sha256, HashAlgorithm.sha224,
+                    HashAlgorithm.sha1
+                };
+                byte[] signatureAlgorithms = new byte[] {SignatureAlgorithm.rsa, SignatureAlgorithm.ecdsa};
 
                 serverSigAlgs = new List<SignatureAndHashAlgorithm>();
                 for (int i = 0; i < hashAlgorithms.Length; ++i)
@@ -246,7 +238,8 @@ namespace SIPSorcery.Net
                     }
                 }
             }
-            return new CertificateRequest(new byte[] { ClientCertificateType.rsa_sign }, serverSigAlgs, null);
+
+            return new CertificateRequest(new byte[] {ClientCertificateType.rsa_sign}, serverSigAlgs, null);
         }
 
         public override void NotifyClientCertificate(Certificate clientCertificate)
@@ -256,15 +249,17 @@ namespace SIPSorcery.Net
 
         public override IDictionary GetServerExtensions()
         {
-            Hashtable serverExtensions = (Hashtable)base.GetServerExtensions();
+            Hashtable serverExtensions = (Hashtable) base.GetServerExtensions();
             if (TlsSRTPUtils.GetUseSrtpExtension(serverExtensions) == null)
             {
                 if (serverExtensions == null)
                 {
                     serverExtensions = new Hashtable();
                 }
+
                 TlsSRTPUtils.AddUseSrtpExtension(serverExtensions, serverSrtpData);
             }
+
             return serverExtensions;
         }
 
@@ -291,7 +286,7 @@ namespace SIPSorcery.Net
 
             // server chooses a mutually supported SRTP protection profile
             // http://tools.ietf.org/html/draft-ietf-avt-dtls-srtp-07#section-4.1.2
-            int[] protectionProfiles = { chosenProfile };
+            int[] protectionProfiles = {chosenProfile};
 
             // server agrees to use the MKI offered by the client
             serverSrtpData = new UseSrtpData(protectionProfiles, clientSrtpData.Mki);
@@ -330,7 +325,9 @@ namespace SIPSorcery.Net
         public override void NotifyHandshakeComplete()
         {
             //Copy master Secret (will be inaccessible after this call)
-            masterSecret = new byte[mContext.SecurityParameters.MasterSecret != null ? mContext.SecurityParameters.MasterSecret.Length : 0];
+            masterSecret = new byte[mContext.SecurityParameters.MasterSecret != null
+                ? mContext.SecurityParameters.MasterSecret.Length
+                : 0];
             Buffer.BlockCopy(mContext.SecurityParameters.MasterSecret, 0, masterSecret, 0, masterSecret.Length);
 
             //Prepare Srtp Keys (we must to it here because master key will be cleared after that)
@@ -344,7 +341,8 @@ namespace SIPSorcery.Net
 
         protected override TlsSignerCredentials GetECDsaSignerCredentials()
         {
-            return DtlsUtils.LoadSignerCredentials(mContext, mCertificateChain, mPrivateKey, new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa));
+            return DtlsUtils.LoadSignerCredentials(mContext, mCertificateChain, mPrivateKey,
+                new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa));
         }
 
         protected override TlsEncryptionCredentials GetRsaEncryptionCredentials()
@@ -377,6 +375,7 @@ namespace SIPSorcery.Net
                     return null;
                 }
             }
+
             return DtlsUtils.LoadSignerCredentials(mContext, mCertificateChain, mPrivateKey, signatureAndHashAlgorithm);
         }
 
@@ -385,7 +384,8 @@ namespace SIPSorcery.Net
             //Set master secret back to security parameters (only works in old bouncy castle versions)
             //mContext.SecurityParameters.masterSecret = masterSecret;
 
-            SrtpParameters srtpParams = SrtpParameters.GetSrtpParametersForProfile(serverSrtpData.ProtectionProfiles[0]);
+            SrtpParameters srtpParams =
+                SrtpParameters.GetSrtpParametersForProfile(serverSrtpData.ProtectionProfiles[0]);
             int keyLen = srtpParams.GetCipherKeyLength();
             int saltLen = srtpParams.GetCipherSaltLength();
 
@@ -446,6 +446,7 @@ namespace SIPSorcery.Net
             {
                 cipherSuites[i] = this.cipherSuites[i];
             }
+
             return cipherSuites;
         }
 
@@ -461,6 +462,7 @@ namespace SIPSorcery.Net
             {
                 description += message;
             }
+
             if (cause != null)
             {
                 description += cause;
@@ -468,11 +470,13 @@ namespace SIPSorcery.Net
 
             if (alertDescription == AlertTypesEnum.close_notify.GetHashCode())
             {
-                logger.LogDebug($"DTLS server raised close notify: {AlertLevel.GetText(alertLevel)}, {AlertDescription.GetText(alertDescription)}, {description}.");
+                logger.LogDebug(
+                    $"DTLS server raised close notify: {AlertLevel.GetText(alertLevel)}, {AlertDescription.GetText(alertDescription)}, {description}.");
             }
             else
             {
-                logger.LogWarning($"DTLS server raised unexpected alert: {AlertLevel.GetText(alertLevel)}, {AlertDescription.GetText(alertDescription)}, {description}.");
+                logger.LogWarning(
+                    $"DTLS server raised unexpected alert: {AlertLevel.GetText(alertLevel)}, {AlertDescription.GetText(alertDescription)}, {description}.");
             }
         }
 
@@ -485,21 +489,23 @@ namespace SIPSorcery.Net
 
             if (Enum.IsDefined(typeof(AlertLevelsEnum), alertLevel))
             {
-                level = (AlertLevelsEnum)alertLevel;
+                level = (AlertLevelsEnum) alertLevel;
             }
 
             if (Enum.IsDefined(typeof(AlertTypesEnum), alertDescription))
             {
-                alertType = (AlertTypesEnum)alertDescription;
+                alertType = (AlertTypesEnum) alertDescription;
             }
 
             if (alertType == AlertTypesEnum.close_notify)
             {
-                logger.LogDebug($"DTLS server received close notification: {AlertLevel.GetText(alertLevel)}, {description}.");
+                logger.LogDebug(
+                    $"DTLS server received close notification: {AlertLevel.GetText(alertLevel)}, {description}.");
             }
             else
             {
-                logger.LogWarning($"DTLS server received unexpected alert: {AlertLevel.GetText(alertLevel)}, {description}.");
+                logger.LogWarning(
+                    $"DTLS server received unexpected alert: {AlertLevel.GetText(alertLevel)}, {description}.");
             }
 
             OnAlert?.Invoke(level, alertType, description);

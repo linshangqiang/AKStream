@@ -30,7 +30,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class ReConfigChunk : Chunk
     {
-
         private static ILogger logger = Log.Logger;
 
         private long sentAt;
@@ -51,7 +50,9 @@ namespace SIPSorcery.Net.Sctp
             }
         }
 
-        public ReConfigChunk() : base(ChunkType.RE_CONFIG) { }
+        public ReConfigChunk() : base(ChunkType.RE_CONFIG)
+        {
+        }
 
         protected override void putFixedParams(ByteBuffer ret)
         {
@@ -70,7 +71,7 @@ namespace SIPSorcery.Net.Sctp
         {
             foreach (var v in _varList)
                 if (typeof(IncomingSSNResetRequestParameter).IsAssignableFrom(v.GetType()))
-                    return (IncomingSSNResetRequestParameter)v;
+                    return (IncomingSSNResetRequestParameter) v;
             return null;
         }
 
@@ -102,7 +103,7 @@ namespace SIPSorcery.Net.Sctp
         {
             foreach (var v in _varList)
                 if (typeof(OutgoingSSNResetRequestParameter).IsAssignableFrom(v.GetType()))
-                    return (OutgoingSSNResetRequestParameter)v;
+                    return (OutgoingSSNResetRequestParameter) v;
             return null;
         }
 
@@ -142,10 +143,12 @@ namespace SIPSorcery.Net.Sctp
             {
                 throw new Exception("[IllegalArgumentException] Too few params " + _varList.Count);
             }
+
             if (_varList.Count > 2)
             {
                 throw new Exception("[IllegalArgumentException] Too many params " + _varList.Count);
             }
+
             // now check for invalid combos
             if ((_varList.Count == 2))
             {
@@ -160,14 +163,18 @@ namespace SIPSorcery.Net.Sctp
                             break;
                         }
                     }
+
                     if (remain == null)
                     {
-                        throw new Exception("[IllegalArgumentException] 2 OutgoingSSNResetRequestParameter in one Chunk not allowed ");
+                        throw new Exception(
+                            "[IllegalArgumentException] 2 OutgoingSSNResetRequestParameter in one Chunk not allowed ");
                     }
+
                     if (!typeof(IncomingSSNResetRequestParameter).IsAssignableFrom(remain.GetType()) //3
                         && !typeof(ReconfigurationResponseParameter).IsAssignableFrom(remain.GetType())) //9
                     {
-                        throw new Exception("[IllegalArgumentException] OutgoingSSNResetRequestParameter and " + remain.GetType().Name + " in same Chunk not allowed ");
+                        throw new Exception("[IllegalArgumentException] OutgoingSSNResetRequestParameter and " +
+                                            remain.GetType().Name + " in same Chunk not allowed ");
                     }
                 }
                 else if (this.hasOutgoingAdd())
@@ -182,13 +189,17 @@ namespace SIPSorcery.Net.Sctp
                             break;
                         }
                     }
+
                     if (remain == null)
                     {
-                        throw new Exception("[IllegalArgumentException] 2 AddOutgoingStreamsRequestParameter in one Chunk not allowed ");
+                        throw new Exception(
+                            "[IllegalArgumentException] 2 AddOutgoingStreamsRequestParameter in one Chunk not allowed ");
                     }
+
                     if (!typeof(AddIncomingStreamsRequestParameter).IsAssignableFrom(remain.GetType())) //7
                     {
-                        throw new Exception("[IllegalArgumentException] OutgoingSSNResetRequestParameter and " + remain.GetType().Name + " in same Chunk not allowed ");
+                        throw new Exception("[IllegalArgumentException] OutgoingSSNResetRequestParameter and " +
+                                            remain.GetType().Name + " in same Chunk not allowed ");
                     }
                 }
                 else if (this.hasResponse())
@@ -206,7 +217,8 @@ namespace SIPSorcery.Net.Sctp
 
                     if (remain != null)
                     {
-                        throw new Exception("[IllegalArgumentException] ReconfigurationResponseParameter and " + remain.GetType().Name + " in same Chunk not allowed ");
+                        throw new Exception("[IllegalArgumentException] ReconfigurationResponseParameter and " +
+                                            remain.GetType().Name + " in same Chunk not allowed ");
                     }
                 }
             } // implicitly just one - which is ok 1,2,4,5,6,8
@@ -227,10 +239,10 @@ namespace SIPSorcery.Net.Sctp
             {
                 // if there are 2 params and both match
                 if ((this.hasIncomingReset() && other.hasIncomingReset())
-                        && (this.hasOutgoingReset() && other.hasOutgoingReset()))
+                    && (this.hasOutgoingReset() && other.hasOutgoingReset()))
                 {
                     ret = this.getIncomingReset().sameAs(other.getIncomingReset())
-                            && this.getOutgoingReset().sameAs(other.getOutgoingReset());
+                          && this.getOutgoingReset().sameAs(other.getOutgoingReset());
                 }
                 else
                 {
@@ -240,12 +252,14 @@ namespace SIPSorcery.Net.Sctp
                     {
                         ret = this.getIncomingReset().sameAs(other.getIncomingReset());
                     }
+
                     if (this.hasOutgoingReset() && other.hasOutgoingReset())
                     {
                         ret = this.getOutgoingReset().sameAs(other.getOutgoingReset());
                     }
                 }
             }
+
             return ret;
         }
 

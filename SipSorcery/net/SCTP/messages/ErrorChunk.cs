@@ -59,7 +59,9 @@ namespace SIPSorcery.Net.Sctp
     {
         private static ILogger logger = Log.Logger;
 
-        public ErrorChunk() : base(ChunkType.ERROR) { }
+        public ErrorChunk() : base(ChunkType.ERROR)
+        {
+        }
 
         public ErrorChunk(KnownError e) : this()
         {
@@ -87,6 +89,8 @@ namespace SIPSorcery.Net.Sctp
             }
         }
 
-        protected override void putFixedParams(ByteBuffer ret) { }
+        protected override void putFixedParams(ByteBuffer ret)
+        {
+        }
     }
 }

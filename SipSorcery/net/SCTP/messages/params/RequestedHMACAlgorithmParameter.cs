@@ -55,7 +55,9 @@ namespace SIPSorcery.Net.Sctp
 		 +-----------------+--------------------------+
 		 */
 
-        public RequestedHMACAlgorithmParameter(int t, string n) : base(t, n) { }
+        public RequestedHMACAlgorithmParameter(int t, string n) : base(t, n)
+        {
+        }
 
         public override void readBody(ByteBuffer body, int blen)
         {
@@ -72,7 +74,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 for (int i = 0; i < hmacs.Length; i++)
                 {
-                    body.Put((ushort)hmacs[i]);
+                    body.Put((ushort) hmacs[i]);
                 }
             }
         }
@@ -96,6 +98,7 @@ namespace SIPSorcery.Net.Sctp
                         break;
                 }
             }
+
             return base.ToString() + ret;
         }
 
@@ -109,6 +112,7 @@ namespace SIPSorcery.Net.Sctp
                     ret = true;
                 }
             }
+
             return ret;
         }
     }

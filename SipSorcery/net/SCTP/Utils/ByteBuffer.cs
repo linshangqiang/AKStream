@@ -10,6 +10,7 @@ namespace SCTP4CS.Utils
         /// Absolute
         /// </summary>
         public int positionAbsolute;
+
         /// <summary>
         /// Relative
         /// </summary>
@@ -28,6 +29,7 @@ namespace SCTP4CS.Utils
         /// Absolute
         /// </summary>
         public int limitAbsolute;
+
         /// <summary>
         /// Relative
         /// </summary>
@@ -63,10 +65,12 @@ namespace SCTP4CS.Utils
         {
             return new ByteBuffer(buffer, offset, length);
         }
+
         public static ByteBuffer wrap(byte[] buffer)
         {
             return new ByteBuffer(buffer);
         }
+
         public static ByteBuffer allocate(int length)
         {
             return new ByteBuffer(new byte[length], 0, length);
@@ -94,6 +98,7 @@ namespace SCTP4CS.Utils
         {
             return limitAbsolute - positionAbsolute;
         }
+
         public bool hasRemaining()
         {
             return limitAbsolute > positionAbsolute;
@@ -106,6 +111,7 @@ namespace SCTP4CS.Utils
             b.limitAbsolute = limitAbsolute;
             return b;
         }
+
         public ByteBuffer flip()
         {
             limitAbsolute = positionAbsolute;
@@ -119,6 +125,7 @@ namespace SCTP4CS.Utils
         }
 
         #region PutMethods
+
         void UpdateDataSize(int position)
         {
             if (position > Limit) Limit = position;
@@ -178,11 +185,13 @@ namespace SCTP4CS.Utils
             new FastBit.Ushort(value).Write(_data, relativeOffset + offset, endianness);
             UpdateDataSize(relativeOffset + offset + 2);
         }
+
         public void Put(int relativeOffset, int value)
         {
             new FastBit.Int(value).Write(_data, relativeOffset + offset, endianness);
             UpdateDataSize(relativeOffset + offset + 4);
         }
+
         public void Put(int relativeOffset, uint value)
         {
             new FastBit.Uint(value).Write(_data, relativeOffset + offset, endianness);
@@ -219,13 +228,15 @@ namespace SCTP4CS.Utils
 
         public void Put(bool value)
         {
-            _data[positionAbsolute] = (byte)(value ? 1 : 0);
+            _data[positionAbsolute] = (byte) (value ? 1 : 0);
             positionAbsolute++;
             UpdateDataSize(positionAbsolute);
         }
+
         #endregion
 
         #region GetMethods
+
         public byte GetByte()
         {
             byte res = _data[positionAbsolute];
@@ -274,6 +285,7 @@ namespace SCTP4CS.Utils
             positionAbsolute += 4;
             return result;
         }
+
         public int GetInt(int relativeOffset)
         {
             int result = new FastBit.Int().Read(_data, offset + relativeOffset, endianness);
@@ -286,6 +298,7 @@ namespace SCTP4CS.Utils
             positionAbsolute += 4;
             return result;
         }
+
         public uint GetUInt(int relativeOffset)
         {
             uint result = new FastBit.Uint().Read(_data, offset + relativeOffset, endianness);
@@ -316,6 +329,7 @@ namespace SCTP4CS.Utils
             Buffer.BlockCopy(_data, positionAbsolute, destination, 0, lenght);
             positionAbsolute += lenght;
         }
+
         #endregion
     }
 }

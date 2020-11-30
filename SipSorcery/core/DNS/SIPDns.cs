@@ -14,7 +14,6 @@
 //-----------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -70,12 +69,10 @@ namespace SIPSorcery.SIP
         //public static List<DnsClient.NameServer> DefaultNameServers { get; set; }
 
         private static LookupClient _lookupClient;
+
         public static LookupClient LookupClient
         {
-            get
-            {
-                return _lookupClient;
-            }
+            get { return _lookupClient; }
             internal set
             {
                 // Intended to allow unit testing with client options that will cause the
@@ -306,7 +303,8 @@ namespace SIPSorcery.SIP
                             var srvProtocol = SIPServices.GetSRVProtocolForSIPURI(uri);
                             //string serviceHost = DnsQueryExtensions.ConcatResolveServiceName(uri.MAddrOrHostAddress, uri.Scheme.ToString(), srvProtocol.ToString());
                             //var srvResult = await _lookupClient.QueryAsync(serviceHost, QueryType.SRV, QueryClass.IN, ct).ConfigureAwait(false);
-                            var srvResult = await _lookupClient.ResolveServiceAsync(uri.MAddrOrHostAddress, uri.Scheme.ToString(), srvProtocol.ToString());
+                            var srvResult = await _lookupClient.ResolveServiceAsync(uri.MAddrOrHostAddress,
+                                uri.Scheme.ToString(), srvProtocol.ToString());
                             (var srvHost, var srvPort) = GetHostAndPortFromSrvResult(srvResult);
                             if (srvHost != null)
                             {
@@ -318,6 +316,7 @@ namespace SIPSorcery.SIP
                         {
                             logger.LogWarning($"SIPDNS exception on SRV lookup. {srvExcp.Message}.");
                         }
+
                         queryType = preferIPv6 ? QueryType.AAAA : QueryType.A;
 
                         break;
@@ -326,10 +325,14 @@ namespace SIPSorcery.SIP
 
                         try
                         {
-                            var aaaaResult = await _lookupClient.QueryAsync(host, UseANYLookups ? QueryType.ANY : QueryType.AAAA, QueryClass.IN, ct).ConfigureAwait(false);
+                            var aaaaResult = await _lookupClient
+                                .QueryAsync(host, UseANYLookups ? QueryType.ANY : QueryType.AAAA, QueryClass.IN, ct)
+                                .ConfigureAwait(false);
                             if (aaaaResult?.Answers?.Count > 0)
                             {
-                                result = GetFromLookupResult(uri.Protocol, aaaaResult.Answers.AddressRecords().OrderByDescending(x => x.RecordType).First(), port);
+                                result = GetFromLookupResult(uri.Protocol,
+                                    aaaaResult.Answers.AddressRecords().OrderByDescending(x => x.RecordType).First(),
+                                    port);
                                 isDone = true;
                             }
                             else
@@ -349,12 +352,14 @@ namespace SIPSorcery.SIP
                         // A record lookup.
                         try
                         {
-                            var aResult = await _lookupClient.QueryAsync(host, QueryType.A, QueryClass.IN, ct).ConfigureAwait(false);
+                            var aResult = await _lookupClient.QueryAsync(host, QueryType.A, QueryClass.IN, ct)
+                                .ConfigureAwait(false);
                             if (aResult != null)
                             {
                                 if (aResult.Answers?.Count > 0)
                                 {
-                                    result = GetFromLookupResult(uri.Protocol, aResult.Answers.AddressRecords().First(), port);
+                                    result = GetFromLookupResult(uri.Protocol, aResult.Answers.AddressRecords().First(),
+                                        port);
                                 }
                                 else
                                 {
@@ -363,7 +368,6 @@ namespace SIPSorcery.SIP
                                     result = SIPEndPoint.Empty;
                                 }
                             }
-
                         }
                         catch (Exception srvExcp)
                         {
@@ -410,7 +414,8 @@ namespace SIPSorcery.SIP
             if (serviceHostEntries != null && serviceHostEntries.Length > 0)
             {
                 // TODO: Should be applying some randomisation logic here to take advantage if there are multiple SRV records.
-                var srvEntry = serviceHostEntries.OrderBy(y => y.Priority).ThenByDescending(w => w.Weight).FirstOrDefault();
+                var srvEntry = serviceHostEntries.OrderBy(y => y.Priority).ThenByDescending(w => w.Weight)
+                    .FirstOrDefault();
 
                 return (srvEntry.HostName, srvEntry.Port);
             }
@@ -428,7 +433,8 @@ namespace SIPSorcery.SIP
         /// <param name="addrRecord">The DNS lookup result.</param>
         /// <param name="port">The port for the IP end point.</param>
         /// <returns>An IP end point or null.</returns>
-        private static SIPEndPoint GetFromLookupResult(SIPProtocolsEnum protocol, DnsResourceRecord addrRecord, int port)
+        private static SIPEndPoint GetFromLookupResult(SIPProtocolsEnum protocol, DnsResourceRecord addrRecord,
+            int port)
         {
             if (addrRecord is AaaaRecord)
             {
@@ -454,8 +460,7 @@ namespace SIPSorcery.SIP
         /// <returns>A SIP end point for the host or null if the URI cannot be resolved.</returns>
         private static SIPEndPoint ResolveLocalHostname(SIPURI uri, bool preferIPv6)
         {
-            AddressFamily family = preferIPv6 ? AddressFamily.InterNetworkV6 :
-                       AddressFamily.InterNetwork;
+            AddressFamily family = preferIPv6 ? AddressFamily.InterNetworkV6 : AddressFamily.InterNetwork;
 
             if (!ushort.TryParse(uri.HostPort, out var uriPort))
             {

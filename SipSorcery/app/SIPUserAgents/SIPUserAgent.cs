@@ -130,10 +130,7 @@ namespace SIPSorcery.SIP.App
         /// </summary>
         public bool IsCallActive
         {
-            get
-            {
-                return m_sipDialogue?.DialogueState == SIPDialogueStateEnum.Confirmed;
-            }
+            get { return m_sipDialogue?.DialogueState == SIPDialogueStateEnum.Confirmed; }
         }
 
         /// <summary>
@@ -147,7 +144,7 @@ namespace SIPSorcery.SIP.App
                 if (!IsCallActive && m_uac != null && m_uac.ServerTransaction != null)
                 {
                     return m_uac.ServerTransaction.TransactionState == SIPTransactionStatesEnum.Calling ||
-                    m_uac.ServerTransaction.TransactionState == SIPTransactionStatesEnum.Trying;
+                           m_uac.ServerTransaction.TransactionState == SIPTransactionStatesEnum.Trying;
                 }
                 else
                 {
@@ -185,7 +182,7 @@ namespace SIPSorcery.SIP.App
                 {
                     return true;
                 }
-                else if(m_byeTransaction != null && m_byeTransaction.DeliveryPending)
+                else if (m_byeTransaction != null && m_byeTransaction.DeliveryPending)
                 {
                     return true;
                 }
@@ -391,7 +388,8 @@ namespace SIPSorcery.SIP.App
         {
             if (mediaSession == null)
             {
-                throw new ArgumentNullException("mediaSession", "A media session must be supplied when placing a call.");
+                throw new ArgumentNullException("mediaSession",
+                    "A media session must be supplied when placing a call.");
             }
 
             if (!SIPURI.TryParse(dst, out var dstUri))
@@ -405,20 +403,21 @@ namespace SIPSorcery.SIP.App
             {
                 // If the call needs to be authenticated the From header needs to be set
                 // with the username and domain to match the credentials.
-                fromHeader = (new SIPURI(username, dstUri.Host, null, dstUri.Scheme, dstUri.Protocol)).ToParameterlessString();
+                fromHeader = (new SIPURI(username, dstUri.Host, null, dstUri.Scheme, dstUri.Protocol))
+                    .ToParameterlessString();
             }
 
             SIPCallDescriptor callDescriptor = new SIPCallDescriptor(
-               username ?? SIPConstants.SIP_DEFAULT_USERNAME,
-               password,
-               dstUri.ToString(),
-               fromHeader,
-               dstUri.CanonicalAddress,
-               null, null, null,
-               SIPCallDirection.Out,
-               SDP.SDP_MIME_CONTENTTYPE,
-               null,
-               null);
+                username ?? SIPConstants.SIP_DEFAULT_USERNAME,
+                password,
+                dstUri.ToString(),
+                fromHeader,
+                dstUri.CanonicalAddress,
+                null, null, null,
+                SIPCallDirection.Out,
+                SDP.SDP_MIME_CONTENTTYPE,
+                null,
+                null);
 
             return Call(callDescriptor, mediaSession);
         }
@@ -434,7 +433,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="mediaSession">The RTP session for the call.</param>
         public async Task<bool> Call(SIPCallDescriptor callDescriptor, IMediaSession mediaSession)
         {
-            TaskCompletionSource<bool> callResult = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<bool> callResult =
+                new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             ClientCallAnswered += (uac, resp) => callResult.TrySetResult(true);
             ClientCallFailed += (uac, errorMessage, result) => callResult.TrySetResult(false);
@@ -487,7 +487,8 @@ namespace SIPSorcery.SIP.App
             }
             else
             {
-                ClientCallFailed?.Invoke(m_uac, $"Could not resolve destination when placing call to {sipCallDescriptor.Uri}.", null);
+                ClientCallFailed?.Invoke(m_uac,
+                    $"Could not resolve destination when placing call to {sipCallDescriptor.Uri}.", null);
                 CallEnded();
             }
         }
@@ -551,7 +552,8 @@ namespace SIPSorcery.SIP.App
         public SIPServerUserAgent AcceptCall(SIPRequest inviteRequest)
         {
             UASInviteTransaction uasTransaction = new UASInviteTransaction(m_transport, inviteRequest, m_outboundProxy);
-            SIPServerUserAgent uas = new SIPServerUserAgent(m_transport, m_outboundProxy, null, null, SIPCallDirection.In, null, null, uasTransaction);
+            SIPServerUserAgent uas = new SIPServerUserAgent(m_transport, m_outboundProxy, null, null,
+                SIPCallDirection.In, null, null, uasTransaction);
             uas.ClientTransaction.TransactionStateChanged += (tx) => OnTransactionStateChange?.Invoke(tx);
             uas.ClientTransaction.TransactionTraceMessage += (tx, msg) => OnTransactionTraceMessage?.Invoke(tx, msg);
             uas.CallCancelled += (pendingUas) =>
@@ -559,10 +561,7 @@ namespace SIPSorcery.SIP.App
                 CallEnded();
                 ServerCallCancelled?.Invoke(pendingUas);
             };
-            uas.NoRingTimeout += (pendingUas) =>
-            {
-                ServerCallRingTimeout?.Invoke(pendingUas);
-            };
+            uas.NoRingTimeout += (pendingUas) => { ServerCallRingTimeout?.Invoke(pendingUas); };
 
             uas.Progress(SIPResponseStatusCodesEnum.Trying, null, null, null, null);
             uas.Progress(SIPResponseStatusCodesEnum.Ringing, null, null, null, null);
@@ -641,7 +640,8 @@ namespace SIPSorcery.SIP.App
                 else
                 {
                     // No SDP offer was included in the INVITE request need to wait for the ACK.
-                    var sdpAnnounceAddress = NetServices.GetLocalAddressForRemote(sipRequest.RemoteSIPEndPoint.GetIPEndPoint().Address);
+                    var sdpAnnounceAddress =
+                        NetServices.GetLocalAddressForRemote(sipRequest.RemoteSIPEndPoint.GetIPEndPoint().Address);
                     var sdpOffer = MediaSession.CreateOffer(sdpAnnounceAddress);
                     sdp = sdpOffer.ToString();
                 }
@@ -652,7 +652,8 @@ namespace SIPSorcery.SIP.App
                 // - INVITE with no SDP offer received,
                 // - Reply with OK and an SDP offer,
                 // - Wait for ACK with SDP answer.
-                TaskCompletionSource<SIPDialogue> dialogueCreatedTcs = new TaskCompletionSource<SIPDialogue>(TaskCreationOptions.RunContinuationsAsynchronously);
+                TaskCompletionSource<SIPDialogue> dialogueCreatedTcs =
+                    new TaskCompletionSource<SIPDialogue>(TaskCreationOptions.RunContinuationsAsynchronously);
                 m_uas.OnDialogueCreated += (dialogue) => dialogueCreatedTcs.TrySetResult(dialogue);
 
                 m_uas.Answer(m_sdpContentType, sdp, null, SIPDialogueTransferModesEnum.Default, customHeaders);
@@ -697,7 +698,8 @@ namespace SIPSorcery.SIP.App
                 }
                 else
                 {
-                    logger.LogWarning("The attempt to answer a call failed as the dialog was not created. The likely cause is the ACK not being received in time.");
+                    logger.LogWarning(
+                        "The attempt to answer a call failed as the dialog was not created. The likely cause is the ACK not being received in time.");
 
                     MediaSession.Close("dialog creation failed");
                     Hangup();
@@ -718,7 +720,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent 
         /// to the remote party.</param>
         /// <returns>True if the transfer was accepted by the Transferee or false if not.</returns>
-        public Task<bool> BlindTransfer(SIPURI destination, TimeSpan timeout, CancellationToken ct, string[] customHeaders = null)
+        public Task<bool> BlindTransfer(SIPURI destination, TimeSpan timeout, CancellationToken ct,
+            string[] customHeaders = null)
         {
             if (m_sipDialogue == null)
             {
@@ -743,7 +746,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent 
         /// to the remote party.</param>
         /// <returns>True if the transfer was accepted by the Transferee or false if not.</returns>
-        public Task<bool> AttendedTransfer(SIPDialogue transferee, TimeSpan timeout, CancellationToken ct, string[] customHeaders = null)
+        public Task<bool> AttendedTransfer(SIPDialogue transferee, TimeSpan timeout, CancellationToken ct,
+            string[] customHeaders = null)
         {
             if (m_sipDialogue == null || transferee == null)
             {
@@ -826,29 +830,33 @@ namespace SIPSorcery.SIP.App
             }
             else
             {
-                TaskCompletionSource<bool> transferAccepted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                TaskCompletionSource<bool> transferAccepted =
+                    new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
                 SIPNonInviteTransaction referTx = new SIPNonInviteTransaction(m_transport, referRequest, null);
 
-                SIPTransactionResponseReceivedDelegate referTxStatusHandler = (localSIPEndPoint, remoteEndPoint, sipTransaction, sipResponse) =>
-                {
-                    if (sipResponse.Header.CSeqMethod == SIPMethodsEnum.REFER && sipResponse.Status == SIPResponseStatusCodesEnum.Accepted)
+                SIPTransactionResponseReceivedDelegate referTxStatusHandler =
+                    (localSIPEndPoint, remoteEndPoint, sipTransaction, sipResponse) =>
                     {
-                        logger.LogInformation("Call transfer was accepted by remote server.");
-                        transferAccepted.TrySetResult(true);
-                    }
-                    else
-                    {
-                        transferAccepted.TrySetResult(false);
-                    }
+                        if (sipResponse.Header.CSeqMethod == SIPMethodsEnum.REFER &&
+                            sipResponse.Status == SIPResponseStatusCodesEnum.Accepted)
+                        {
+                            logger.LogInformation("Call transfer was accepted by remote server.");
+                            transferAccepted.TrySetResult(true);
+                        }
+                        else
+                        {
+                            transferAccepted.TrySetResult(false);
+                        }
 
-                    return Task.FromResult(SocketError.Success);
-                };
+                        return Task.FromResult(SocketError.Success);
+                    };
 
                 referTx.NonInviteTransactionFinalResponseReceived += referTxStatusHandler;
                 referTx.SendRequest();
 
-                await Task.WhenAny(transferAccepted.Task, Task.Delay((int)timeout.TotalMilliseconds, ct)).ConfigureAwait(false);
+                await Task.WhenAny(transferAccepted.Task, Task.Delay((int) timeout.TotalMilliseconds, ct))
+                    .ConfigureAwait(false);
 
                 referTx.NonInviteTransactionFinalResponseReceived -= referTxStatusHandler;
 
@@ -888,7 +896,8 @@ namespace SIPSorcery.SIP.App
             {
                 logger.LogDebug($"Re-INVITE request received {sipRequest.StatusLine}.");
 
-                UASInviteTransaction reInviteTransaction = new UASInviteTransaction(m_transport, sipRequest, m_outboundProxy);
+                UASInviteTransaction reInviteTransaction =
+                    new UASInviteTransaction(m_transport, sipRequest, m_outboundProxy);
 
                 try
                 {
@@ -899,7 +908,8 @@ namespace SIPSorcery.SIP.App
                         // A transfer is in progress and this re-INVITE belongs to the original call. More than likely
                         // the purpose of the request is to place us on hold. We'll respond with OK but not update any local state.
                         var answerSdp = MediaSession.CreateAnswer(null);
-                        var okResponse = reInviteTransaction.GetOkResponse(SDP.SDP_MIME_CONTENTTYPE, answerSdp.ToString());
+                        var okResponse =
+                            reInviteTransaction.GetOkResponse(SDP.SDP_MIME_CONTENTTYPE, answerSdp.ToString());
                         reInviteTransaction.SendFinalResponse(okResponse);
                     }
                     else
@@ -908,9 +918,11 @@ namespace SIPSorcery.SIP.App
 
                         if (setRemoteResult != SetDescriptionResultEnum.OK)
                         {
-                            logger.LogWarning($"Unable to set remote description from reINVITE request {setRemoteResult}");
+                            logger.LogWarning(
+                                $"Unable to set remote description from reINVITE request {setRemoteResult}");
 
-                            var notAcceptableResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotAcceptable, setRemoteResult.ToString());
+                            var notAcceptableResponse = SIPResponse.GetResponse(sipRequest,
+                                SIPResponseStatusCodesEnum.NotAcceptable, setRemoteResult.ToString());
                             reInviteTransaction.SendFinalResponse(notAcceptableResponse);
                         }
                         else
@@ -919,12 +931,14 @@ namespace SIPSorcery.SIP.App
 
                             if (MediaSession.HasAudio)
                             {
-                                MediaSession.SetMediaStreamStatus(SDPMediaTypesEnum.audio, GetStreamStatusForOnHoldState());
+                                MediaSession.SetMediaStreamStatus(SDPMediaTypesEnum.audio,
+                                    GetStreamStatusForOnHoldState());
                             }
 
                             if (MediaSession.HasVideo)
                             {
-                                MediaSession.SetMediaStreamStatus(SDPMediaTypesEnum.video, GetStreamStatusForOnHoldState());
+                                MediaSession.SetMediaStreamStatus(SDPMediaTypesEnum.video,
+                                    GetStreamStatusForOnHoldState());
                             }
 
                             var answerSdp = MediaSession.CreateAnswer(null);
@@ -933,7 +947,8 @@ namespace SIPSorcery.SIP.App
                             m_sipDialogue.SDP = answerSdp.ToString();
                             m_sipDialogue.RemoteCSeq = sipRequest.Header.CSeq;
 
-                            var okResponse = reInviteTransaction.GetOkResponse(SDP.SDP_MIME_CONTENTTYPE, m_sipDialogue.SDP);
+                            var okResponse =
+                                reInviteTransaction.GetOkResponse(SDP.SDP_MIME_CONTENTTYPE, m_sipDialogue.SDP);
                             reInviteTransaction.SendFinalResponse(okResponse);
                         }
                     }
@@ -946,13 +961,15 @@ namespace SIPSorcery.SIP.App
                     {
                         // The application isn't prepared to accept re-INVITE requests and we can't work out what it was for. 
                         // We'll reject as gently as we can to try and not lose the call.
-                        SIPResponse notAcceptableResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotAcceptable, null);
+                        SIPResponse notAcceptableResponse = SIPResponse.GetResponse(sipRequest,
+                            SIPResponseStatusCodesEnum.NotAcceptable, null);
                         reInviteTransaction.SendFinalResponse(notAcceptableResponse);
                     }
                     else
                     {
                         // The application is going to handle the re-INVITE request. We'll send a Trying response as a precursor.
-                        SIPResponse tryingResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.Trying, null);
+                        SIPResponse tryingResponse =
+                            SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.Trying, null);
                         await reInviteTransaction.SendProvisionalResponse(tryingResponse).ConfigureAwait(false);
                         OnReinviteRequest.Invoke(reInviteTransaction);
                     }
@@ -982,14 +999,16 @@ namespace SIPSorcery.SIP.App
                 SIPResponse okResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.Ok, null);
                 await SendResponseAsync(okResponse).ConfigureAwait(false);
 
-                if (sipRequest.Body?.Length > 0 && sipRequest.Header.ContentType?.Contains(m_sipReferContentType) == true)
+                if (sipRequest.Body?.Length > 0 &&
+                    sipRequest.Header.ContentType?.Contains(m_sipReferContentType) == true)
                 {
                     OnTransferNotify?.Invoke(sipRequest.Body);
                 }
             }
             else if (m_isTransportExclusive)
             {
-                SIPResponse notSupportedResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotImplemented, null);
+                SIPResponse notSupportedResponse =
+                    SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotImplemented, null);
                 await m_transport.SendResponseAsync(notSupportedResponse).ConfigureAwait(false);
             }
         }
@@ -1005,15 +1024,19 @@ namespace SIPSorcery.SIP.App
             if (referRequest.Header.ReferTo.IsNullOrBlank())
             {
                 // A REFER request must have a Refer-To header.
-                logger.LogWarning($"A REFER request was received from {referRequest.RemoteSIPEndPoint} without a Refer-To header.");
-                SIPResponse invalidResponse = SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.BadRequest, "Missing mandatory Refer-To header");
+                logger.LogWarning(
+                    $"A REFER request was received from {referRequest.RemoteSIPEndPoint} without a Refer-To header.");
+                SIPResponse invalidResponse = SIPResponse.GetResponse(referRequest,
+                    SIPResponseStatusCodesEnum.BadRequest, "Missing mandatory Refer-To header");
                 referResponseTx.SendResponse(invalidResponse);
             }
             else if (m_sipDialogue == null || m_sipDialogue.DialogueState != SIPDialogueStateEnum.Confirmed)
             {
                 // Can't replace out existing dialog if we don't have a current one.
-                logger.LogWarning($"A REFER request was received from {referRequest.RemoteSIPEndPoint} when there was no dialog or the dialog was not in a ready state.");
-                SIPResponse noDialogResponse = SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.CallLegTransactionDoesNotExist, null);
+                logger.LogWarning(
+                    $"A REFER request was received from {referRequest.RemoteSIPEndPoint} when there was no dialog or the dialog was not in a ready state.");
+                SIPResponse noDialogResponse = SIPResponse.GetResponse(referRequest,
+                    SIPResponseStatusCodesEnum.CallLegTransactionDoesNotExist, null);
                 referResponseTx.SendResponse(noDialogResponse);
             }
             else
@@ -1036,13 +1059,15 @@ namespace SIPSorcery.SIP.App
                 {
                     logger.LogDebug("Transfer request was rejected by application.");
 
-                    SIPResponse rejectXferResponse = SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.Decline, null);
+                    SIPResponse rejectXferResponse =
+                        SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.Decline, null);
                     referResponseTx.SendResponse(rejectXferResponse);
                 }
                 else
                 {
                     // All checks have passed so go ahead and accept the transfer.
-                    SIPResponse acceptXferResponse = SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.Accepted, null);
+                    SIPResponse acceptXferResponse =
+                        SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.Accepted, null);
                     referResponseTx.SendResponse(acceptXferResponse);
 
                     // While we process the transfer request we flag the original call so that any subsequent re-INVITE 
@@ -1090,7 +1115,8 @@ namespace SIPSorcery.SIP.App
                             // Blind transfers do not include a Replaces header.
                             if (referToUserField.URI.Headers.Has(SIPHeaderAncillary.SIP_REFER_REPLACES))
                             {
-                                string replacesStr = referToUserField.URI.Headers.Get(SIPHeaderAncillary.SIP_REFER_REPLACES);
+                                string replacesStr =
+                                    referToUserField.URI.Headers.Get(SIPHeaderAncillary.SIP_REFER_REPLACES);
                                 SIPReplacesParameter replaces = SIPReplacesParameter.Parse(replacesStr);
                                 customHeaders = new List<string>
                                 {
@@ -1099,18 +1125,18 @@ namespace SIPSorcery.SIP.App
                             }
 
                             SIPCallDescriptor callDescriptor = new SIPCallDescriptor(
-                               SIPConstants.SIP_DEFAULT_USERNAME,
-                               null,
-                               referToUri.ToParameterlessString(),
-                               SIPConstants.SIP_DEFAULT_FROMURI,
-                               referToUri.ToParameterlessString(),
-                               null,
-                               customHeaders,
-                               null,
-                               SIPCallDirection.Out,
-                               SDP.SDP_MIME_CONTENTTYPE,
-                               null,
-                               null);
+                                SIPConstants.SIP_DEFAULT_USERNAME,
+                                null,
+                                referToUri.ToParameterlessString(),
+                                SIPConstants.SIP_DEFAULT_FROMURI,
+                                referToUri.ToParameterlessString(),
+                                null,
+                                customHeaders,
+                                null,
+                                SIPCallDirection.Out,
+                                SDP.SDP_MIME_CONTENTTYPE,
+                                null,
+                                null);
 
                             var transferResult = await Call(callDescriptor, MediaSession);
 
@@ -1129,7 +1155,8 @@ namespace SIPSorcery.SIP.App
 
                                 logger.LogDebug("Transfer succeeded, hanging up original call.");
 
-                                SIPNonInviteTransaction byeTransaction = new SIPNonInviteTransaction(m_transport, byeRequest, m_outboundProxy);
+                                SIPNonInviteTransaction byeTransaction =
+                                    new SIPNonInviteTransaction(m_transport, byeRequest, m_outboundProxy);
                                 byeTransaction.SendRequest();
                             }
                         }
@@ -1159,7 +1186,8 @@ namespace SIPSorcery.SIP.App
                 reinviteRequest.Header.UserAgent = m_userAgent;
                 reinviteRequest.Header.ContentType = m_sdpContentType;
                 reinviteRequest.Body = sdp.ToString();
-                reinviteRequest.Header.Supported = SIPExtensionHeaders.REPLACES + ", " + SIPExtensionHeaders.NO_REFER_SUB + ", " + SIPExtensionHeaders.PRACK;
+                reinviteRequest.Header.Supported = SIPExtensionHeaders.REPLACES + ", " +
+                                                   SIPExtensionHeaders.NO_REFER_SUB + ", " + SIPExtensionHeaders.PRACK;
 
                 if (m_uac != null)
                 {
@@ -1173,10 +1201,12 @@ namespace SIPSorcery.SIP.App
                 }
                 else
                 {
-                    reinviteRequest.Header.Contact = new List<SIPContactHeader>() { SIPContactHeader.GetDefaultSIPContactHeader() };
+                    reinviteRequest.Header.Contact = new List<SIPContactHeader>()
+                        {SIPContactHeader.GetDefaultSIPContactHeader()};
                 }
 
-                UACInviteTransaction reinviteTransaction = new UACInviteTransaction(m_transport, reinviteRequest, m_outboundProxy);
+                UACInviteTransaction reinviteTransaction =
+                    new UACInviteTransaction(m_transport, reinviteRequest, m_outboundProxy);
                 reinviteTransaction.SendInviteRequest();
                 reinviteTransaction.UACInviteTransactionFinalResponseReceived += ReinviteRequestFinalResponseReceived;
             }
@@ -1188,7 +1218,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="localSIPEndPoint">The local end point the request was received on.</param>
         /// <param name="remoteEndPoint">The remote end point the request came from.</param>
         /// <param name="sipRequest">The SIP request.</param>
-        private async Task SIPTransportRequestReceived(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint, SIPRequest sipRequest)
+        private async Task SIPTransportRequestReceived(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
+            SIPRequest sipRequest)
         {
             if (m_sipDialogue != null)
             {
@@ -1209,7 +1240,8 @@ namespace SIPSorcery.SIP.App
                         logger.LogError(excp, $"Exception SIPUserAgent.SIPTransportRequestReceived. {excp.Message}");
                     }
                 }
-                else if (sipRequest.Method == SIPMethodsEnum.INVITE && !string.IsNullOrWhiteSpace(sipRequest.Header.Replaces))
+                else if (sipRequest.Method == SIPMethodsEnum.INVITE &&
+                         !string.IsNullOrWhiteSpace(sipRequest.Header.Replaces))
                 {
                     // This is a special case of receiving an INVITE request that is part of an attended transfer and
                     // that if successful will replace the existing dialog.
@@ -1222,11 +1254,13 @@ namespace SIPSorcery.SIP.App
                     // of the three required headers they can almost certainly get all 3).
                     SIPReplacesParameter replaces = SIPReplacesParameter.Parse(sipRequest.Header.Replaces);
 
-                    logger.LogDebug($"INVITE for attended transfer received, Replaces CallID {replaces.CallID}, our dialog Call-ID {m_sipDialogue.CallId}.");
+                    logger.LogDebug(
+                        $"INVITE for attended transfer received, Replaces CallID {replaces.CallID}, our dialog Call-ID {m_sipDialogue.CallId}.");
 
                     if (replaces == null || replaces.CallID != m_sipDialogue.CallId)
                     {
-                        logger.LogDebug("The attended transfer INVITE's Replaces header did not match the current dialog, rejecting.");
+                        logger.LogDebug(
+                            "The attended transfer INVITE's Replaces header did not match the current dialog, rejecting.");
                         uas.Reject(SIPResponseStatusCodesEnum.BadRequest, null);
                     }
                     else
@@ -1238,7 +1272,8 @@ namespace SIPSorcery.SIP.App
             }
             else if (!_isClosed && sipRequest.Method == SIPMethodsEnum.INVITE)
             {
-                logger.LogInformation($"Incoming call request: {localSIPEndPoint}<-{remoteEndPoint}, uri:{sipRequest.URI}.");
+                logger.LogInformation(
+                    $"Incoming call request: {localSIPEndPoint}<-{remoteEndPoint}, uri:{sipRequest.URI}.");
 
                 if (!m_isTransportExclusive)
                 {
@@ -1256,7 +1291,8 @@ namespace SIPSorcery.SIP.App
                     {
                         // This user agent has exclusive control of the transport and no incoming call handler was provided.
                         var uas = new UASInviteTransaction(m_transport, sipRequest, m_outboundProxy);
-                        var notFoundResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotFound, null);
+                        var notFoundResponse =
+                            SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotFound, null);
                         uas.SendFinalResponse(notFoundResponse);
                     }
                 }
@@ -1265,7 +1301,8 @@ namespace SIPSorcery.SIP.App
             {
                 // If the transport is exclusive this is the only user agent listening and if it's not handling the request
                 // nothing is.
-                var notSupportedResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.MethodNotAllowed, null);
+                var notSupportedResponse =
+                    SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.MethodNotAllowed, null);
                 await m_transport.SendResponseAsync(notSupportedResponse).ConfigureAwait(false);
             }
         }
@@ -1321,7 +1358,8 @@ namespace SIPSorcery.SIP.App
                 logger.LogDebug("Attended transfer was successfully answered, hanging up original call.");
 
                 // Hanging up original call.
-                SIPNonInviteTransaction byeTransaction = new SIPNonInviteTransaction(m_transport, byeRequest, m_outboundProxy);
+                SIPNonInviteTransaction byeTransaction =
+                    new SIPNonInviteTransaction(m_transport, byeRequest, m_outboundProxy);
                 byeTransaction.SendRequest();
             }
             else
@@ -1339,7 +1377,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="remoteEndPoint">The remote end point the response came from.</param>
         /// <param name="sipTransaction">The UAS transaction the response is part of.</param>
         /// <param name="sipResponse">The SIP response.</param>
-        private Task<SocketError> ReinviteRequestFinalResponseReceived(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint, SIPTransaction sipTransaction, SIPResponse sipResponse)
+        private Task<SocketError> ReinviteRequestFinalResponseReceived(SIPEndPoint localSIPEndPoint,
+            SIPEndPoint remoteEndPoint, SIPTransaction sipTransaction, SIPResponse sipResponse)
         {
             if (sipResponse.Status == SIPResponseStatusCodesEnum.Ok)
             {
@@ -1395,7 +1434,8 @@ namespace SIPSorcery.SIP.App
             }
             else
             {
-                logger.LogInformation($"Call attempt to {m_uac.CallDescriptor.Uri} received a trying response {sipResponse.ShortDescription}.");
+                logger.LogInformation(
+                    $"Call attempt to {m_uac.CallDescriptor.Uri} received a trying response {sipResponse.ShortDescription}.");
             }
         }
 
@@ -1409,7 +1449,8 @@ namespace SIPSorcery.SIP.App
             if (sipResponse.Status == SIPResponseStatusCodesEnum.SessionProgress &&
                 sipResponse.Body != null)
             {
-                var setDescriptionResult = MediaSession.SetRemoteDescription(SdpType.answer, SDP.ParseSDPDescription(sipResponse.Body));
+                var setDescriptionResult =
+                    MediaSession.SetRemoteDescription(SdpType.answer, SDP.ParseSDPDescription(sipResponse.Body));
                 logger.LogDebug($"Set remote description for early media result {setDescriptionResult}.");
 
                 if (setDescriptionResult == SetDescriptionResultEnum.OK)
@@ -1424,7 +1465,8 @@ namespace SIPSorcery.SIP.App
             }
             else
             {
-                logger.LogInformation($"Call attempt to {m_uac.CallDescriptor.Uri} received a ringing response {sipResponse.ShortDescription}.");
+                logger.LogInformation(
+                    $"Call attempt to {m_uac.CallDescriptor.Uri} received a ringing response {sipResponse.ShortDescription}.");
             }
         }
 
@@ -1449,7 +1491,8 @@ namespace SIPSorcery.SIP.App
         {
             if (sipResponse.StatusCode >= 200 && sipResponse.StatusCode <= 299)
             {
-                var setDescriptionResult = MediaSession.SetRemoteDescription(SdpType.answer, SDP.ParseSDPDescription(sipResponse.Body));
+                var setDescriptionResult =
+                    MediaSession.SetRemoteDescription(SdpType.answer, SDP.ParseSDPDescription(sipResponse.Body));
 
                 if (setDescriptionResult == SetDescriptionResultEnum.OK)
                 {
@@ -1464,8 +1507,10 @@ namespace SIPSorcery.SIP.App
                 }
                 else
                 {
-                    logger.LogWarning($"Call attempt was answered with {sipResponse.ShortDescription} but an {setDescriptionResult} error occurred setting the remote description.");
-                    ClientCallFailed?.Invoke(uac, $"Failed to set the remote description {setDescriptionResult}", sipResponse);
+                    logger.LogWarning(
+                        $"Call attempt was answered with {sipResponse.ShortDescription} but an {setDescriptionResult} error occurred setting the remote description.");
+                    ClientCallFailed?.Invoke(uac, $"Failed to set the remote description {setDescriptionResult}",
+                        sipResponse);
                     uac.SIPDialogue?.Hangup(this.m_transport, this.m_outboundProxy);
                     CallEnded();
                 }
@@ -1490,7 +1535,7 @@ namespace SIPSorcery.SIP.App
             SIPRequest referRequest = m_sipDialogue.GetInDialogRequest(SIPMethodsEnum.REFER);
             referRequest.Header.ReferTo = referToUri.ToString();
             referRequest.Header.Supported = SIPExtensionHeaders.NO_REFER_SUB;
-            referRequest.Header.Contact = new List<SIPContactHeader> { SIPContactHeader.GetDefaultSIPContactHeader() };
+            referRequest.Header.Contact = new List<SIPContactHeader> {SIPContactHeader.GetDefaultSIPContactHeader()};
 
             if (customHeaders != null && customHeaders.Length > 0)
             {
@@ -1514,19 +1559,23 @@ namespace SIPSorcery.SIP.App
         {
             SIPRequest referRequest = m_sipDialogue.GetInDialogRequest(SIPMethodsEnum.REFER);
             SIPURI targetUri = target.RemoteTarget.CopyOf();
-            referRequest.Header.Contact = new List<SIPContactHeader> { SIPContactHeader.GetDefaultSIPContactHeader() };
+            referRequest.Header.Contact = new List<SIPContactHeader> {SIPContactHeader.GetDefaultSIPContactHeader()};
 
             SIPParameters replacesHeaders = new SIPParameters();
 
             if (target.Direction == SIPCallDirection.Out)
             {
-                replacesHeaders.Set("Replaces", SIPEscape.SIPURIParameterEscape($"{target.CallId};to-tag={target.RemoteTag};from-tag={target.LocalTag}"));
+                replacesHeaders.Set("Replaces",
+                    SIPEscape.SIPURIParameterEscape(
+                        $"{target.CallId};to-tag={target.RemoteTag};from-tag={target.LocalTag}"));
                 var from = new SIPUserField(target.LocalUserField.Name, target.LocalUserField.URI.CopyOf(), null);
                 referRequest.Header.ReferredBy = from.ToString();
             }
             else
             {
-                replacesHeaders.Set("Replaces", SIPEscape.SIPURIParameterEscape($"{target.CallId};to-tag={target.RemoteTag};from-tag={target.LocalTag}"));
+                replacesHeaders.Set("Replaces",
+                    SIPEscape.SIPURIParameterEscape(
+                        $"{target.CallId};to-tag={target.RemoteTag};from-tag={target.LocalTag}"));
                 var from = new SIPUserField(target.RemoteUserField.Name, target.RemoteUserField.URI.CopyOf(), null);
                 referRequest.Header.ReferredBy = from.ToString();
             }

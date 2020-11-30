@@ -37,7 +37,8 @@ namespace SIPSorcery.SIP
         public string CRMPictureURL;
 
         private SIPEventDialogParticipant()
-        { }
+        {
+        }
 
         public SIPEventDialogParticipant(string displayName, SIPURI uri, SIPURI targetURI, int cseq)
         {
@@ -62,7 +63,9 @@ namespace SIPSorcery.SIP
             XElement identityElement = participantElement.Element(ns + "identity");
             if (identityElement != null)
             {
-                participant.DisplayName = (identityElement.Attribute("display-name") != null) ? identityElement.Attribute("display-name").Value : null;
+                participant.DisplayName = (identityElement.Attribute("display-name") != null)
+                    ? identityElement.Attribute("display-name").Value
+                    : null;
                 participant.URI = SIPURI.ParseSIPURI(identityElement.Value);
             }
 
@@ -72,13 +75,23 @@ namespace SIPSorcery.SIP
                 participant.TargetURI = SIPURI.ParseSIPURI(targetElement.Attribute("uri").Value);
             }
 
-            participant.CSeq = (participantElement.Element(ns + "cseq") != null) ? Convert.ToInt32(participantElement.Element(ns + "cseq").Value) : 0;
+            participant.CSeq = (participantElement.Element(ns + "cseq") != null)
+                ? Convert.ToInt32(participantElement.Element(ns + "cseq").Value)
+                : 0;
             //participant.SwitchboardDescription = (participantElement.Element(ss + "switchboarddescription") != null) ? participantElement.Element(ss + "switchboarddescription").Value : null;
             //participant.SwitchboardCallerDescription = (participantElement.Element(ss + "switchboardcallerdescription") != null) ? participantElement.Element(ss + "switchboardcallerdescription").Value : null;
-            participant.SwitchboardLineName = (participantElement.Element(ss + "switchboardlinename") != null) ? participantElement.Element(ss + "switchboardlinename").Value : null;
-            participant.CRMPersonName = (participantElement.Element(ss + "crmpersonname") != null) ? participantElement.Element(ss + "crmpersonname").Value : null;
-            participant.CRMCompanyName = (participantElement.Element(ss + "crmcompanyname") != null) ? participantElement.Element(ss + "crmcompanyname").Value : null;
-            participant.CRMPictureURL = (participantElement.Element(ss + "crmpictureurl") != null) ? participantElement.Element(ss + "crmpictureurl").Value : null;
+            participant.SwitchboardLineName = (participantElement.Element(ss + "switchboardlinename") != null)
+                ? participantElement.Element(ss + "switchboardlinename").Value
+                : null;
+            participant.CRMPersonName = (participantElement.Element(ss + "crmpersonname") != null)
+                ? participantElement.Element(ss + "crmpersonname").Value
+                : null;
+            participant.CRMCompanyName = (participantElement.Element(ss + "crmcompanyname") != null)
+                ? participantElement.Element(ss + "crmcompanyname").Value
+                : null;
+            participant.CRMPictureURL = (participantElement.Element(ss + "crmpictureurl") != null)
+                ? participantElement.Element(ss + "crmpictureurl").Value
+                : null;
 
             return participant;
         }
@@ -101,6 +114,7 @@ namespace SIPSorcery.SIP
                 {
                     identityElement.Add(new XAttribute("display-name", DisplayName));
                 }
+
                 participantElement.Add(identityElement);
             }
 

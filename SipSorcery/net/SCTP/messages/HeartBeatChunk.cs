@@ -46,6 +46,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 throw new SctpPacketFormatException("No (or too much content in this heartbeat packet");
             }
+
             hbd = _varList[0];
             if (!typeof(HeartbeatInfo).IsAssignableFrom(hbd.GetType()))
             {
@@ -62,6 +63,8 @@ namespace SIPSorcery.Net.Sctp
             return rep;
         }
 
-        protected override void putFixedParams(ByteBuffer ret) { }
+        protected override void putFixedParams(ByteBuffer ret)
+        {
+        }
     }
 }

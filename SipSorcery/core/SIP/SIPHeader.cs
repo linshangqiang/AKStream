@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -55,13 +56,15 @@ namespace SIPSorcery.SIP
         /// </summary>
         public static SIPViaHeader GetDefaultSIPViaHeader()
         {
-            return new SIPViaHeader(new IPEndPoint(IPAddress.Any, 0), CallProperties.CreateBranchId(), SIPProtocolsEnum.udp);
+            return new SIPViaHeader(new IPEndPoint(IPAddress.Any, 0), CallProperties.CreateBranchId(),
+                SIPProtocolsEnum.udp);
         }
 
         public string Version;
         public SIPProtocolsEnum Transport;
         public string Host;
         public int Port = 0;
+
         public string Branch
         {
             get
@@ -77,7 +80,8 @@ namespace SIPSorcery.SIP
             }
             set { ViaParameters.Set(m_branchKey, value); }
         }
-        public string ReceivedFromIPAddress     // IP Address contained in the received parameter.
+
+        public string ReceivedFromIPAddress // IP Address contained in the received parameter.
         {
             get
             {
@@ -92,7 +96,8 @@ namespace SIPSorcery.SIP
             }
             set { ViaParameters.Set(m_receivedKey, value); }
         }
-        public int ReceivedFromPort             // Port contained in the rport parameter.
+
+        public int ReceivedFromPort // Port contained in the rport parameter.
         {
             get
             {
@@ -110,7 +115,7 @@ namespace SIPSorcery.SIP
 
         public SIPParameters ViaParameters = new SIPParameters(null, m_paramDelimChar);
 
-        public string ContactAddress            // This the address placed into the Via header by the User Agent.
+        public string ContactAddress // This the address placed into the Via header by the User Agent.
         {
             get
             {
@@ -125,7 +130,7 @@ namespace SIPSorcery.SIP
                         }
                         else
                         {
-                            if (ipEndPoint.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                            if (ipEndPoint.Address.AddressFamily == AddressFamily.InterNetworkV6)
                             {
                                 return "[" + ipEndPoint.Address.ToString() + "]";
                             }
@@ -151,7 +156,8 @@ namespace SIPSorcery.SIP
             }
         }
 
-        public string ReceivedFromAddress       // This is the socket the request was received on and is a combination of the Host and Received fields.
+        public string
+            ReceivedFromAddress // This is the socket the request was received on and is a combination of the Host and Received fields.
         {
             get
             {
@@ -201,7 +207,8 @@ namespace SIPSorcery.SIP
         }
 
         public SIPViaHeader()
-        { }
+        {
+        }
 
         public SIPViaHeader(string contactIPAddress, int contactPort, string branch, SIPProtocolsEnum protocol)
         {
@@ -215,23 +222,28 @@ namespace SIPSorcery.SIP
 
         public SIPViaHeader(string contactIPAddress, int contactPort, string branch) :
             this(contactIPAddress, contactPort, branch, SIPProtocolsEnum.udp)
-        { }
+        {
+        }
 
         public SIPViaHeader(IPEndPoint contactEndPoint, string branch) :
             this(contactEndPoint.Address.ToString(), contactEndPoint.Port, branch, SIPProtocolsEnum.udp)
-        { }
+        {
+        }
 
         public SIPViaHeader(SIPEndPoint localEndPoint, string branch) :
             this(localEndPoint.GetIPEndPoint(), branch, localEndPoint.Protocol)
-        { }
+        {
+        }
 
         public SIPViaHeader(string contactEndPoint, string branch) :
             this(IPSocket.ParseSocketString(contactEndPoint), branch, SIPProtocolsEnum.udp)
-        { }
+        {
+        }
 
         public SIPViaHeader(IPEndPoint contactEndPoint, string branch, SIPProtocolsEnum protocol) :
             this(contactEndPoint.Address.ToString(), contactEndPoint.Port, branch, protocol)
-        { }
+        {
+        }
 
         public static SIPViaHeader[] ParseSIPViaHeader(string viaHeaderStr)
         {
@@ -264,7 +276,9 @@ namespace SIPSorcery.SIP
                         {
                             string versionAndTransport = header.Substring(0, firstSpacePosn);
                             viaHeader.Version = versionAndTransport.Substring(0, versionAndTransport.LastIndexOf('/'));
-                            viaHeader.Transport = SIPProtocolsType.GetProtocolType(versionAndTransport.Substring(versionAndTransport.LastIndexOf('/') + 1));
+                            viaHeader.Transport =
+                                SIPProtocolsType.GetProtocolType(
+                                    versionAndTransport.Substring(versionAndTransport.LastIndexOf('/') + 1));
 
                             string nextField = header.Substring(firstSpacePosn, header.Length - firstSpacePosn).Trim();
 
@@ -288,7 +302,8 @@ namespace SIPSorcery.SIP
                             else
                             {
                                 contactAddress = nextField.Substring(0, delimIndex).Trim();
-                                viaHeader.ViaParameters = new SIPParameters(nextField.Substring(delimIndex, nextField.Length - delimIndex), m_paramDelimChar);
+                                viaHeader.ViaParameters = new SIPParameters(
+                                    nextField.Substring(delimIndex, nextField.Length - delimIndex), m_paramDelimChar);
                             }
 
                             if (contactAddress == null || contactAddress.Trim().Length == 0)
@@ -301,7 +316,8 @@ namespace SIPSorcery.SIP
                                 //    return null;
                                 //}
 
-                                throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader, "No Contact address.");
+                                throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader,
+                                    "No Contact address.");
                             }
 
                             // Parse the contact address.
@@ -323,11 +339,13 @@ namespace SIPSorcery.SIP
 
                                     if (!Int32.TryParse(contactAddress.Substring(colonIndex + 1), out viaHeader.Port))
                                     {
-                                        throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader, "Non-numeric port for IP address.");
+                                        throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader,
+                                            "Non-numeric port for IP address.");
                                     }
                                     else if (viaHeader.Port > IPEndPoint.MaxPort)
                                     {
-                                        throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader, "The port specified in a Via header exceeded the maximum allowed.");
+                                        throw new SIPValidationException(SIPValidationFieldsEnum.ViaHeader,
+                                            "The port specified in a Via header exceeded the maximum allowed.");
                                     }
                                 }
                                 else
@@ -354,7 +372,8 @@ namespace SIPSorcery.SIP
 
         public new string ToString()
         {
-            string sipViaHeader = SIPHeaders.SIP_HEADER_VIA + ": " + this.Version + "/" + this.Transport.ToString().ToUpper() + " " + ContactAddress;
+            string sipViaHeader = SIPHeaders.SIP_HEADER_VIA + ": " + this.Version + "/" +
+                                  this.Transport.ToString().ToUpper() + " " + ContactAddress;
             sipViaHeader += (ViaParameters != null && ViaParameters.Count > 0) ? ViaParameters.ToString() : null;
 
             return sipViaHeader;
@@ -428,6 +447,7 @@ namespace SIPSorcery.SIP
         }
 
         private SIPUserField m_userField = new SIPUserField();
+
         public SIPUserField FromUserField
         {
             get { return m_userField; }
@@ -435,7 +455,8 @@ namespace SIPSorcery.SIP
         }
 
         private SIPFromHeader()
-        { }
+        {
+        }
 
         public SIPFromHeader(string fromName, SIPURI fromURI, string fromTag)
         {
@@ -459,7 +480,8 @@ namespace SIPSorcery.SIP
             }
             catch
             {
-                throw new SIPValidationException(SIPValidationFieldsEnum.FromHeader, "The SIP From header was invalid.");
+                throw new SIPValidationException(SIPValidationFieldsEnum.FromHeader,
+                    "The SIP From header was invalid.");
             }
         }
 
@@ -536,6 +558,7 @@ namespace SIPSorcery.SIP
         }
 
         private SIPUserField m_userField;
+
         public SIPUserField ToUserField
         {
             get { return m_userField; }
@@ -543,7 +566,8 @@ namespace SIPSorcery.SIP
         }
 
         private SIPToHeader()
-        { }
+        {
+        }
 
         public SIPToHeader(string toName, SIPURI toURI, string toTag)
         {
@@ -650,6 +674,7 @@ namespace SIPSorcery.SIP
             }
             set { ContactParameters.Set(EXPIRES_PARAMETER_KEY, value.ToString()); }
         }
+
         public string Q
         {
             get { return ContactParameters.Get(QVALUE_PARAMETER_KEY); }
@@ -659,7 +684,8 @@ namespace SIPSorcery.SIP
         private SIPUserField m_userField;
 
         private SIPContactHeader()
-        { }
+        {
+        }
 
         public SIPContactHeader(string contactName, SIPURI contactURI)
         {
@@ -723,7 +749,8 @@ namespace SIPSorcery.SIP
             }
             catch (Exception excp)
             {
-                throw new SIPValidationException(SIPValidationFieldsEnum.ContactHeader, "Contact header invalid, parse failed. " + excp.Message);
+                throw new SIPValidationException(SIPValidationFieldsEnum.ContactHeader,
+                    "Contact header invalid, parse failed. " + excp.Message);
             }
         }
 
@@ -842,7 +869,8 @@ namespace SIPSorcery.SIP
             SIPDigest.Nonce = nonce;
         }
 
-        public static SIPAuthenticationHeader ParseSIPAuthenticationHeader(SIPAuthorisationHeadersEnum authorizationType, string headerValue)
+        public static SIPAuthenticationHeader ParseSIPAuthenticationHeader(
+            SIPAuthorisationHeadersEnum authorizationType, string headerValue)
         {
             try
             {
@@ -861,7 +889,10 @@ namespace SIPSorcery.SIP
             if (SIPDigest != null)
             {
                 string authHeader = null;
-                SIPAuthorisationHeadersEnum authorisationHeaderType = (SIPDigest.AuthorisationResponseType != SIPAuthorisationHeadersEnum.Unknown) ? SIPDigest.AuthorisationResponseType : SIPDigest.AuthorisationType;
+                SIPAuthorisationHeadersEnum authorisationHeaderType =
+                    (SIPDigest.AuthorisationResponseType != SIPAuthorisationHeadersEnum.Unknown)
+                        ? SIPDigest.AuthorisationResponseType
+                        : SIPDigest.AuthorisationType;
 
                 if (authorisationHeaderType == SIPAuthorisationHeadersEnum.Authorize)
                 {
@@ -918,7 +949,7 @@ namespace SIPSorcery.SIP
     {
         private static string m_looseRouterParameter = SIPConstants.SIP_LOOSEROUTER_PARAMETER;
 
-        private static char[] m_angles = new char[] { '<', '>' };
+        private static char[] m_angles = new char[] {'<', '>'};
 
         private SIPUserField m_userField;
 
@@ -950,13 +981,15 @@ namespace SIPSorcery.SIP
         }
 
         private SIPRoute()
-        { }
+        {
+        }
 
         public SIPRoute(string host)
         {
             if (host.IsNullOrBlank())
             {
-                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader, "Cannot create a Route from an blank string.");
+                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader,
+                    "Cannot create a Route from an blank string.");
             }
 
             m_userField = SIPUserField.ParseSIPUserField(host);
@@ -966,7 +999,8 @@ namespace SIPSorcery.SIP
         {
             if (host.IsNullOrBlank())
             {
-                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader, "Cannot create a Route from an blank string.");
+                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader,
+                    "Cannot create a Route from an blank string.");
             }
 
             m_userField = SIPUserField.ParseSIPUserField(host);
@@ -990,7 +1024,8 @@ namespace SIPSorcery.SIP
         {
             if (route.IsNullOrBlank())
             {
-                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader, "Cannot create a Route from an blank string.");
+                throw new SIPValidationException(SIPValidationFieldsEnum.RouteHeader,
+                    "Cannot create a Route from an blank string.");
             }
 
             try
@@ -1125,7 +1160,9 @@ namespace SIPSorcery.SIP
             if (m_sipRoutes.Count > 0)
             {
                 m_sipRoutes.RemoveAt(m_sipRoutes.Count - 1);
-            };
+            }
+
+            ;
         }
 
         public SIPRouteSet Reversed()
@@ -1171,7 +1208,9 @@ namespace SIPSorcery.SIP
             {
                 for (int routeIndex = 0; routeIndex < m_sipRoutes.Count; routeIndex++)
                 {
-                    routeStr += (routeStr != null) ? "," + m_sipRoutes[routeIndex].ToString() : m_sipRoutes[routeIndex].ToString();
+                    routeStr += (routeStr != null)
+                        ? "," + m_sipRoutes[routeIndex].ToString()
+                        : m_sipRoutes[routeIndex].ToString();
                 }
             }
 
@@ -1192,14 +1231,8 @@ namespace SIPSorcery.SIP
 
         public List<SIPViaHeader> Via
         {
-            get
-            {
-                return m_viaHeaders;
-            }
-            set
-            {
-                m_viaHeaders = value;
-            }
+            get { return m_viaHeaders; }
+            set { m_viaHeaders = value; }
         }
 
         public SIPViaHeader TopViaHeader
@@ -1310,7 +1343,7 @@ namespace SIPSorcery.SIP
         public string AcceptLanguage;
         public string AlertInfo;
         public string Allow;
-        public string AllowEvents;                          // RFC3265 SIP Events.
+        public string AllowEvents; // RFC3265 SIP Events.
         public string AuthenticationInfo;
         public SIPAuthenticationHeader AuthenticationHeader;
         public string CallId;
@@ -1325,8 +1358,8 @@ namespace SIPSorcery.SIP
         public SIPMethodsEnum CSeqMethod;
         public string Date;
         public string ErrorInfo;
-        public string ETag;                                 // added by Tilmann: look RFC3903
-        public string Event;                                // RFC3265 SIP Events.
+        public string ETag; // added by Tilmann: look RFC3903
+        public string Event; // RFC3265 SIP Events.
         public int Expires = -1;
         public SIPFromHeader From;
         public string InReplyTo;
@@ -1336,23 +1369,29 @@ namespace SIPSorcery.SIP
         public string Organization;
         public string Priority;
         public string ProxyRequire;
-        public int RAckCSeq = -1;                          // RFC3262 the CSeq number the PRACK request is acknowledging.
-        public SIPMethodsEnum RAckCSeqMethod;              // RFC3262 the CSeq method from the response the PRACK request is acknowledging.
-        public int RAckRSeq = -1;                          // RFC3262 the RSeq number the PRACK request is acknowledging.
+        public int RAckCSeq = -1; // RFC3262 the CSeq number the PRACK request is acknowledging.
+
+        public SIPMethodsEnum
+            RAckCSeqMethod; // RFC3262 the CSeq method from the response the PRACK request is acknowledging.
+
+        public int RAckRSeq = -1; // RFC3262 the RSeq number the PRACK request is acknowledging.
         public string Reason;
         public SIPRouteSet RecordRoutes = new SIPRouteSet();
-        public string ReferredBy;                           // RFC 3515 "The Session Initiation Protocol (SIP) Refer Method"
-        public string ReferSub;                             // RFC 4488 If set to false indicates the implicit REFER subscription should not be created.
-        public string ReferTo;                              // RFC 3515 "The Session Initiation Protocol (SIP) Refer Method"
+        public string ReferredBy; // RFC 3515 "The Session Initiation Protocol (SIP) Refer Method"
+
+        public string
+            ReferSub; // RFC 4488 If set to false indicates the implicit REFER subscription should not be created.
+
+        public string ReferTo; // RFC 3515 "The Session Initiation Protocol (SIP) Refer Method"
         public string ReplyTo;
         public string Replaces;
         public string Require;
         public string RetryAfter;
-        public int RSeq = -1;                               // RFC3262 reliable provisional response sequence number.
+        public int RSeq = -1; // RFC3262 reliable provisional response sequence number.
         public SIPRouteSet Routes = new SIPRouteSet();
         public string Server;
         public string Subject;
-        public string SubscriptionState;                    // RFC3265 SIP Events.
+        public string SubscriptionState; // RFC3265 SIP Events.
         public string Supported;
         public string Timestamp;
         public SIPToHeader To;
@@ -1362,23 +1401,26 @@ namespace SIPSorcery.SIP
         public string Warning;
 
         // Non-core custom SIP headers used to allow a SIP Proxy to communicate network info to internal server agents.
-        public string ProxyReceivedOn;          // The Proxy socket that the SIP message was received on.
-        public string ProxyReceivedFrom;        // The remote socket that the Proxy received the SIP message on.
-        public string ProxySendFrom;            // The Proxy socket that the SIP message should be transmitted from.
+        public string ProxyReceivedOn; // The Proxy socket that the SIP message was received on.
+        public string ProxyReceivedFrom; // The remote socket that the Proxy received the SIP message on.
+        public string ProxySendFrom; // The Proxy socket that the SIP message should be transmitted from.
 
         // Non-core custom headers for CRM integration.
-        public string CRMPersonName;                // The matching name from the CRM system for the caller.
-        public string CRMCompanyName;               // The matching company name from the CRM system for the caller.
-        public string CRMPictureURL;                 // If available a URL for a picture for the person or company from the CRM system for the caller.
+        public string CRMPersonName; // The matching name from the CRM system for the caller.
+        public string CRMCompanyName; // The matching company name from the CRM system for the caller.
 
-        public List<string> UnknownHeaders = new List<string>();    // Holds any unrecognised headers.
+        public string
+            CRMPictureURL; // If available a URL for a picture for the person or company from the CRM system for the caller.
+
+        public List<string> UnknownHeaders = new List<string>(); // Holds any unrecognised headers.
 
         public List<SIPExtensions> RequiredExtensions = new List<SIPExtensions>();
         public string UnknownRequireExtension = null;
         public List<SIPExtensions> SupportedExtensions = new List<SIPExtensions>();
 
         public SIPHeader()
-        { }
+        {
+        }
 
         public SIPHeader(string fromHeader, string toHeader, int cseq, string callId)
         {
@@ -1411,12 +1453,14 @@ namespace SIPSorcery.SIP
             Initialise(contactList, from, to, cseq, callId);
         }
 
-        public SIPHeader(List<SIPContactHeader> contactList, SIPFromHeader from, SIPToHeader to, int cseq, string callId)
+        public SIPHeader(List<SIPContactHeader> contactList, SIPFromHeader from, SIPToHeader to, int cseq,
+            string callId)
         {
             Initialise(contactList, from, to, cseq, callId);
         }
 
-        private void Initialise(List<SIPContactHeader> contact, SIPFromHeader from, SIPToHeader to, int cseq, string callId)
+        private void Initialise(List<SIPContactHeader> contact, SIPFromHeader from, SIPToHeader to, int cseq,
+            string callId)
         {
             if (from == null)
             {
@@ -1464,7 +1508,7 @@ namespace SIPSorcery.SIP
             try
             {
                 SIPHeader sipHeader = new SIPHeader();
-                sipHeader.MaxForwards = -1;     // This allows detection of whether this header is present or not.
+                sipHeader.MaxForwards = -1; // This allows detection of whether this header is present or not.
                 string lastHeader = null;
 
                 for (int lineIndex = 0; lineIndex < headersCollection.Length; lineIndex++)
@@ -1506,6 +1550,7 @@ namespace SIPSorcery.SIP
                         string headerNameLower = headerName.ToLower();
 
                         #region Via
+
                         if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_VIA ||
                             headerNameLower == SIPHeaders.SIP_HEADER_VIA.ToLower())
                         {
@@ -1521,15 +1566,21 @@ namespace SIPSorcery.SIP
                                 }
                             }
                         }
+
                         #endregion
+
                         #region CallId
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_CALLID ||
-                                headerNameLower == SIPHeaders.SIP_HEADER_CALLID.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_CALLID.ToLower())
                         {
                             sipHeader.CallId = headerValue;
                         }
+
                         #endregion
+
                         #region CSeq
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CSEQ.ToLower())
                         {
                             //sipHeader.RawCSeq += headerValue;
@@ -1543,7 +1594,8 @@ namespace SIPSorcery.SIP
                             {
                                 if (!Int32.TryParse(cseqFields[0], out sipHeader.CSeq))
                                 {
-                                    logger.LogWarning(SIPHeaders.SIP_HEADER_CSEQ + " did not contain a valid integer, " + headerLine + ".");
+                                    logger.LogWarning(SIPHeaders.SIP_HEADER_CSEQ +
+                                                      " did not contain a valid integer, " + headerLine + ".");
                                 }
 
                                 if (cseqFields != null && cseqFields.Length > 1)
@@ -1552,12 +1604,16 @@ namespace SIPSorcery.SIP
                                 }
                                 else
                                 {
-                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_CSEQ + " method, " + headerLine + ".");
+                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_CSEQ + " method, " +
+                                                      headerLine + ".");
                                 }
                             }
                         }
+
                         #endregion
+
                         #region Expires
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_EXPIRES.ToLower())
                         {
                             //sipHeader.RawExpires += headerValue;
@@ -1567,8 +1623,11 @@ namespace SIPSorcery.SIP
                                 logger.LogWarning("The Expires value was not a valid integer, " + headerLine + ".");
                             }
                         }
+
                         #endregion
+
                         #region Min-Expires
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_MINEXPIRES.ToLower())
                         {
                             if (!Int32.TryParse(headerValue, out sipHeader.MinExpires))
@@ -1576,10 +1635,13 @@ namespace SIPSorcery.SIP
                                 logger.LogWarning("The Min-Expires value was not a valid integer, " + headerLine + ".");
                             }
                         }
+
                         #endregion
+
                         #region Contact
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_CONTACT ||
-                            headerNameLower == SIPHeaders.SIP_HEADER_CONTACT.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_CONTACT.ToLower())
                         {
                             List<SIPContactHeader> contacts = SIPContactHeader.ParseContactHeader(headerValue);
                             if (contacts != null && contacts.Count > 0)
@@ -1587,89 +1649,135 @@ namespace SIPSorcery.SIP
                                 sipHeader.Contact.AddRange(contacts);
                             }
                         }
+
                         #endregion
+
                         #region From
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_FROM ||
-                             headerNameLower == SIPHeaders.SIP_HEADER_FROM.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_FROM.ToLower())
                         {
                             //sipHeader.RawFrom = headerValue;
                             sipHeader.From = SIPFromHeader.ParseFromHeader(headerValue);
                         }
+
                         #endregion
+
                         #region To
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_TO ||
-                            headerNameLower == SIPHeaders.SIP_HEADER_TO.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_TO.ToLower())
                         {
                             //sipHeader.RawTo = headerValue;
                             sipHeader.To = SIPToHeader.ParseToHeader(headerValue);
                         }
+
                         #endregion
+
                         #region WWWAuthenticate
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_WWWAUTHENTICATE.ToLower())
                         {
                             //sipHeader.RawAuthentication = headerValue;
-                            sipHeader.AuthenticationHeader = SIPAuthenticationHeader.ParseSIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate, headerValue);
+                            sipHeader.AuthenticationHeader =
+                                SIPAuthenticationHeader.ParseSIPAuthenticationHeader(
+                                    SIPAuthorisationHeadersEnum.WWWAuthenticate, headerValue);
                         }
+
                         #endregion
+
                         #region Authorization
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_AUTHORIZATION.ToLower())
                         {
                             //sipHeader.RawAuthentication = headerValue;
-                            sipHeader.AuthenticationHeader = SIPAuthenticationHeader.ParseSIPAuthenticationHeader(SIPAuthorisationHeadersEnum.Authorize, headerValue);
+                            sipHeader.AuthenticationHeader =
+                                SIPAuthenticationHeader.ParseSIPAuthenticationHeader(
+                                    SIPAuthorisationHeadersEnum.Authorize, headerValue);
                         }
+
                         #endregion
+
                         #region ProxyAuthentication
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXYAUTHENTICATION.ToLower())
                         {
                             //sipHeader.RawAuthentication = headerValue;
-                            sipHeader.AuthenticationHeader = SIPAuthenticationHeader.ParseSIPAuthenticationHeader(SIPAuthorisationHeadersEnum.ProxyAuthenticate, headerValue);
+                            sipHeader.AuthenticationHeader =
+                                SIPAuthenticationHeader.ParseSIPAuthenticationHeader(
+                                    SIPAuthorisationHeadersEnum.ProxyAuthenticate, headerValue);
                         }
+
                         #endregion
+
                         #region ProxyAuthorization
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXYAUTHORIZATION.ToLower())
                         {
-                            sipHeader.AuthenticationHeader = SIPAuthenticationHeader.ParseSIPAuthenticationHeader(SIPAuthorisationHeadersEnum.ProxyAuthorization, headerValue);
+                            sipHeader.AuthenticationHeader =
+                                SIPAuthenticationHeader.ParseSIPAuthenticationHeader(
+                                    SIPAuthorisationHeadersEnum.ProxyAuthorization, headerValue);
                         }
+
                         #endregion
+
                         #region UserAgent
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_USERAGENT.ToLower())
                         {
                             sipHeader.UserAgent = headerValue;
                         }
+
                         #endregion
+
                         #region MaxForwards
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_MAXFORWARDS.ToLower())
                         {
                             if (!Int32.TryParse(headerValue, out sipHeader.MaxForwards))
                             {
-                                logger.LogWarning("The " + SIPHeaders.SIP_HEADER_MAXFORWARDS + " could not be parsed as a valid integer, " + headerLine + ".");
+                                logger.LogWarning("The " + SIPHeaders.SIP_HEADER_MAXFORWARDS +
+                                                  " could not be parsed as a valid integer, " + headerLine + ".");
                             }
                         }
+
                         #endregion
+
                         #region ContentLength
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_CONTENTLENGTH ||
-                            headerNameLower == SIPHeaders.SIP_HEADER_CONTENTLENGTH.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_CONTENTLENGTH.ToLower())
                         {
                             if (!Int32.TryParse(headerValue, out sipHeader.ContentLength))
                             {
-                                logger.LogWarning("The " + SIPHeaders.SIP_HEADER_CONTENTLENGTH + " could not be parsed as a valid integer.");
+                                logger.LogWarning("The " + SIPHeaders.SIP_HEADER_CONTENTLENGTH +
+                                                  " could not be parsed as a valid integer.");
                             }
                         }
+
                         #endregion
+
                         #region ContentType
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_CONTENTTYPE ||
-                            headerNameLower == SIPHeaders.SIP_HEADER_CONTENTTYPE.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_CONTENTTYPE.ToLower())
                         {
                             sipHeader.ContentType = headerValue;
                         }
+
                         #endregion
+
                         #region Accept
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ACCEPT.ToLower())
                         {
                             sipHeader.Accept = headerValue;
                         }
+
                         #endregion
+
                         #region Route
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ROUTE.ToLower())
                         {
                             SIPRouteSet routeSet = SIPRouteSet.ParseSIPRouteSet(headerValue);
@@ -1681,8 +1789,11 @@ namespace SIPSorcery.SIP
                                 }
                             }
                         }
+
                         #endregion
+
                         #region RecordRoute
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_RECORDROUTE.ToLower())
                         {
                             SIPRouteSet recordRouteSet = SIPRouteSet.ParseSIPRouteSet(headerValue);
@@ -1694,38 +1805,58 @@ namespace SIPSorcery.SIP
                                 }
                             }
                         }
+
                         #endregion
+
                         #region Allow-Events
-                        else if (headerNameLower == SIPHeaders.SIP_HEADER_ALLOW_EVENTS || headerNameLower == SIPHeaders.SIP_COMPACTHEADER_ALLOWEVENTS)
+
+                        else if (headerNameLower == SIPHeaders.SIP_HEADER_ALLOW_EVENTS ||
+                                 headerNameLower == SIPHeaders.SIP_COMPACTHEADER_ALLOWEVENTS)
                         {
                             sipHeader.AllowEvents = headerValue;
                         }
+
                         #endregion
+
                         #region Event
-                        else if (headerNameLower == SIPHeaders.SIP_HEADER_EVENT.ToLower() || headerNameLower == SIPHeaders.SIP_COMPACTHEADER_EVENT)
+
+                        else if (headerNameLower == SIPHeaders.SIP_HEADER_EVENT.ToLower() ||
+                                 headerNameLower == SIPHeaders.SIP_COMPACTHEADER_EVENT)
                         {
                             sipHeader.Event = headerValue;
                         }
+
                         #endregion
+
                         #region SubscriptionState.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_SUBSCRIPTION_STATE.ToLower())
                         {
                             sipHeader.SubscriptionState = headerValue;
                         }
+
                         #endregion
+
                         #region Timestamp.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_TIMESTAMP.ToLower())
                         {
                             sipHeader.Timestamp = headerValue;
                         }
+
                         #endregion
+
                         #region Date.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_DATE.ToLower())
                         {
                             sipHeader.Date = headerValue;
                         }
+
                         #endregion
+
                         #region Refer-Sub.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REFERSUB.ToLower())
                         {
                             if (sipHeader.ReferSub == null)
@@ -1734,13 +1865,17 @@ namespace SIPSorcery.SIP
                             }
                             else
                             {
-                                throw new SIPValidationException(SIPValidationFieldsEnum.ReferToHeader, "Only a single Refer-Sub header is permitted.");
+                                throw new SIPValidationException(SIPValidationFieldsEnum.ReferToHeader,
+                                    "Only a single Refer-Sub header is permitted.");
                             }
                         }
+
                         #endregion
+
                         #region Refer-To.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REFERTO.ToLower() ||
-                            headerNameLower == SIPHeaders.SIP_COMPACTHEADER_REFERTO)
+                                 headerNameLower == SIPHeaders.SIP_COMPACTHEADER_REFERTO)
                         {
                             if (sipHeader.ReferTo == null)
                             {
@@ -1748,214 +1883,316 @@ namespace SIPSorcery.SIP
                             }
                             else
                             {
-                                throw new SIPValidationException(SIPValidationFieldsEnum.ReferToHeader, "Only a single Refer-To header is permitted.");
+                                throw new SIPValidationException(SIPValidationFieldsEnum.ReferToHeader,
+                                    "Only a single Refer-To header is permitted.");
                             }
                         }
+
                         #endregion
+
                         #region Referred-By.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REFERREDBY.ToLower())
                         {
                             sipHeader.ReferredBy = headerValue;
                         }
+
                         #endregion
+
                         #region Replaces.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REPLACES.ToLower())
                         {
                             sipHeader.Replaces = headerValue;
                         }
+
                         #endregion
+
                         #region Require.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REQUIRE.ToLower())
                         {
                             sipHeader.Require = headerValue;
 
                             if (!String.IsNullOrEmpty(sipHeader.Require))
                             {
-                                sipHeader.RequiredExtensions = SIPExtensionHeaders.ParseSIPExtensions(sipHeader.Require, out sipHeader.UnknownRequireExtension);
+                                sipHeader.RequiredExtensions = SIPExtensionHeaders.ParseSIPExtensions(sipHeader.Require,
+                                    out sipHeader.UnknownRequireExtension);
                             }
                         }
+
                         #endregion
+
                         #region Reason.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REASON.ToLower())
                         {
                             sipHeader.Reason = headerValue;
                         }
+
                         #endregion
+
                         #region Proxy-ReceivedFrom.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXY_RECEIVEDFROM.ToLower())
                         {
                             sipHeader.ProxyReceivedFrom = headerValue;
                         }
+
                         #endregion
+
                         #region Proxy-ReceivedOn.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXY_RECEIVEDON.ToLower())
                         {
                             sipHeader.ProxyReceivedOn = headerValue;
                         }
+
                         #endregion
+
                         #region Proxy-SendFrom.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXY_SENDFROM.ToLower())
                         {
                             sipHeader.ProxySendFrom = headerValue;
                         }
+
                         #endregion
+
                         #region Supported
+
                         else if (headerNameLower == SIPHeaders.SIP_COMPACTHEADER_SUPPORTED ||
-                            headerNameLower == SIPHeaders.SIP_HEADER_SUPPORTED.ToLower())
+                                 headerNameLower == SIPHeaders.SIP_HEADER_SUPPORTED.ToLower())
                         {
                             sipHeader.Supported = headerValue;
 
                             if (!String.IsNullOrEmpty(sipHeader.Supported))
                             {
-                                sipHeader.SupportedExtensions = SIPExtensionHeaders.ParseSIPExtensions(sipHeader.Supported, out _);
+                                sipHeader.SupportedExtensions =
+                                    SIPExtensionHeaders.ParseSIPExtensions(sipHeader.Supported, out _);
                             }
                         }
+
                         #endregion
+
                         #region Authentication-Info
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_AUTHENTICATIONINFO.ToLower())
                         {
                             sipHeader.AuthenticationInfo = headerValue;
                         }
+
                         #endregion
+
                         #region Accept-Encoding
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ACCEPTENCODING.ToLower())
                         {
                             sipHeader.AcceptEncoding = headerValue;
                         }
+
                         #endregion
+
                         #region Accept-Language
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ACCEPTLANGUAGE.ToLower())
                         {
                             sipHeader.AcceptLanguage = headerValue;
                         }
+
                         #endregion
+
                         #region Alert-Info
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ALERTINFO.ToLower())
                         {
                             sipHeader.AlertInfo = headerValue;
                         }
+
                         #endregion
+
                         #region Allow
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ALLOW.ToLower())
                         {
                             sipHeader.Allow = headerValue;
                         }
+
                         #endregion
+
                         #region Call-Info
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CALLINFO.ToLower())
                         {
                             sipHeader.CallInfo = headerValue;
                         }
+
                         #endregion
+
                         #region Content-Disposition
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CONTENT_DISPOSITION.ToLower())
                         {
                             sipHeader.ContentDisposition = headerValue;
                         }
+
                         #endregion
+
                         #region Content-Encoding
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CONTENT_ENCODING.ToLower())
                         {
                             sipHeader.ContentEncoding = headerValue;
                         }
+
                         #endregion
+
                         #region Content-Language
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CONTENT_LANGUAGE.ToLower())
                         {
                             sipHeader.ContentLanguage = headerValue;
                         }
+
                         #endregion
+
                         #region Error-Info
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ERROR_INFO.ToLower())
                         {
                             sipHeader.ErrorInfo = headerValue;
                         }
+
                         #endregion
+
                         #region In-Reply-To
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_IN_REPLY_TO.ToLower())
                         {
                             sipHeader.InReplyTo = headerValue;
                         }
+
                         #endregion
+
                         #region MIME-Version
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_MIME_VERSION.ToLower())
                         {
                             sipHeader.MIMEVersion = headerValue;
                         }
+
                         #endregion
+
                         #region Organization
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ORGANIZATION.ToLower())
                         {
                             sipHeader.Organization = headerValue;
                         }
+
                         #endregion
+
                         #region Priority
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PRIORITY.ToLower())
                         {
                             sipHeader.Priority = headerValue;
                         }
+
                         #endregion
+
                         #region Proxy-Require
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_PROXY_REQUIRE.ToLower())
                         {
                             sipHeader.ProxyRequire = headerValue;
                         }
+
                         #endregion
+
                         #region Reply-To
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_REPLY_TO.ToLower())
                         {
                             sipHeader.ReplyTo = headerValue;
                         }
+
                         #endregion
+
                         #region Retry-After
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_RETRY_AFTER.ToLower())
                         {
                             sipHeader.RetryAfter = headerValue;
                         }
+
                         #endregion
+
                         #region Subject
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_SUBJECT.ToLower())
                         {
                             sipHeader.Subject = headerValue;
                         }
+
                         #endregion
+
                         #region Unsupported
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_UNSUPPORTED.ToLower())
                         {
                             sipHeader.Unsupported = headerValue;
                         }
+
                         #endregion
+
                         #region Warning
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_WARNING.ToLower())
                         {
                             sipHeader.Warning = headerValue;
                         }
+
                         #endregion
+
                         #region CRM-PersonName.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CRM_PERSON_NAME.ToLower())
                         {
                             sipHeader.CRMPersonName = headerValue;
                         }
+
                         #endregion
+
                         #region CRM-CompanyName.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CRM_COMPANY_NAME.ToLower())
                         {
                             sipHeader.CRMCompanyName = headerValue;
                         }
+
                         #endregion
+
                         #region CRM-AvatarURL.
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_CRM_PICTURE_URL.ToLower())
                         {
                             sipHeader.CRMPictureURL = headerValue;
                         }
+
                         #endregion
+
                         #region ETag
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_ETAG.ToLower())
                         {
                             sipHeader.ETag = headerValue;
                         }
+
                         #endregion
+
                         #region RAck
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_RELIABLE_ACK.ToLower())
                         {
                             string[] rackFields = headerValue.Split(' ');
@@ -1967,19 +2204,24 @@ namespace SIPSorcery.SIP
                             {
                                 if (!Int32.TryParse(rackFields[0], out sipHeader.RAckRSeq))
                                 {
-                                    logger.LogWarning(SIPHeaders.SIP_HEADER_RELIABLE_ACK + " did not contain a valid integer for the RSeq being acknowledged, " + headerLine + ".");
+                                    logger.LogWarning(SIPHeaders.SIP_HEADER_RELIABLE_ACK +
+                                                      " did not contain a valid integer for the RSeq being acknowledged, " +
+                                                      headerLine + ".");
                                 }
 
                                 if (rackFields?.Length > 1)
                                 {
                                     if (!Int32.TryParse(rackFields[1], out sipHeader.RAckCSeq))
                                     {
-                                        logger.LogWarning(SIPHeaders.SIP_HEADER_RELIABLE_ACK + " did not contain a valid integer for the CSeq being acknowledged, " + headerLine + ".");
+                                        logger.LogWarning(SIPHeaders.SIP_HEADER_RELIABLE_ACK +
+                                                          " did not contain a valid integer for the CSeq being acknowledged, " +
+                                                          headerLine + ".");
                                     }
                                 }
                                 else
                                 {
-                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_RELIABLE_ACK + " method, " + headerLine + ".");
+                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_RELIABLE_ACK +
+                                                      " method, " + headerLine + ".");
                                 }
 
                                 if (rackFields?.Length > 2)
@@ -1988,12 +2230,16 @@ namespace SIPSorcery.SIP
                                 }
                                 else
                                 {
-                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_RELIABLE_ACK + " method, " + headerLine + ".");
+                                    logger.LogWarning("There was no " + SIPHeaders.SIP_HEADER_RELIABLE_ACK +
+                                                      " method, " + headerLine + ".");
                                 }
                             }
                         }
+
                         #endregion
+
                         #region RSeq
+
                         else if (headerNameLower == SIPHeaders.SIP_HEADER_RELIABLE_SEQ.ToLower())
                         {
                             if (!Int32.TryParse(headerValue, out sipHeader.RSeq))
@@ -2001,7 +2247,9 @@ namespace SIPSorcery.SIP
                                 logger.LogWarning("The Rseq value was not a valid integer, " + headerLine + ".");
                             }
                         }
+
                         #endregion
+
                         else
                         {
                             sipHeader.UnknownHeaders.Add(headerLine);
@@ -2016,7 +2264,8 @@ namespace SIPSorcery.SIP
                     catch (Exception parseExcp)
                     {
                         logger.LogError("Error parsing SIP header " + headerLine + ". " + parseExcp.Message);
-                        throw new SIPValidationException(SIPValidationFieldsEnum.Headers, "Unknown error parsing Header.");
+                        throw new SIPValidationException(SIPValidationFieldsEnum.Headers,
+                            "Unknown error parsing Header.");
                     }
                 }
 
@@ -2050,12 +2299,20 @@ namespace SIPSorcery.SIP
                 string cseqField = null;
                 if (this.CSeq != 0)
                 {
-                    cseqField = (this.CSeqMethod != SIPMethodsEnum.NONE) ? this.CSeq + " " + this.CSeqMethod.ToString() : this.CSeq.ToString();
+                    cseqField = (this.CSeqMethod != SIPMethodsEnum.NONE)
+                        ? this.CSeq + " " + this.CSeqMethod.ToString()
+                        : this.CSeq.ToString();
                 }
 
-                headersBuilder.Append((To != null) ? SIPHeaders.SIP_HEADER_TO + ": " + this.To.ToString() + m_CRLF : null);
-                headersBuilder.Append((From != null) ? SIPHeaders.SIP_HEADER_FROM + ": " + this.From.ToString() + m_CRLF : null);
-                headersBuilder.Append((CallId != null) ? SIPHeaders.SIP_HEADER_CALLID + ": " + this.CallId + m_CRLF : null);
+                headersBuilder.Append((To != null)
+                    ? SIPHeaders.SIP_HEADER_TO + ": " + this.To.ToString() + m_CRLF
+                    : null);
+                headersBuilder.Append((From != null)
+                    ? SIPHeaders.SIP_HEADER_FROM + ": " + this.From.ToString() + m_CRLF
+                    : null);
+                headersBuilder.Append((CallId != null)
+                    ? SIPHeaders.SIP_HEADER_CALLID + ": " + this.CallId + m_CRLF
+                    : null);
                 headersBuilder.Append((CSeq > 0) ? SIPHeaders.SIP_HEADER_CSEQ + ": " + cseqField + m_CRLF : null);
 
                 #region Appending Contact header.
@@ -2089,38 +2346,95 @@ namespace SIPSorcery.SIP
 
                 #endregion
 
-                headersBuilder.Append((MaxForwards >= 0) ? SIPHeaders.SIP_HEADER_MAXFORWARDS + ": " + this.MaxForwards + m_CRLF : null);
-                headersBuilder.Append((Routes != null && Routes.Length > 0) ? SIPHeaders.SIP_HEADER_ROUTE + ": " + Routes.ToString() + m_CRLF : null);
-                headersBuilder.Append((RecordRoutes != null && RecordRoutes.Length > 0) ? SIPHeaders.SIP_HEADER_RECORDROUTE + ": " + RecordRoutes.ToString() + m_CRLF : null);
-                headersBuilder.Append((UserAgent != null && UserAgent.Trim().Length != 0) ? SIPHeaders.SIP_HEADER_USERAGENT + ": " + this.UserAgent + m_CRLF : null);
-                headersBuilder.Append((Expires != -1) ? SIPHeaders.SIP_HEADER_EXPIRES + ": " + this.Expires + m_CRLF : null);
-                headersBuilder.Append((MinExpires != -1) ? SIPHeaders.SIP_HEADER_MINEXPIRES + ": " + this.MinExpires + m_CRLF : null);
-                headersBuilder.Append((Accept != null) ? SIPHeaders.SIP_HEADER_ACCEPT + ": " + this.Accept + m_CRLF : null);
-                headersBuilder.Append((AcceptEncoding != null) ? SIPHeaders.SIP_HEADER_ACCEPTENCODING + ": " + this.AcceptEncoding + m_CRLF : null);
-                headersBuilder.Append((AcceptLanguage != null) ? SIPHeaders.SIP_HEADER_ACCEPTLANGUAGE + ": " + this.AcceptLanguage + m_CRLF : null);
-                headersBuilder.Append((Allow != null) ? SIPHeaders.SIP_HEADER_ALLOW + ": " + this.Allow + m_CRLF : null);
-                headersBuilder.Append((AlertInfo != null) ? SIPHeaders.SIP_HEADER_ALERTINFO + ": " + this.AlertInfo + m_CRLF : null);
-                headersBuilder.Append((AuthenticationInfo != null) ? SIPHeaders.SIP_HEADER_AUTHENTICATIONINFO + ": " + this.AuthenticationInfo + m_CRLF : null);
+                headersBuilder.Append((MaxForwards >= 0)
+                    ? SIPHeaders.SIP_HEADER_MAXFORWARDS + ": " + this.MaxForwards + m_CRLF
+                    : null);
+                headersBuilder.Append((Routes != null && Routes.Length > 0)
+                    ? SIPHeaders.SIP_HEADER_ROUTE + ": " + Routes.ToString() + m_CRLF
+                    : null);
+                headersBuilder.Append((RecordRoutes != null && RecordRoutes.Length > 0)
+                    ? SIPHeaders.SIP_HEADER_RECORDROUTE + ": " + RecordRoutes.ToString() + m_CRLF
+                    : null);
+                headersBuilder.Append((UserAgent != null && UserAgent.Trim().Length != 0)
+                    ? SIPHeaders.SIP_HEADER_USERAGENT + ": " + this.UserAgent + m_CRLF
+                    : null);
+                headersBuilder.Append((Expires != -1)
+                    ? SIPHeaders.SIP_HEADER_EXPIRES + ": " + this.Expires + m_CRLF
+                    : null);
+                headersBuilder.Append((MinExpires != -1)
+                    ? SIPHeaders.SIP_HEADER_MINEXPIRES + ": " + this.MinExpires + m_CRLF
+                    : null);
+                headersBuilder.Append((Accept != null)
+                    ? SIPHeaders.SIP_HEADER_ACCEPT + ": " + this.Accept + m_CRLF
+                    : null);
+                headersBuilder.Append((AcceptEncoding != null)
+                    ? SIPHeaders.SIP_HEADER_ACCEPTENCODING + ": " + this.AcceptEncoding + m_CRLF
+                    : null);
+                headersBuilder.Append((AcceptLanguage != null)
+                    ? SIPHeaders.SIP_HEADER_ACCEPTLANGUAGE + ": " + this.AcceptLanguage + m_CRLF
+                    : null);
+                headersBuilder.Append((Allow != null)
+                    ? SIPHeaders.SIP_HEADER_ALLOW + ": " + this.Allow + m_CRLF
+                    : null);
+                headersBuilder.Append((AlertInfo != null)
+                    ? SIPHeaders.SIP_HEADER_ALERTINFO + ": " + this.AlertInfo + m_CRLF
+                    : null);
+                headersBuilder.Append((AuthenticationInfo != null)
+                    ? SIPHeaders.SIP_HEADER_AUTHENTICATIONINFO + ": " + this.AuthenticationInfo + m_CRLF
+                    : null);
                 headersBuilder.Append((AuthenticationHeader != null) ? AuthenticationHeader.ToString() + m_CRLF : null);
-                headersBuilder.Append((CallInfo != null) ? SIPHeaders.SIP_HEADER_CALLINFO + ": " + this.CallInfo + m_CRLF : null);
-                headersBuilder.Append((ContentDisposition != null) ? SIPHeaders.SIP_HEADER_CONTENT_DISPOSITION + ": " + this.ContentDisposition + m_CRLF : null);
-                headersBuilder.Append((ContentEncoding != null) ? SIPHeaders.SIP_HEADER_CONTENT_ENCODING + ": " + this.ContentEncoding + m_CRLF : null);
-                headersBuilder.Append((ContentLanguage != null) ? SIPHeaders.SIP_HEADER_CONTENT_LANGUAGE + ": " + this.ContentLanguage + m_CRLF : null);
+                headersBuilder.Append((CallInfo != null)
+                    ? SIPHeaders.SIP_HEADER_CALLINFO + ": " + this.CallInfo + m_CRLF
+                    : null);
+                headersBuilder.Append((ContentDisposition != null)
+                    ? SIPHeaders.SIP_HEADER_CONTENT_DISPOSITION + ": " + this.ContentDisposition + m_CRLF
+                    : null);
+                headersBuilder.Append((ContentEncoding != null)
+                    ? SIPHeaders.SIP_HEADER_CONTENT_ENCODING + ": " + this.ContentEncoding + m_CRLF
+                    : null);
+                headersBuilder.Append((ContentLanguage != null)
+                    ? SIPHeaders.SIP_HEADER_CONTENT_LANGUAGE + ": " + this.ContentLanguage + m_CRLF
+                    : null);
                 headersBuilder.Append((Date != null) ? SIPHeaders.SIP_HEADER_DATE + ": " + Date + m_CRLF : null);
-                headersBuilder.Append((ErrorInfo != null) ? SIPHeaders.SIP_HEADER_ERROR_INFO + ": " + this.ErrorInfo + m_CRLF : null);
-                headersBuilder.Append((InReplyTo != null) ? SIPHeaders.SIP_HEADER_IN_REPLY_TO + ": " + this.InReplyTo + m_CRLF : null);
-                headersBuilder.Append((Organization != null) ? SIPHeaders.SIP_HEADER_ORGANIZATION + ": " + this.Organization + m_CRLF : null);
-                headersBuilder.Append((Priority != null) ? SIPHeaders.SIP_HEADER_PRIORITY + ": " + Priority + m_CRLF : null);
-                headersBuilder.Append((ProxyRequire != null) ? SIPHeaders.SIP_HEADER_PROXY_REQUIRE + ": " + this.ProxyRequire + m_CRLF : null);
-                headersBuilder.Append((ReplyTo != null) ? SIPHeaders.SIP_HEADER_REPLY_TO + ": " + this.ReplyTo + m_CRLF : null);
-                headersBuilder.Append((Require != null) ? SIPHeaders.SIP_HEADER_REQUIRE + ": " + Require + m_CRLF : null);
-                headersBuilder.Append((RetryAfter != null) ? SIPHeaders.SIP_HEADER_RETRY_AFTER + ": " + this.RetryAfter + m_CRLF : null);
-                headersBuilder.Append((Server != null && Server.Trim().Length != 0) ? SIPHeaders.SIP_HEADER_SERVER + ": " + this.Server + m_CRLF : null);
-                headersBuilder.Append((Subject != null) ? SIPHeaders.SIP_HEADER_SUBJECT + ": " + Subject + m_CRLF : null);
-                headersBuilder.Append((Supported != null) ? SIPHeaders.SIP_HEADER_SUPPORTED + ": " + Supported + m_CRLF : null);
-                headersBuilder.Append((Timestamp != null) ? SIPHeaders.SIP_HEADER_TIMESTAMP + ": " + Timestamp + m_CRLF : null);
-                headersBuilder.Append((Unsupported != null) ? SIPHeaders.SIP_HEADER_UNSUPPORTED + ": " + Unsupported + m_CRLF : null);
-                headersBuilder.Append((Warning != null) ? SIPHeaders.SIP_HEADER_WARNING + ": " + Warning + m_CRLF : null);
+                headersBuilder.Append((ErrorInfo != null)
+                    ? SIPHeaders.SIP_HEADER_ERROR_INFO + ": " + this.ErrorInfo + m_CRLF
+                    : null);
+                headersBuilder.Append((InReplyTo != null)
+                    ? SIPHeaders.SIP_HEADER_IN_REPLY_TO + ": " + this.InReplyTo + m_CRLF
+                    : null);
+                headersBuilder.Append((Organization != null)
+                    ? SIPHeaders.SIP_HEADER_ORGANIZATION + ": " + this.Organization + m_CRLF
+                    : null);
+                headersBuilder.Append((Priority != null)
+                    ? SIPHeaders.SIP_HEADER_PRIORITY + ": " + Priority + m_CRLF
+                    : null);
+                headersBuilder.Append((ProxyRequire != null)
+                    ? SIPHeaders.SIP_HEADER_PROXY_REQUIRE + ": " + this.ProxyRequire + m_CRLF
+                    : null);
+                headersBuilder.Append((ReplyTo != null)
+                    ? SIPHeaders.SIP_HEADER_REPLY_TO + ": " + this.ReplyTo + m_CRLF
+                    : null);
+                headersBuilder.Append(
+                    (Require != null) ? SIPHeaders.SIP_HEADER_REQUIRE + ": " + Require + m_CRLF : null);
+                headersBuilder.Append((RetryAfter != null)
+                    ? SIPHeaders.SIP_HEADER_RETRY_AFTER + ": " + this.RetryAfter + m_CRLF
+                    : null);
+                headersBuilder.Append((Server != null && Server.Trim().Length != 0)
+                    ? SIPHeaders.SIP_HEADER_SERVER + ": " + this.Server + m_CRLF
+                    : null);
+                headersBuilder.Append(
+                    (Subject != null) ? SIPHeaders.SIP_HEADER_SUBJECT + ": " + Subject + m_CRLF : null);
+                headersBuilder.Append((Supported != null)
+                    ? SIPHeaders.SIP_HEADER_SUPPORTED + ": " + Supported + m_CRLF
+                    : null);
+                headersBuilder.Append((Timestamp != null)
+                    ? SIPHeaders.SIP_HEADER_TIMESTAMP + ": " + Timestamp + m_CRLF
+                    : null);
+                headersBuilder.Append((Unsupported != null)
+                    ? SIPHeaders.SIP_HEADER_UNSUPPORTED + ": " + Unsupported + m_CRLF
+                    : null);
+                headersBuilder.Append(
+                    (Warning != null) ? SIPHeaders.SIP_HEADER_WARNING + ": " + Warning + m_CRLF : null);
                 headersBuilder.Append((ETag != null) ? SIPHeaders.SIP_HEADER_ETAG + ": " + ETag + m_CRLF : null);
                 headersBuilder.Append(SIPHeaders.SIP_HEADER_CONTENTLENGTH + ": " + this.ContentLength + m_CRLF);
                 if (this.ContentType != null && this.ContentType.Trim().Length > 0)
@@ -2129,26 +2443,52 @@ namespace SIPSorcery.SIP
                 }
 
                 // Non-core SIP headers.
-                headersBuilder.Append((AllowEvents != null) ? SIPHeaders.SIP_HEADER_ALLOW_EVENTS + ": " + AllowEvents + m_CRLF : null);
+                headersBuilder.Append((AllowEvents != null)
+                    ? SIPHeaders.SIP_HEADER_ALLOW_EVENTS + ": " + AllowEvents + m_CRLF
+                    : null);
                 headersBuilder.Append((Event != null) ? SIPHeaders.SIP_HEADER_EVENT + ": " + Event + m_CRLF : null);
-                headersBuilder.Append((SubscriptionState != null) ? SIPHeaders.SIP_HEADER_SUBSCRIPTION_STATE + ": " + SubscriptionState + m_CRLF : null);
-                headersBuilder.Append((ReferSub != null) ? SIPHeaders.SIP_HEADER_REFERSUB + ": " + ReferSub + m_CRLF : null);
-                headersBuilder.Append((ReferTo != null) ? SIPHeaders.SIP_HEADER_REFERTO + ": " + ReferTo + m_CRLF : null);
-                headersBuilder.Append((ReferredBy != null) ? SIPHeaders.SIP_HEADER_REFERREDBY + ": " + ReferredBy + m_CRLF : null);
-                headersBuilder.Append((Replaces != null) ? SIPHeaders.SIP_HEADER_REPLACES + ": " + Replaces + m_CRLF : null);
+                headersBuilder.Append((SubscriptionState != null)
+                    ? SIPHeaders.SIP_HEADER_SUBSCRIPTION_STATE + ": " + SubscriptionState + m_CRLF
+                    : null);
+                headersBuilder.Append((ReferSub != null)
+                    ? SIPHeaders.SIP_HEADER_REFERSUB + ": " + ReferSub + m_CRLF
+                    : null);
+                headersBuilder.Append(
+                    (ReferTo != null) ? SIPHeaders.SIP_HEADER_REFERTO + ": " + ReferTo + m_CRLF : null);
+                headersBuilder.Append((ReferredBy != null)
+                    ? SIPHeaders.SIP_HEADER_REFERREDBY + ": " + ReferredBy + m_CRLF
+                    : null);
+                headersBuilder.Append((Replaces != null)
+                    ? SIPHeaders.SIP_HEADER_REPLACES + ": " + Replaces + m_CRLF
+                    : null);
                 headersBuilder.Append((Reason != null) ? SIPHeaders.SIP_HEADER_REASON + ": " + Reason + m_CRLF : null);
                 headersBuilder.Append((RSeq != -1) ? SIPHeaders.SIP_HEADER_RELIABLE_SEQ + ": " + RSeq + m_CRLF : null);
-                headersBuilder.Append((RAckRSeq != -1) ? SIPHeaders.SIP_HEADER_RELIABLE_ACK + ": " + RAckRSeq + " " + RAckCSeq + " " + RAckCSeqMethod + m_CRLF : null);
+                headersBuilder.Append((RAckRSeq != -1)
+                    ? SIPHeaders.SIP_HEADER_RELIABLE_ACK + ": " + RAckRSeq + " " + RAckCSeq + " " + RAckCSeqMethod +
+                      m_CRLF
+                    : null);
 
                 // Custom SIP headers.
-                headersBuilder.Append((ProxyReceivedFrom != null) ? SIPHeaders.SIP_HEADER_PROXY_RECEIVEDFROM + ": " + ProxyReceivedFrom + m_CRLF : null);
-                headersBuilder.Append((ProxyReceivedOn != null) ? SIPHeaders.SIP_HEADER_PROXY_RECEIVEDON + ": " + ProxyReceivedOn + m_CRLF : null);
-                headersBuilder.Append((ProxySendFrom != null) ? SIPHeaders.SIP_HEADER_PROXY_SENDFROM + ": " + ProxySendFrom + m_CRLF : null);
+                headersBuilder.Append((ProxyReceivedFrom != null)
+                    ? SIPHeaders.SIP_HEADER_PROXY_RECEIVEDFROM + ": " + ProxyReceivedFrom + m_CRLF
+                    : null);
+                headersBuilder.Append((ProxyReceivedOn != null)
+                    ? SIPHeaders.SIP_HEADER_PROXY_RECEIVEDON + ": " + ProxyReceivedOn + m_CRLF
+                    : null);
+                headersBuilder.Append((ProxySendFrom != null)
+                    ? SIPHeaders.SIP_HEADER_PROXY_SENDFROM + ": " + ProxySendFrom + m_CRLF
+                    : null);
 
                 // CRM Headers.
-                headersBuilder.Append((CRMPersonName != null) ? SIPHeaders.SIP_HEADER_CRM_PERSON_NAME + ": " + CRMPersonName + m_CRLF : null);
-                headersBuilder.Append((CRMCompanyName != null) ? SIPHeaders.SIP_HEADER_CRM_COMPANY_NAME + ": " + CRMCompanyName + m_CRLF : null);
-                headersBuilder.Append((CRMPictureURL != null) ? SIPHeaders.SIP_HEADER_CRM_PICTURE_URL + ": " + CRMPictureURL + m_CRLF : null);
+                headersBuilder.Append((CRMPersonName != null)
+                    ? SIPHeaders.SIP_HEADER_CRM_PERSON_NAME + ": " + CRMPersonName + m_CRLF
+                    : null);
+                headersBuilder.Append((CRMCompanyName != null)
+                    ? SIPHeaders.SIP_HEADER_CRM_COMPANY_NAME + ": " + CRMCompanyName + m_CRLF
+                    : null);
+                headersBuilder.Append((CRMPictureURL != null)
+                    ? SIPHeaders.SIP_HEADER_CRM_PICTURE_URL + ": " + CRMPictureURL + m_CRLF
+                    : null);
 
                 // Unknown SIP headers
                 foreach (string unknownHeader in UnknownHeaders)
@@ -2181,7 +2521,7 @@ namespace SIPSorcery.SIP
         public SIPHeader Copy()
         {
             string headerString = this.ToString();
-            string[] sipHeaders = SIPHeader.SplitHeaders(headerString);
+            string[] sipHeaders = SplitHeaders(headerString);
             return ParseSIPHeaders(sipHeaders);
         }
 

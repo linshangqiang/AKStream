@@ -31,9 +31,9 @@ namespace SIPSorcery.SIP
     public enum SIPDialogueTransferModesEnum
     {
         Default = 0,
-        PassThru = 1,           // REFER requests will be treated as an in-dialogue request and passed through to user agents.
-        NotAllowed = 2,         // REFER requests will be blocked.
-        BlindPlaceCall = 3,     // REFER requests without a replaces parameter will initiate a new call.
+        PassThru = 1, // REFER requests will be treated as an in-dialogue request and passed through to user agents.
+        NotAllowed = 2, // REFER requests will be blocked.
+        BlindPlaceCall = 3, // REFER requests without a replaces parameter will initiate a new call.
     }
 
     /// <summary>
@@ -52,24 +52,64 @@ namespace SIPSorcery.SIP
         protected static string m_sipVersion = SIPConstants.SIP_VERSION_STRING;
         private static readonly int m_defaultSIPPort = SIPConstants.DEFAULT_SIP_PORT;
 
-        public Guid Id { get; set; }                                // Id for persistence, NOT used for SIP call purposes.
+        public Guid Id { get; set; } // Id for persistence, NOT used for SIP call purposes.
         public string CallId { get; set; }
         public SIPRouteSet RouteSet { get; set; }
-        public SIPUserField LocalUserField { get; set; }            // To header for a UAS, From header for a UAC.
+        public SIPUserField LocalUserField { get; set; } // To header for a UAS, From header for a UAC.
         public string LocalTag { get; set; }
-        public SIPUserField RemoteUserField { get; set; }           // To header for a UAC, From header for a UAS.    
+        public SIPUserField RemoteUserField { get; set; } // To header for a UAC, From header for a UAS.    
         public string RemoteTag { get; set; }
-        public int CSeq { get; set; }                               // CSeq being used by the remote UA for sending requests.
-        public int RemoteCSeq { get; set; }                         // Latest CSeq received from the remote UA.
-        public SIPURI RemoteTarget { get; set; }                    // This will be the Contact URI in the INVITE request or in the 2xx INVITE response and is where subsequent dialogue requests should be sent.
-        public Guid CDRId { get; set; }                             // Call detail record for call the dialogue belongs to.
-        public string ContentType { get; private set; }             // The content type on the request or response that created this dialogue. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
-        public string SDP { get; set; }                             // The sessions description protocol payload. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
-        public string RemoteSDP { get; set; }                       // The sessions description protocol payload from the remote end. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
-        public Guid BridgeId { get; set; }                          // If this dialogue gets bridged by a higher level application server the id for the bridge can be stored here.                   
-        public int CallDurationLimit { get; set; }                  // If non-zero indicates the dialogue established should only be permitted to stay up for this many seconds.
-        public string ProxySendFrom { get; set; }                   // If set this is the socket the upstream proxy received the call on.
-        public SIPDialogueTransferModesEnum TransferMode { get; set; }  // Specifies how the dialogue will handle REFER requests (transfers).
+        public int CSeq { get; set; } // CSeq being used by the remote UA for sending requests.
+        public int RemoteCSeq { get; set; } // Latest CSeq received from the remote UA.
+
+        public SIPURI
+            RemoteTarget
+        {
+            get;
+            set;
+        } // This will be the Contact URI in the INVITE request or in the 2xx INVITE response and is where subsequent dialogue requests should be sent.
+
+        public Guid CDRId { get; set; } // Call detail record for call the dialogue belongs to.
+
+        public string
+            ContentType
+        {
+            get;
+            private set;
+        } // The content type on the request or response that created this dialogue. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
+
+        public string
+            SDP
+        {
+            get;
+            set;
+        } // The sessions description protocol payload. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
+
+        public string
+            RemoteSDP
+        {
+            get;
+            set;
+        } // The sessions description protocol payload from the remote end. This is not part of or required for the dialogue and is kept for info and consumer app. purposes only.
+
+        public Guid
+            BridgeId
+        {
+            get;
+            set;
+        } // If this dialogue gets bridged by a higher level application server the id for the bridge can be stored here.                   
+
+        public int
+            CallDurationLimit
+        {
+            get;
+            set;
+        } // If non-zero indicates the dialogue established should only be permitted to stay up for this many seconds.
+
+        public string ProxySendFrom { get; set; } // If set this is the socket the upstream proxy received the call on.
+
+        public SIPDialogueTransferModesEnum
+            TransferMode { get; set; } // Specifies how the dialogue will handle REFER requests (transfers).
 
         /// <summary>
         /// Indicates whether the dialogue was created by a ingress or egress call.
@@ -112,6 +152,7 @@ namespace SIPSorcery.SIP
         }
 
         private DateTimeOffset m_inserted;
+
         public DateTimeOffset Inserted
         {
             get { return m_inserted; }
@@ -122,7 +163,9 @@ namespace SIPSorcery.SIP
 
         internal SIPNonInviteTransaction m_byeTransaction;
 
-        public SIPDialogue() { }
+        public SIPDialogue()
+        {
+        }
 
         public SIPDialogue(
             string callId,
@@ -166,7 +209,10 @@ namespace SIPSorcery.SIP
 
             CallId = uasInviteTransaction.TransactionRequest.Header.CallId;
             //RouteSet = (uasInviteTransaction.TransactionFinalResponse != null && uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes != null) ? uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes.Reversed() : null;
-            RouteSet = (uasInviteTransaction.TransactionFinalResponse != null && uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes != null) ? uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes : null;
+            RouteSet = (uasInviteTransaction.TransactionFinalResponse != null &&
+                        uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes != null)
+                ? uasInviteTransaction.TransactionFinalResponse.Header.RecordRoutes
+                : null;
             LocalUserField = uasInviteTransaction.TransactionFinalResponse.Header.To.ToUserField;
             LocalTag = uasInviteTransaction.TransactionFinalResponse.Header.To.ToTag;
             RemoteUserField = uasInviteTransaction.TransactionFinalResponse.Header.From.FromUserField;
@@ -179,14 +225,16 @@ namespace SIPSorcery.SIP
             Inserted = DateTimeOffset.UtcNow;
             Direction = SIPCallDirection.In;
 
-            if(uasInviteTransaction.m_gotPrack)
+            if (uasInviteTransaction.m_gotPrack)
             {
                 CSeq++;
             }
 
-            RemoteTarget = new SIPURI(uasInviteTransaction.TransactionRequest.URI.Scheme, uasInviteTransaction.TransactionRequest.RemoteSIPEndPoint.CopyOf());
+            RemoteTarget = new SIPURI(uasInviteTransaction.TransactionRequest.URI.Scheme,
+                uasInviteTransaction.TransactionRequest.RemoteSIPEndPoint.CopyOf());
             ProxySendFrom = uasInviteTransaction.TransactionRequest.Header.ProxyReceivedOn;
-            if (uasInviteTransaction.TransactionRequest.Header.Contact != null && uasInviteTransaction.TransactionRequest.Header.Contact.Count > 0)
+            if (uasInviteTransaction.TransactionRequest.Header.Contact != null &&
+                uasInviteTransaction.TransactionRequest.Header.Contact.Count > 0)
             {
                 RemoteTarget = uasInviteTransaction.TransactionRequest.Header.Contact[0].ContactURI.CopyOf();
                 if (!uasInviteTransaction.TransactionRequest.Header.ProxyReceivedFrom.IsNullOrBlank())
@@ -195,7 +243,9 @@ namespace SIPSorcery.SIP
                     // Don't mangle private contacts if there is a Record-Route header. If a proxy is putting private IP's in a Record-Route header that's its problem.
                     if (RouteSet == null && IPSocket.IsPrivateAddress(RemoteTarget.Host))
                     {
-                        SIPEndPoint remoteUASSIPEndPoint = SIPEndPoint.ParseSIPEndPoint(uasInviteTransaction.TransactionRequest.Header.ProxyReceivedFrom);
+                        SIPEndPoint remoteUASSIPEndPoint =
+                            SIPEndPoint.ParseSIPEndPoint(uasInviteTransaction.TransactionRequest.Header
+                                .ProxyReceivedFrom);
                         RemoteTarget.Host = remoteUASSIPEndPoint.GetIPEndPoint().ToString();
                     }
                 }
@@ -212,7 +262,11 @@ namespace SIPSorcery.SIP
             Id = Guid.NewGuid();
 
             CallId = uacInviteTransaction.TransactionRequest.Header.CallId;
-            RouteSet = (uacInviteTransaction.TransactionFinalResponse != null && uacInviteTransaction.TransactionFinalResponse.Header.RecordRoutes != null) ? uacInviteTransaction.TransactionFinalResponse.Header.RecordRoutes.Reversed() : null;
+            RouteSet =
+                (uacInviteTransaction.TransactionFinalResponse != null &&
+                 uacInviteTransaction.TransactionFinalResponse.Header.RecordRoutes != null)
+                    ? uacInviteTransaction.TransactionFinalResponse.Header.RecordRoutes.Reversed()
+                    : null;
             LocalUserField = uacInviteTransaction.TransactionFinalResponse.Header.From.FromUserField;
             LocalTag = uacInviteTransaction.TransactionFinalResponse.Header.From.FromTag;
             RemoteUserField = uacInviteTransaction.TransactionFinalResponse.Header.To.ToUserField;
@@ -225,7 +279,7 @@ namespace SIPSorcery.SIP
             Inserted = DateTimeOffset.UtcNow;
             Direction = SIPCallDirection.Out;
 
-            if(uacInviteTransaction.m_sentPrack)
+            if (uacInviteTransaction.m_sentPrack)
             {
                 CSeq++;
             }
@@ -233,14 +287,18 @@ namespace SIPSorcery.SIP
             // Set the dialogue remote target and take care of mangling if an upstream proxy has indicated it's required.
             if (uacInviteTransaction.TransactionFinalResponse != null)
             {
-                RemoteTarget = new SIPURI(uacInviteTransaction.TransactionRequest.URI.Scheme, uacInviteTransaction.TransactionFinalResponse.RemoteSIPEndPoint.CopyOf());
+                RemoteTarget = new SIPURI(uacInviteTransaction.TransactionRequest.URI.Scheme,
+                    uacInviteTransaction.TransactionFinalResponse.RemoteSIPEndPoint.CopyOf());
             }
             else
             {
-                RemoteTarget = new SIPURI(uacInviteTransaction.TransactionRequest.URI.Scheme, uacInviteTransaction.TransactionRequest.RemoteSIPEndPoint.CopyOf());
+                RemoteTarget = new SIPURI(uacInviteTransaction.TransactionRequest.URI.Scheme,
+                    uacInviteTransaction.TransactionRequest.RemoteSIPEndPoint.CopyOf());
             }
+
             ProxySendFrom = uacInviteTransaction.TransactionFinalResponse.Header.ProxyReceivedOn;
-            if (uacInviteTransaction.TransactionFinalResponse.Header.Contact != null && uacInviteTransaction.TransactionFinalResponse.Header.Contact.Count > 0)
+            if (uacInviteTransaction.TransactionFinalResponse.Header.Contact != null &&
+                uacInviteTransaction.TransactionFinalResponse.Header.Contact.Count > 0)
             {
                 RemoteTarget = uacInviteTransaction.TransactionFinalResponse.Header.Contact[0].ContactURI.CopyOf();
                 if (!uacInviteTransaction.TransactionFinalResponse.Header.ProxyReceivedFrom.IsNullOrBlank())
@@ -249,7 +307,9 @@ namespace SIPSorcery.SIP
                     // Don't mangle private contacts if there is a Record-Route header. If a proxy is putting private IP's in a Record-Route header that's its problem.
                     if (RouteSet == null && IPSocket.IsPrivateAddress(RemoteTarget.Host))
                     {
-                        SIPEndPoint remoteUASSIPEndPoint = SIPEndPoint.ParseSIPEndPoint(uacInviteTransaction.TransactionFinalResponse.Header.ProxyReceivedFrom);
+                        SIPEndPoint remoteUASSIPEndPoint =
+                            SIPEndPoint.ParseSIPEndPoint(uacInviteTransaction.TransactionFinalResponse.Header
+                                .ProxyReceivedFrom);
                         RemoteTarget.Host = remoteUASSIPEndPoint.GetIPEndPoint().ToString();
                     }
                 }
@@ -261,13 +321,15 @@ namespace SIPSorcery.SIP
         /// where the dialogue is created based on a SUBSCRIBE request.
         /// </summary>
         public SIPDialogue(
-          SIPRequest nonInviteRequest,
-          string toTag)
+            SIPRequest nonInviteRequest,
+            string toTag)
         {
             Id = Guid.NewGuid();
 
             CallId = nonInviteRequest.Header.CallId;
-            RouteSet = (nonInviteRequest.Header.RecordRoutes != null) ? nonInviteRequest.Header.RecordRoutes.Reversed() : null;
+            RouteSet = (nonInviteRequest.Header.RecordRoutes != null)
+                ? nonInviteRequest.Header.RecordRoutes.Reversed()
+                : null;
             RemoteUserField = nonInviteRequest.Header.From.FromUserField;
             RemoteTag = nonInviteRequest.Header.From.FromTag;
             LocalUserField = nonInviteRequest.Header.To.ToUserField;
@@ -287,7 +349,8 @@ namespace SIPSorcery.SIP
                 // Don't mangle private contacts if there is a Record-Route header. If a proxy is putting private IP's in a Record-Route header that's its problem.
                 if (RouteSet == null && IPSocket.IsPrivateAddress(RemoteTarget.Host))
                 {
-                    SIPEndPoint remoteUASIPEndPoint = SIPEndPoint.ParseSIPEndPoint(nonInviteRequest.Header.ProxyReceivedFrom);
+                    SIPEndPoint remoteUASIPEndPoint =
+                        SIPEndPoint.ParseSIPEndPoint(nonInviteRequest.Header.ProxyReceivedFrom);
                     RemoteTarget.Host = remoteUASIPEndPoint.GetIPEndPoint().ToString();
                 }
             }
@@ -312,7 +375,9 @@ namespace SIPSorcery.SIP
                 }
                 else if (!ProxySendFrom.IsNullOrBlank())
                 {
-                    byeOutboundProxy = new SIPEndPoint(new IPEndPoint(SIPEndPoint.ParseSIPEndPoint(ProxySendFrom).Address, m_defaultSIPPort));
+                    byeOutboundProxy =
+                        new SIPEndPoint(new IPEndPoint(SIPEndPoint.ParseSIPEndPoint(ProxySendFrom).Address,
+                            m_defaultSIPPort));
                 }
                 else if (outboundProxy != null)
                 {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace LibSystemInfo
 {
@@ -17,7 +16,7 @@ namespace LibSystemInfo
         private NetWorkStat _netWorkStat;
         private List<DriveInfo> _driveInfo;
         private DateTime _updateTime;
-        
+
 
         public string SystemType
         {

@@ -141,6 +141,7 @@ namespace SIPSorcery.Net.Sctp
                         {
                             _invalid = ex;
                         }
+
                         //logger.LogDebug("Got an DCEP " + _open);
                         break;
                     case WEBRTCstring:
@@ -161,7 +162,8 @@ namespace SIPSorcery.Net.Sctp
 
                     default:
                         logger.LogWarning($"Invalid payload protocol identifier Id in data chunk, ppid {_ppid}.");
-                        _invalid = new InvalidDataChunkException($"Invalid payload protocol identifier in data chunk, ppid {_ppid}.");
+                        _invalid = new InvalidDataChunkException(
+                            $"Invalid payload protocol identifier in data chunk, ppid {_ppid}.");
                         break;
                 }
             }
@@ -193,6 +195,7 @@ namespace SIPSorcery.Net.Sctp
                     ret = "Invalid Protocol Id in data Chunk " + _ppid;
                     break;
             }
+
             return ret;
         }
 
@@ -257,15 +260,16 @@ namespace SIPSorcery.Net.Sctp
                 // ie outbound chunk.
                 len = _dataLength + 12 + 4;
             }
+
             return len;
         }
 
         protected override void putFixedParams(ByteBuffer ret)
         {
-            ret.Put(_tsn);// = _body.getInt();
-            ret.Put((ushort)_streamId);// = _body.getushort();
-            ret.Put((ushort)_sSeqNo);// = _body.getushort();
-            ret.Put(_ppid);// = _body.getInt();
+            ret.Put(_tsn); // = _body.getInt();
+            ret.Put((ushort) _streamId); // = _body.getushort();
+            ret.Put((ushort) _sSeqNo); // = _body.getushort();
+            ret.Put(_ppid); // = _body.getInt();
             ret.Put(_data, _dataOffset, _dataLength);
         }
 
@@ -279,6 +283,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 res = (4 - mod);
             }
+
             //logger.LogDebug("padded by " + res);
             return res;
         }
@@ -306,7 +311,7 @@ namespace SIPSorcery.Net.Sctp
             DataChunk ack = new DataChunk();
             ack.setData(dcep.mkAck());
             ack._ppid = WEBRTCCONTROL;
-            ack.setFlags(DataChunk.SINGLEFLAG);
+            ack.setFlags(SINGLEFLAG);
 
             return ack;
         }
@@ -317,7 +322,7 @@ namespace SIPSorcery.Net.Sctp
             DataChannelOpen dope = new DataChannelOpen(label);
             open.setData(dope.getBytes());
             open._ppid = WEBRTCCONTROL;
-            open.setFlags(DataChunk.SINGLEFLAG);
+            open.setFlags(SINGLEFLAG);
             return open;
         }
 
@@ -325,13 +330,13 @@ namespace SIPSorcery.Net.Sctp
         {
             string ret = base.ToString();
             ret += $" ppid {_ppid}, seqn {_sSeqNo}, streamId {_streamId}, tsn {_tsn}"
-                    + $", retry {_retryTime}, gap acked {_gapAck}.";
+                   + $", retry {_retryTime}, gap acked {_gapAck}.";
             return ret;
         }
 
         public void setFlags(int flag)
         {
-            _flags = (byte)flag;
+            _flags = (byte) flag;
         }
 
         public int getFlags()
@@ -358,8 +363,8 @@ namespace SIPSorcery.Net.Sctp
 
         /// <summary
         /// Only use this method if you are certain that data won't be reused until
-		/// this chunk is sent and ack'd ie after MessageCompleteHandler has been
-		/// called for the surrounding message
+        /// this chunk is sent and ack'd ie after MessageCompleteHandler has been
+        /// called for the surrounding message
         /// </summary>
         public void setData(byte[] data, int offs, int len)
         {
@@ -396,7 +401,7 @@ namespace SIPSorcery.Net.Sctp
 
         public int Compare(DataChunk o1, DataChunk o2)
         {
-            return (int)(o1._tsn - o2._tsn);
+            return (int) (o1._tsn - o2._tsn);
         }
 
         public long getSentTime()

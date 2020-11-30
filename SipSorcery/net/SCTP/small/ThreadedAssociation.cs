@@ -49,6 +49,7 @@ namespace SIPSorcery.Net.Sctp
 		 Note: This variable is kept on the entire association.
 		 */
         private long _rwnd;
+
         /*
 		 o  Congestion control window (cwnd, in bytes), which is adjusted by
 		 the sender based on observed network conditions.
@@ -57,6 +58,7 @@ namespace SIPSorcery.Net.Sctp
 		 basis.
 		 */
         private long _cwnd;
+
         // assume a single destination via ICE
         /*
 			 o  Slow-start threshold (ssthresh, in bytes), which is used by the
@@ -66,6 +68,7 @@ namespace SIPSorcery.Net.Sctp
 			 basis.
 			 */
         private long _ssthresh;
+
         /*
 
 
@@ -80,6 +83,7 @@ namespace SIPSorcery.Net.Sctp
 		 to facilitate cwnd adjustment.
 		 */
         private long _partial_bytes_acked;
+
         // AC: This variable was never being set. Removed for now.
         //private bool _fastRecovery;
         /*
@@ -131,7 +135,8 @@ namespace SIPSorcery.Net.Sctp
         private static double _rtoMin = 1.0;
         private static double _rtoMax = 60.0;
 
-        public ThreadedAssociation(DatagramTransport transport, AssociationListener al, bool isClient, int srcPort, int destPort)
+        public ThreadedAssociation(DatagramTransport transport, AssociationListener al, bool isClient, int srcPort,
+            int destPort)
             : base(transport, al, isClient, srcPort, destPort)
         {
             try
@@ -144,7 +149,8 @@ namespace SIPSorcery.Net.Sctp
                 logger.LogWarning("Failed to get suitable transport mtu ");
                 logger.LogWarning(x.ToString());
             }
-            _freeBlocks = new Queue<DataChunk>(/*MAXBLOCKS*/);
+
+            _freeBlocks = new Queue<DataChunk>( /*MAXBLOCKS*/);
             _inFlight = new Dictionary<long, DataChunk>(MAXBLOCKS);
 
             for (int i = 0; i < MAXBLOCKS; i++)
@@ -155,6 +161,7 @@ namespace SIPSorcery.Net.Sctp
                     _freeBlocks.Enqueue(dc);
                 }
             }
+
             resetCwnd();
         }
         /*
@@ -179,11 +186,16 @@ namespace SIPSorcery.Net.Sctp
         class AssocRun
         {
             ThreadedAssociation ta;
-            private AssocRun() { }
+
+            private AssocRun()
+            {
+            }
+
             public AssocRun(ThreadedAssociation ta)
             {
                 this.ta = ta;
             }
+
             int retries = 0;
 
             public void run()
@@ -199,7 +211,8 @@ namespace SIPSorcery.Net.Sctp
                             ta.sendInit();
                         }
                         else
-                        { // COOKIEECHOED
+                        {
+                            // COOKIEECHOED
                             ta.send(ta._stashCookieEcho);
                         }
                     }
@@ -212,6 +225,7 @@ namespace SIPSorcery.Net.Sctp
                     {
                         logger.LogError("Cant send Init/cookie retry " + retries + " because " + ex.ToString());
                     }
+
                     retries++;
                     if (retries < MAX_INIT_RETRANS)
                     {
@@ -239,7 +253,7 @@ namespace SIPSorcery.Net.Sctp
 
         public long getT3()
         {
-            return (_rto > 0) ? (long)(1000.0 * _rto) : 100;
+            return (_rto > 0) ? (long) (1000.0 * _rto) : 100;
         }
 
         public override void enqueue(DataChunk d)
@@ -269,8 +283,8 @@ namespace SIPSorcery.Net.Sctp
                     {
                         _inFlight.Add(d.getTsn(), d);
                     }
-                    //logger.LogDebug("added to inFlight... " + d.getTsn());
 
+                    //logger.LogDebug("added to inFlight... " + d.getTsn());
                 }
                 catch (SctpPacketFormatException ex)
                 {
@@ -288,6 +302,7 @@ namespace SIPSorcery.Net.Sctp
                     logger.LogError(ex.ToString());
                 }
             }
+
             //logger.LogDebug("leaving enqueue" + d.getTsn());
         }
 
@@ -300,6 +315,7 @@ namespace SIPSorcery.Net.Sctp
                 {
                     dc = _freeBlocks.Count > 0 ? _freeBlocks.Dequeue() : new DataChunk();
                 }
+
                 m.fill(dc);
                 //logger.LogDebug("thinking about waiting for congestion " + dc.getTsn());
 
@@ -309,9 +325,10 @@ namespace SIPSorcery.Net.Sctp
                     while (!this.maySend(dc.getDataSize()))
                     {
                         //logger.LogDebug("about to wait for congestion for " + this.getT3());
-                        Monitor.Wait(_congestion, (int)this.getT3());// wholly wrong
+                        Monitor.Wait(_congestion, (int) this.getT3()); // wholly wrong
                     }
                 }
+
                 // todo check rollover - will break at maxint.
                 enqueue(dc);
             }
@@ -335,6 +352,7 @@ namespace SIPSorcery.Net.Sctp
                         }
                     }
                 }
+
                 return m;
             }
         }
@@ -363,6 +381,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogWarning("Can't send a message right now");
             }
+
             return m;
         }
 
@@ -384,7 +403,7 @@ namespace SIPSorcery.Net.Sctp
             // ToDo - check on unacked recvs (why?)
             // and then check on size - will it fit?
             // then add sack
-            Chunk[] ret = { d };
+            Chunk[] ret = {d};
             return ret;
         }
 
@@ -511,6 +530,7 @@ namespace SIPSorcery.Net.Sctp
                             removals.Add(kvp.Key);
                         }
                     }
+
                     foreach (long k in removals)
                     {
                         DataChunk d = _inFlight[k];
@@ -526,7 +546,11 @@ namespace SIPSorcery.Net.Sctp
                         {
                             int sid = d.getStreamId();
                             SCTPStream stream = getStream(sid);
-                            if (stream != null) { stream.delivered(d); }
+                            if (stream != null)
+                            {
+                                stream.delivered(d);
+                            }
+
                             lock (_freeBlocks)
                             {
                                 _freeBlocks.Enqueue(d);
@@ -539,6 +563,7 @@ namespace SIPSorcery.Net.Sctp
                         }
                     }
                 }
+
                 /*
 				 Gap Ack Blocks:
 
@@ -572,6 +597,7 @@ namespace SIPSorcery.Net.Sctp
                         }
                     }
                 }
+
                 /*
 				 ii) Set rwnd equal to the newly received a_rwnd minus the number
 				 of bytes still outstanding after processing the Cumulative
@@ -590,17 +616,18 @@ namespace SIPSorcery.Net.Sctp
                         }
                     }
                 }
+
                 _rwnd = sack.getArWin() - totalDataInFlight;
                 //logger.LogDebug("Setting rwnd to " + _rwnd);
                 bool advanced = (_lastCumuTSNAck < ackedTo);
                 adjustCwind(advanced, totalDataInFlight, totalAcked);
                 _lastCumuTSNAck = ackedTo;
-
             }
             else
             {
                 logger.LogDebug("Dumping Sack - already seen later sack.");
             }
+
             return ret;
         }
 
@@ -668,6 +695,7 @@ namespace SIPSorcery.Net.Sctp
                     _cwnd -= sz;
                 }
             }
+
             //logger.LogDebug("MaySend " + maysend + " rwnd = " + _rwnd + " cwnd = " + _cwnd + " sz = " + sz);
             return maysend;
         }
@@ -695,16 +723,17 @@ namespace SIPSorcery.Net.Sctp
                 //logger.LogDebug("slow start");
 
                 if (didAdvance && fullyUtilized)
-                {// && !_fastRecovery) {
+                {
+                    // && !_fastRecovery) {
                     int incCwinBy = Math.Min(_transpMTU, totalAcked);
                     _cwnd += incCwinBy;
                     //logger.LogDebug("cwnd now " + _cwnd);
                 }
+
                 //else
                 //{
                 //    logger.LogDebug("cwnd static at " + _cwnd + " (didAdvance fullyUtilized  inFlightBytes totalAcked)  " + didAdvance + " " + fullyUtilized + " " + inFlightBytes + " " + totalAcked);
                 //}
-
             }
             else
             {
@@ -760,6 +789,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             lock (_congestion)
             {
                 Monitor.PulseAll(_congestion);
@@ -821,6 +851,7 @@ namespace SIPSorcery.Net.Sctp
                             //logger.LogDebug("skipping gap-acked tsn " + d.getTsn());
                             continue;
                         }
+
                         if (d.getRetryTime() <= now)
                         {
                             space -= d.getLength();
@@ -843,6 +874,7 @@ namespace SIPSorcery.Net.Sctp
                         }
                     }
                 }
+
                 if (dcs.Count != 0)
                 {
                     dcs.Sort();
@@ -852,6 +884,7 @@ namespace SIPSorcery.Net.Sctp
                     {
                         da[i++] = d;
                     }
+
                     resetTimer = true;
                     try
                     {
@@ -873,18 +906,18 @@ namespace SIPSorcery.Net.Sctp
                 {
                     //logger.LogDebug("Nothing to do ");
                 }
+
                 if (resetTimer)
                 {
                     SimpleSCTPTimer.setRunnable(run, getT3());
                     //logger.LogDebug("Try again in a while  " + getT3());
-
                 }
             }
         }
 
         private long getT1()
         {
-            return (long)(_rto * 1000) * 10;
+            return (long) (_rto * 1000) * 10;
         }
 
         /*
@@ -950,16 +983,19 @@ namespace SIPSorcery.Net.Sctp
                 //logger.LogDebug("clamping min rto as " + nrto + " < " + _rtoMin);
                 nrto = _rtoMin;
             }
+
             if (nrto > _rtoMax)
             {
                 //logger.LogDebug("clamping max rto as " + nrto + " > " + _rtoMax);
                 nrto = _rtoMax;
             }
+
             if ((nrto < _rtoMax) && (nrto > _rtoMin))
             {
                 // if still out of range (i.e. a NaN) ignore it.
                 _rto = nrto;
             }
+
             //logger.LogDebug("new rto is " + _rto);
             /*
 

@@ -25,7 +25,8 @@ using SIPSorcery.Sys;
 
 namespace SIPSorcery.Net
 {
-    public delegate void PacketReceivedDelegate(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint, byte[] packet);
+    public delegate void PacketReceivedDelegate(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint,
+        byte[] packet);
 
     /// <summary>
     /// A basic UDP socket manager. The RTP channel may need both an RTP and Control socket. This class encapsulates
@@ -81,10 +82,15 @@ namespace SIPSorcery.Net
         {
             try
             {
-                EndPoint recvEndPoint = m_addressFamily == AddressFamily.InterNetwork ? new IPEndPoint(IPAddress.Any, 0) : new IPEndPoint(IPAddress.IPv6Any, 0);
-                m_udpSocket.BeginReceiveFrom(m_recvBuffer, 0, m_recvBuffer.Length, SocketFlags.None, ref recvEndPoint, EndReceiveFrom, null);
+                EndPoint recvEndPoint = m_addressFamily == AddressFamily.InterNetwork
+                    ? new IPEndPoint(IPAddress.Any, 0)
+                    : new IPEndPoint(IPAddress.IPv6Any, 0);
+                m_udpSocket.BeginReceiveFrom(m_recvBuffer, 0, m_recvBuffer.Length, SocketFlags.None, ref recvEndPoint,
+                    EndReceiveFrom, null);
             }
-            catch (ObjectDisposedException) { } // Thrown when socket is closed. Can be safely ignored.
+            catch (ObjectDisposedException)
+            {
+            } // Thrown when socket is closed. Can be safely ignored.
             // This exception can be thrown in response to an ICMP packet. The problem is the ICMP packet can be a false positive.
             // For example if the remote RTP socket has not yet been opened the remote host could generate an ICMP packet for the 
             // initial RTP packets. Experience has shown that it's not safe to close an RTP connection based solely on ICMP packets.
@@ -114,7 +120,9 @@ namespace SIPSorcery.Net
                 // When socket is closed the object will be disposed of in the middle of a receive.
                 if (!m_isClosed)
                 {
-                    EndPoint remoteEP = m_addressFamily == AddressFamily.InterNetwork ? new IPEndPoint(IPAddress.Any, 0) : new IPEndPoint(IPAddress.IPv6Any, 0);
+                    EndPoint remoteEP = m_addressFamily == AddressFamily.InterNetwork
+                        ? new IPEndPoint(IPAddress.Any, 0)
+                        : new IPEndPoint(IPAddress.IPv6Any, 0);
                     int bytesRead = m_udpSocket.EndReceiveFrom(ar, ref remoteEP);
 
                     if (bytesRead > 0)
@@ -147,7 +155,8 @@ namespace SIPSorcery.Net
                 //logger.LogWarning($"SocketException UdpReceiver.EndReceiveMessage. {sockExcp}");
             }
             catch (ObjectDisposedException) // Thrown when socket is closed. Can be safely ignored.
-            { }
+            {
+            }
             catch (Exception excp)
             {
                 logger.LogError($"Exception UdpReceiver.EndReceiveMessage. {excp}");
@@ -271,7 +280,8 @@ namespace SIPSorcery.Net
         /// <param name="bindPort">Optional. The specific port to attempt to bind the RTP port on.</param>
         public RTPChannel(bool createControlSocket, IPAddress bindAddress, int bindPort = 0)
         {
-            NetServices.CreateRtpSocket(createControlSocket, bindAddress, bindPort, out var rtpSocket, out m_controlSocket);
+            NetServices.CreateRtpSocket(createControlSocket, bindAddress, bindPort, out var rtpSocket,
+                out m_controlSocket);
 
             if (rtpSocket == null)
             {
@@ -332,7 +342,8 @@ namespace SIPSorcery.Net
                     }
                     else
                     {
-                        logger.LogDebug($"RTPChannel closing, RTP receiver on port {RTPPort}, Control receiver on port {ControlPort}. Reason: {closeReason}.");
+                        logger.LogDebug(
+                            $"RTPChannel closing, RTP receiver on port {RTPPort}, Control receiver on port {ControlPort}. Reason: {closeReason}.");
                     }
 
                     m_isClosed = true;
@@ -385,7 +396,8 @@ namespace SIPSorcery.Net
                         LastControlDestination = dstEndPoint;
                         if (m_controlSocket == null)
                         {
-                            throw new ApplicationException("RTPChannel was asked to send on the control socket but none exists.");
+                            throw new ApplicationException(
+                                "RTPChannel was asked to send on the control socket but none exists.");
                         }
                         else
                         {
@@ -397,7 +409,8 @@ namespace SIPSorcery.Net
                         LastRtpDestination = dstEndPoint;
                     }
 
-                    sendSocket.BeginSendTo(buffer, 0, buffer.Length, SocketFlags.None, dstEndPoint, EndSendTo, sendSocket);
+                    sendSocket.BeginSendTo(buffer, 0, buffer.Length, SocketFlags.None, dstEndPoint, EndSendTo,
+                        sendSocket);
                     return SocketError.Success;
                 }
                 catch (ObjectDisposedException) // Thrown when socket is closed. Can be safely ignored.
@@ -424,7 +437,7 @@ namespace SIPSorcery.Net
         {
             try
             {
-                Socket sendSocket = (Socket)ar.AsyncState;
+                Socket sendSocket = (Socket) ar.AsyncState;
                 int bytesSent = sendSocket.EndSendTo(ar);
             }
             catch (SocketException sockExcp)
@@ -437,7 +450,8 @@ namespace SIPSorcery.Net
                 logger.LogWarning($"SocketException RTPChannel EndSendTo ({sockExcp.ErrorCode}). {sockExcp.Message}");
             }
             catch (ObjectDisposedException) // Thrown when socket is closed. Can be safely ignored.
-            { }
+            {
+            }
             catch (Exception excp)
             {
                 logger.LogError($"Exception RTPChannel EndSendTo. {excp.Message}");
@@ -451,7 +465,8 @@ namespace SIPSorcery.Net
         /// <param name="localPort">The local port it was received on.</param>
         /// <param name="remoteEndPoint">The remote end point of the sender.</param>
         /// <param name="packet">The raw packet received (note this may not be RTP if other protocols are being multiplexed).</param>
-        protected virtual void OnRTPPacketReceived(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint, byte[] packet)
+        protected virtual void OnRTPPacketReceived(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint,
+            byte[] packet)
         {
             if (packet?.Length > 0)
             {
@@ -467,7 +482,8 @@ namespace SIPSorcery.Net
         /// <param name="localPort">The local port it was received on.</param>
         /// <param name="remoteEndPoint">The remote end point of the sender.</param>
         /// <param name="packet">The raw packet received which should always be an RTCP packet.</param>
-        private void OnControlPacketReceived(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint, byte[] packet)
+        private void OnControlPacketReceived(UdpReceiver receiver, int localPort, IPEndPoint remoteEndPoint,
+            byte[] packet)
         {
             LastControlDestination = remoteEndPoint;
             OnControlDataReceived?.Invoke(localPort, remoteEndPoint, packet);

@@ -46,9 +46,9 @@ namespace SIPSorcery.Net.Sctp
             }
 
             long expectedTsn = stash.First.getTsn(); // This ignores gaps - but _hopefully_ messageNo will catch any
-                                                     // gaps we care about - ie gaps in the sequence for _this_ stream 
-                                                     // we can deliver ordered messages on this stream even if earlier messages from other streams are missing
-                                                     // - this does assume that the tsn's of a message are contiguous -which is odd.
+            // gaps we care about - ie gaps in the sequence for _this_ stream 
+            // we can deliver ordered messages on this stream even if earlier messages from other streams are missing
+            // - this does assume that the tsn's of a message are contiguous -which is odd.
 
 
             foreach (DataChunk dc in stash)
@@ -63,14 +63,17 @@ namespace SIPSorcery.Net.Sctp
                     logger.LogDebug("Hole in chunk sequence  " + tsn + " expected " + expectedTsn);
                     break;
                 }
+
                 switch (flags)
                 {
                     case DataChunk.SINGLEFLAG:
                         if (_ordered && (messageNo != dc.getSSeqNo()))
                         {
-                            logger.LogDebug("Hole (single) in message sequence  " + dc.getSSeqNo() + " expected " + messageNo);
+                            logger.LogDebug("Hole (single) in message sequence  " + dc.getSSeqNo() + " expected " +
+                                            messageNo);
                             break; // not the message we are looking for...
                         }
+
                         SCTPMessage single = new SCTPMessage(s, dc);
                         if (single.deliver(l))
                         {
@@ -78,15 +81,18 @@ namespace SIPSorcery.Net.Sctp
                             messageNo++;
                             s.setNextMessageSeqIn(messageNo);
                         }
+
                         break;
                     case DataChunk.BEGINFLAG:
                     case DataChunk.ENDFLAG:
                     case DataChunk.CONTINUEFLAG:
                         if (_ordered && (messageNo != dc.getSSeqNo()))
                         {
-                            logger.LogDebug("Hole (single) in message sequence  " + dc.getSSeqNo() + " expected " + messageNo);
+                            logger.LogDebug("Hole (single) in message sequence  " + dc.getSSeqNo() + " expected " +
+                                            messageNo);
                             break; // not the message we are looking for...
                         }
+
                         var orderedMessage = _orderedMessageHandler.GetMessage(dc.getSSeqNo())
                             .Add(dc, flags);
 
@@ -104,12 +110,15 @@ namespace SIPSorcery.Net.Sctp
                                 }
                             });
                         }
+
                         break;
                     default:
                         throw new Exception("[IllegalStateException] Impossible value in stream logic");
                 }
+
                 expectedTsn = tsn + 1;
             }
+
             stash.RemoveWhere((dc) => { return delivered.Contains(dc); });
         }
 
@@ -117,6 +126,5 @@ namespace SIPSorcery.Net.Sctp
         {
             return null;
         }
-
     }
 }

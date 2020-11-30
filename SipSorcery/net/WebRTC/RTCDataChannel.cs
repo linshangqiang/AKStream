@@ -55,8 +55,10 @@ namespace SIPSorcery.Net
         public bool IsOpened { get; private set; } = false;
 
         public event Action onopen;
+
         //public event Action onbufferedamountlow;
         public event Action<string> onerror;
+
         //public event Action onclosing;
         public event Action onclose;
         public event Action<string> onmessage;
@@ -73,7 +75,7 @@ namespace SIPSorcery.Net
         {
             logger.LogDebug($"Data channel for label {label} now open.");
             IsOpened = true;
-            id = (ushort)_sctpStream.getNum();
+            id = (ushort) _sctpStream.getNum();
             readyState = RTCDataChannelState.open;
             onopen?.Invoke();
         }

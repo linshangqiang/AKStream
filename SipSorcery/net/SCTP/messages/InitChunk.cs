@@ -62,7 +62,9 @@ namespace SIPSorcery.Net.Sctp
         byte[] _farChunks;
         public int _outStreams;
 
-        public InitChunk() : base(ChunkType.INIT) { }
+        public InitChunk() : base(ChunkType.INIT)
+        {
+        }
 
         public InitChunk(ChunkType type, byte flags, int length, ByteBuffer pkt)
             : base(type, flags, length, pkt)
@@ -80,17 +82,18 @@ namespace SIPSorcery.Net.Sctp
                     VariableParam v = readVariable();
                     _varList.Add(v);
                 }
+
                 foreach (VariableParam v in _varList)
                 {
                     // now look for variables we are expecting...
                     //logger.LogDebug("variable of type: " + v.getName() + " " + v.ToString());
                     if (typeof(SupportedExtensions).IsAssignableFrom(v.GetType()))
                     {
-                        _farSupportedExtensions = ((SupportedExtensions)v).getData();
+                        _farSupportedExtensions = ((SupportedExtensions) v).getData();
                     }
                     else if (typeof(RandomParam).IsAssignableFrom(v.GetType()))
                     {
-                        _farRandom = ((RandomParam)v).getData();
+                        _farRandom = ((RandomParam) v).getData();
                     }
                     else if (typeof(ForwardTSNsupported).IsAssignableFrom(v.GetType()))
                     {
@@ -98,11 +101,11 @@ namespace SIPSorcery.Net.Sctp
                     }
                     else if (typeof(RequestedHMACAlgorithmParameter).IsAssignableFrom(v.GetType()))
                     {
-                        _farHmacs = ((RequestedHMACAlgorithmParameter)v).getData();
+                        _farHmacs = ((RequestedHMACAlgorithmParameter) v).getData();
                     }
                     else if (typeof(ChunkListParam).IsAssignableFrom(v.GetType()))
                     {
-                        _farChunks = ((ChunkListParam)v).getData();
+                        _farChunks = ((ChunkListParam) v).getData();
                     }
                     else
                     {
@@ -116,27 +119,27 @@ namespace SIPSorcery.Net.Sctp
         {
             string ret = base.ToString();
             ret += " initiateTag : " + _initiateTag
-                    + " adRecWinCredit : " + _adRecWinCredit
-                    + " numOutStreams : " + _numOutStreams
-                    + " numInStreams : " + _numInStreams
-                    + " initialTSN : " + _initialTSN
-                    + " farForwardTSNsupported : " + _farForwardTSNsupported;
+                                     + " adRecWinCredit : " + _adRecWinCredit
+                                     + " numOutStreams : " + _numOutStreams
+                                     + " numInStreams : " + _numInStreams
+                                     + " initialTSN : " + _initialTSN
+                                     + " farForwardTSNsupported : " + _farForwardTSNsupported;
             //+ ((_farSupportedExtensions == null) ? " no supported extensions" : " supported extensions are: " + chunksToNames(_farSupportedExtensions));
             return ret;
         }
 
         protected override void putFixedParams(ByteBuffer ret)
         {
-            ret.Put((int)_initiateTag);
+            ret.Put((int) _initiateTag);
             ret.Put(_adRecWinCredit);
-            ret.Put((ushort)_numOutStreams);
-            ret.Put((ushort)_numInStreams);
+            ret.Put((ushort) _numOutStreams);
+            ret.Put((ushort) _numInStreams);
             ret.Put(_initialTSN);
         }
 
         public int getInitiateTag()
         {
-            return (int)_initiateTag;
+            return (int) _initiateTag;
         }
 
         public long getAdRecWinCredit()

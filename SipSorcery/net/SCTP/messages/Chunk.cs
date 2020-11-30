@@ -143,7 +143,7 @@ namespace SIPSorcery.Net.Sctp
             Chunk ret = null;
             if (pkt.remaining() >= 4)
             {
-                ChunkType type = (ChunkType)pkt.GetByte();
+                ChunkType type = (ChunkType) pkt.GetByte();
                 byte flags = pkt.GetByte();
                 int length = pkt.GetUShort();
                 switch (type)
@@ -183,6 +183,7 @@ namespace SIPSorcery.Net.Sctp
                         ret = new FailChunk(type, flags, length, pkt);
                         break;
                 }
+
                 if (ret != null)
                 {
                     if (pkt.hasRemaining())
@@ -198,6 +199,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             return ret;
         }
 
@@ -224,9 +226,9 @@ namespace SIPSorcery.Net.Sctp
 
         public void write(ByteBuffer ret)
         {
-            ret.Put((byte)_type);
-            ret.Put((byte)_flags);
-            ret.Put((ushort)4); // marker for length;
+            ret.Put((byte) _type);
+            ret.Put((byte) _flags);
+            ret.Put((ushort) 4); // marker for length;
             putFixedParams(ret);
             int pad = 0;
             if (_varList != null)
@@ -236,10 +238,10 @@ namespace SIPSorcery.Net.Sctp
                     //logger.LogDebug("var " + v.getName() + " at " + ret.Position);
 
                     ByteBuffer var = ret.slice();
-                    var.Put((ushort)v.getType());
-                    var.Put((ushort)4); // length holder.
+                    var.Put((ushort) v.getType());
+                    var.Put((ushort) 4); // length holder.
                     v.writeBody(var);
-                    var.Put(2, (ushort)var.Position);
+                    var.Put(2, (ushort) var.Position);
                     //logger.LogDebug("setting var length to " + var.Position);
                     pad = var.Position % 4;
                     pad = (pad != 0) ? 4 - pad : 0;
@@ -247,10 +249,11 @@ namespace SIPSorcery.Net.Sctp
                     ret.Position += var.Position + pad;
                 }
             }
+
             //Console.WriteLine("un padding by " + pad);
             ret.Position -= pad;
             // and push the new length into place.
-            ret.Put(2, (ushort)ret.Position);
+            ret.Put(2, (ushort) ret.Position);
             //Console.WriteLine("setting chunk length to " + ret.position());
         }
 
@@ -367,6 +370,7 @@ namespace SIPSorcery.Net.Sctp
                     var = new Unknown(-1, "Unknown");
                     break;
             }
+
             try
             {
                 var.readBody(_body, blen);
@@ -376,6 +380,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogError(ex.ToString());
             }
+
             if (_body.hasRemaining())
             {
                 int mod = blen % 4;
@@ -387,6 +392,7 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             return var;
         }
 
@@ -401,65 +407,66 @@ namespace SIPSorcery.Net.Sctp
             {
                 case 1:
                     var = new KnownError(1, "InvalidStreamIdentifier");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 2:
                     var = new KnownError(2, "MissingMandatoryParameter");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 3:
                     var = new StaleCookieError();
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 4:
                     var = new KnownError(4, "OutofResource");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 5:
                     var = new KnownError(5, "UnresolvableAddress");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 6:
                     var = new KnownError(6, "UnrecognizedChunkType");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 7:
                     var = new KnownError(7, "InvalidMandatoryParameter");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 8:
                     var = new KnownError(8, "UnrecognizedParameters");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 9:
                     var = new KnownError(9, "NoUserData");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 10:
                     var = new KnownError(10, "CookieReceivedWhileShuttingDown");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 11:
                     var = new KnownError(11, "RestartofanAssociationwithNewAddresses");
-                    break;//[RFC4960]
+                    break; //[RFC4960]
                 case 12:
                     var = new KnownError(12, "UserInitiatedAbort");
-                    break;//[RFC4460]
+                    break; //[RFC4460]
                 case 13:
                     var = new ProtocolViolationError(13, "ProtocolViolation");
-                    break;//[RFC4460]
-                          // 14-159,Unassigned,
+                    break; //[RFC4460]
+                // 14-159,Unassigned,
                 case 160:
                     var = new KnownError(160, "RequesttoDeleteLastRemainingIPAddress");
-                    break;//[RFC5061]
+                    break; //[RFC5061]
                 case 161:
                     var = new KnownError(161, "OperationRefusedDuetoResourceShortage");
-                    break;//[RFC5061]
+                    break; //[RFC5061]
                 case 162:
                     var = new KnownError(162, "RequesttoDeleteSourceIPAddress");
-                    break;//[RFC5061]
+                    break; //[RFC5061]
                 case 163:
                     var = new KnownError(163, "AssociationAbortedduetoillegalASCONF-ACK");
-                    break;//[RFC5061]
+                    break; //[RFC5061]
                 case 164:
                     var = new KnownError(164, "Requestrefused-noauthorization");
-                    break;//[RFC5061]
-                          // 165-260,Unassigned,
+                    break; //[RFC5061]
+                // 165-260,Unassigned,
                 case 261:
                     var = new KnownError(261, "UnsupportedHMACIdentifier");
-                    break;//[RFC4895]
-                          // 262-65535,Unassigned,
+                    break; //[RFC4895]
+                // 262-65535,Unassigned,
             }
+
             try
             {
                 var.readBody(_body, blen);
@@ -470,6 +477,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogError(ex.ToString());
             }
+
             if (_body.hasRemaining())
             {
                 int mod = blen % 4;
@@ -481,29 +489,37 @@ namespace SIPSorcery.Net.Sctp
                     }
                 }
             }
+
             return var;
         }
 
         protected abstract void putFixedParams(ByteBuffer ret);
 
         public virtual void validate()
-        { // todo be more specific in the Exception tree
-          // throw new Exception("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        {
+            // todo be more specific in the Exception tree
+            // throw new Exception("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         protected class HeartbeatInfo : KnownParam
         {
-            public HeartbeatInfo(int t, string n) : base(t, n) { }
+            public HeartbeatInfo(int t, string n) : base(t, n)
+            {
+            }
         }
 
         protected class ForwardTSNsupported : KnownParam
         {
-            public ForwardTSNsupported(int t, string n) : base(t, n) { }
+            public ForwardTSNsupported(int t, string n) : base(t, n)
+            {
+            }
         }
 
         protected class RandomParam : KnownParam
         {
-            public RandomParam(int t, string n) : base(t, n) { }
+            public RandomParam(int t, string n) : base(t, n)
+            {
+            }
 
             public override string ToString()
             {
@@ -515,7 +531,9 @@ namespace SIPSorcery.Net.Sctp
 
         protected class ChunkListParam : KnownParam
         {
-            public ChunkListParam(int t, string n) : base(t, n) { }
+            public ChunkListParam(int t, string n) : base(t, n)
+            {
+            }
 
             public override string ToString()
             {
@@ -523,17 +541,22 @@ namespace SIPSorcery.Net.Sctp
                 byte[] data = this.getData();
                 for (int i = 0; i < data.Length; i++)
                 {
-                    ret += $" {(ChunkType)data[i]}";
+                    ret += $" {(ChunkType) data[i]}";
                 }
+
                 return base.ToString() + ret;
             }
         }
 
         protected class SupportedExtensions : KnownParam
         {
-            public SupportedExtensions() : base(32776, "SupportedExtensions") { }
+            public SupportedExtensions() : base(32776, "SupportedExtensions")
+            {
+            }
 
-            public SupportedExtensions(int t, string n) : base(t, n) { }
+            public SupportedExtensions(int t, string n) : base(t, n)
+            {
+            }
 
             public override string ToString()
             {
@@ -541,8 +564,9 @@ namespace SIPSorcery.Net.Sctp
                 byte[] data = this.getData();
                 for (int i = 0; i < data.Length; i++)
                 {
-                    ret += $" ${(ChunkType)data[i]}";
+                    ret += $" ${(ChunkType) data[i]}";
                 }
+
                 return base.ToString() + ret;
             }
         }

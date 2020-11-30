@@ -117,7 +117,9 @@ namespace SIPSorcery.Net
             {
                 SSRC = NetConvert.DoReverseEndian(BitConverter.ToUInt32(packet, 0));
                 FractionLost = packet[4];
-                PacketsLost = NetConvert.DoReverseEndian(BitConverter.ToInt32(new byte[] { 0x00, packet[5], packet[6], packet[7] }, 0));
+                PacketsLost =
+                    NetConvert.DoReverseEndian(BitConverter.ToInt32(new byte[] {0x00, packet[5], packet[6], packet[7]},
+                        0));
                 ExtendedHighestSequenceNumber = NetConvert.DoReverseEndian(BitConverter.ToUInt32(packet, 8));
                 Jitter = NetConvert.DoReverseEndian(BitConverter.ToUInt32(packet, 12));
                 LastSenderReportTimestamp = NetConvert.DoReverseEndian(BitConverter.ToUInt32(packet, 16));
@@ -127,7 +129,7 @@ namespace SIPSorcery.Net
             {
                 SSRC = BitConverter.ToUInt32(packet, 4);
                 FractionLost = packet[4];
-                PacketsLost = BitConverter.ToInt32(new byte[] { 0x00, packet[5], packet[6], packet[7] }, 0);
+                PacketsLost = BitConverter.ToInt32(new byte[] {0x00, packet[5], packet[6], packet[7]}, 0);
                 ExtendedHighestSequenceNumber = BitConverter.ToUInt32(packet, 8);
                 Jitter = BitConverter.ToUInt32(packet, 12);
                 LastSenderReportTimestamp = BitConverter.ToUInt32(packet, 16);
@@ -148,10 +150,13 @@ namespace SIPSorcery.Net
                 Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(SSRC)), 0, payload, 0, 4);
                 payload[4] = FractionLost;
                 Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(PacketsLost)), 1, payload, 5, 3);
-                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(ExtendedHighestSequenceNumber)), 0, payload, 8, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(ExtendedHighestSequenceNumber)), 0,
+                    payload, 8, 4);
                 Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(Jitter)), 0, payload, 12, 4);
-                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(LastSenderReportTimestamp)), 0, payload, 16, 4);
-                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(DelaySinceLastSenderReport)), 0, payload, 20, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(LastSenderReportTimestamp)), 0,
+                    payload, 16, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(NetConvert.DoReverseEndian(DelaySinceLastSenderReport)), 0,
+                    payload, 20, 4);
             }
             else
             {
@@ -258,7 +263,7 @@ namespace SIPSorcery.Net
         /// <param name="srNtpTimestamp">The sender report timestamp.</param>
         internal void RtcpSenderReportReceived(ulong srNtpTimestamp)
         {
-            m_lastSenderReportTimestamp = (uint)((srNtpTimestamp >> 16) & 0xFFFFFFFF);
+            m_lastSenderReportTimestamp = (uint) ((srNtpTimestamp >> 16) & 0xFFFFFFFF);
             m_lastSenderReportReceivedAt = DateTime.Now;
         }
 
@@ -279,20 +284,22 @@ namespace SIPSorcery.Net
             if (m_received == 0)
             {
                 init_seq(seq);
-                m_max_seq = (ushort)(seq - 1);
+                m_max_seq = (ushort) (seq - 1);
                 m_probation = MIN_SEQUENTIAL;
             }
+
             bool ready = update_seq(seq);
 
             // Estimating the Interarrival Jitter as defined in RFC3550 Appendix A.8.
             uint transit = arrivalTimestamp - rtpTimestamp;
-            int d = (int)(transit - m_transit);
+            int d = (int) (transit - m_transit);
             m_transit = transit;
             if (d < 0)
             {
                 d = -d;
             }
-            m_jitter += (uint)(d - ((m_jitter + 8) >> 4));
+
+            m_jitter += (uint) (d - ((m_jitter + 8) >> 4));
 
             return ready;
         }
@@ -306,14 +313,16 @@ namespace SIPSorcery.Net
             // Determining the number of packets expected and lost in RFC3550 Appendix A.3.
             uint extended_max = m_cycles + m_max_seq;
             uint expected = extended_max - m_base_seq + 1;
-            int lost = (int)(expected - m_received);
+            int lost = (int) (expected - m_received);
 
             uint expected_interval = expected - m_expected_prior;
             m_expected_prior = expected;
             uint received_interval = m_received - m_received_prior;
             m_received_prior = m_received;
             uint lost_interval = expected_interval - received_interval;
-            byte fraction = (byte)((expected_interval == 0 || lost_interval <= 0) ? 0 : (lost_interval << 8) / expected_interval);
+            byte fraction = (byte) ((expected_interval == 0 || lost_interval <= 0)
+                ? 0
+                : (lost_interval << 8) / expected_interval);
 
             // In this case, the estimate is sampled for the reception report as:
             uint jitter = m_jitter >> 4;
@@ -324,7 +333,8 @@ namespace SIPSorcery.Net
                 delay = ntpTimestampNow - m_lastSenderReportTimestamp;
             }
 
-            return new ReceptionReportSample(SSRC, fraction, lost, m_max_seq, jitter, m_lastSenderReportTimestamp, delay);
+            return new ReceptionReportSample(SSRC, fraction, lost, m_max_seq, jitter, m_lastSenderReportTimestamp,
+                delay);
         }
 
         /// <summary>
@@ -336,7 +346,7 @@ namespace SIPSorcery.Net
         {
             m_base_seq = seq;
             m_max_seq = seq;
-            m_bad_seq = RTP_SEQ_MOD + 1;   /* so seq == bad_seq is false */
+            m_bad_seq = RTP_SEQ_MOD + 1; /* so seq == bad_seq is false */
             m_cycles = 0;
             m_received = 0;
             m_received_prior = 0;
@@ -352,7 +362,7 @@ namespace SIPSorcery.Net
         /// indicates not yet enough data.</returns>
         bool update_seq(ushort seq)
         {
-            ushort udelta = (ushort)(seq - m_max_seq);
+            ushort udelta = (ushort) (seq - m_max_seq);
 
             /*
              * Source is not valid until MIN_SEQUENTIAL packets with
@@ -377,6 +387,7 @@ namespace SIPSorcery.Net
                     m_probation = MIN_SEQUENTIAL - 1;
                     m_max_seq = seq;
                 }
+
                 return true;
             }
             else if (udelta < MAX_DROPOUT)
@@ -389,6 +400,7 @@ namespace SIPSorcery.Net
                      */
                     m_cycles += RTP_SEQ_MOD;
                 }
+
                 m_max_seq = seq;
             }
             else if (udelta <= RTP_SEQ_MOD - MAX_MISORDER)
@@ -405,7 +417,7 @@ namespace SIPSorcery.Net
                 }
                 else
                 {
-                    m_bad_seq = (uint)((seq + 1) & (RTP_SEQ_MOD - 1));
+                    m_bad_seq = (uint) ((seq + 1) & (RTP_SEQ_MOD - 1));
                     return true;
                 }
             }
@@ -413,6 +425,7 @@ namespace SIPSorcery.Net
             {
                 /* duplicate or reordered packet */
             }
+
             m_received++;
             return false;
         }

@@ -27,6 +27,8 @@ namespace SIPSorcery.Net.Sctp
 {
     class MessageSizeExceededException : Exception
     {
-        public MessageSizeExceededException() { }
+        public MessageSizeExceededException()
+        {
+        }
     }
 }

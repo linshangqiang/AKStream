@@ -21,10 +21,13 @@
  *
  * @author tim
  */
+
 namespace SIPSorcery.Net.Sctp
 {
     public class AddOutgoingStreamsRequestParameter : AddStreamsRequestParameter
     {
-        public AddOutgoingStreamsRequestParameter(int t, string n) : base(t, n) { }
+        public AddOutgoingStreamsRequestParameter(int t, string n) : base(t, n)
+        {
+        }
     }
 }

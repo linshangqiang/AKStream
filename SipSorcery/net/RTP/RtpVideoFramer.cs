@@ -33,7 +33,7 @@ namespace SIPSorcery.Net
 
         public RtpVideoFramer(VideoCodecsEnum codec)
         {
-            if(codec != VideoCodecsEnum.VP8)
+            if (codec != VideoCodecsEnum.VP8)
             {
                 throw new NotSupportedException("The RTP video framer currently only understands VP8 encoded frames.");
             }
@@ -59,7 +59,8 @@ namespace SIPSorcery.Net
             {
                 RtpVP8Header vp8Header = RtpVP8Header.GetVP8Header(payload);
 
-                Buffer.BlockCopy(payload, vp8Header.Length, _currVideoFrame, _currVideoFramePosn, payload.Length - vp8Header.Length);
+                Buffer.BlockCopy(payload, vp8Header.Length, _currVideoFrame, _currVideoFramePosn,
+                    payload.Length - vp8Header.Length);
                 _currVideoFramePosn += payload.Length - vp8Header.Length;
 
                 if (rtpPacket.Header.MarkerBit > 0)
@@ -75,7 +76,8 @@ namespace SIPSorcery.Net
             {
                 var hdr = rtpPacket.Header;
                 logger.LogWarning("Discarding RTP packet, VP8 header Start bit not set.");
-                logger.LogWarning($"rtp video, seqnum {hdr.SequenceNumber}, ts {hdr.Timestamp}, marker {hdr.MarkerBit}, payload {payload.Length}.");
+                logger.LogWarning(
+                    $"rtp video, seqnum {hdr.SequenceNumber}, ts {hdr.Timestamp}, marker {hdr.MarkerBit}, payload {payload.Length}.");
             }
 
             return null;

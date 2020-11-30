@@ -21,16 +21,20 @@
  *
  * @author tim
  */
+
 namespace SIPSorcery.Net.Sctp
 {
     public class KnownParam : Unknown
     {
-        public KnownParam(int t, string n) : base(t, n) { }
+        public KnownParam(int t, string n) : base(t, n)
+        {
+        }
 
         public byte[] getData()
         {
             return _data;
         }
+
         public void setData(byte[] data)
         {
             _data = data;

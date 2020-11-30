@@ -7,6 +7,7 @@ namespace SCTP4CS.Utils
         Dictionary<K, V> dict;
         K[] keys;
         int i;
+
         public Iterator(Dictionary<K, V> dict)
         {
             this.dict = dict;
@@ -21,6 +22,7 @@ namespace SCTP4CS.Utils
         }
 
         K lastKey;
+
         public V next()
         {
             lastKey = keys[i++];
@@ -39,6 +41,7 @@ namespace SCTP4CS.Utils
     {
         List<V> list;
         int i;
+
         public Iterator(List<V> list)
         {
             this.list = list;
@@ -68,6 +71,7 @@ namespace SCTP4CS.Utils
         {
             return new Iterator<K, V>(dict);
         }
+
         public static Iterator<V> iterator<V>(this List<V> list)
         {
             return new Iterator<V>(list);

@@ -24,5 +24,7 @@ using System;
  */
 public class InvalidDataChunkException : Exception
 {
-    public InvalidDataChunkException(string message) : base(message) { }
+    public InvalidDataChunkException(string message) : base(message)
+    {
+    }
 }

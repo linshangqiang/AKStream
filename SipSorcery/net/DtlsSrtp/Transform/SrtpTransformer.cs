@@ -25,7 +25,7 @@
 * 
 * Distributed under LGPL license.
 * See terms of license at gnu.org.
-*//**
+*/ /**
 * SRTPTransformer implements PacketTransformer and provides implementations for
 * RTP packet to SRTP packet transformation and SRTP packet to RTP packet
 * transformation logic.
@@ -128,6 +128,7 @@ namespace SIPSorcery.Net
             {
                 return this.rawPacket.GetData();
             }
+
             return null;
         }
 

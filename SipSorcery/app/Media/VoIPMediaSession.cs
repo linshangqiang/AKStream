@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SIPSorcery.Net;
 using SIPSorcery.SIP.App;
+using SIPSorcery.Sys;
 using SIPSorceryMedia.Abstractions.V1;
 
 namespace SIPSorcery.Media
@@ -47,7 +48,7 @@ namespace SIPSorcery.Media
         private const int TEST_PATTERN_FPS = 30;
         private const int TEST_PATTERN_ONHOLD_FPS = 3;
 
-        private static ILogger logger = SIPSorcery.Sys.Log.Logger;
+        private static ILogger logger = Log.Logger;
 
         private VideoTestPatternSource _videoTestPatternSource;
         private AudioExtrasSource _audioExtrasSource;
@@ -69,13 +70,14 @@ namespace SIPSorcery.Media
 
         public VoIPMediaSession(MediaEndPoints mediaEndPoint, VideoTestPatternSource testPatternSource)
             : this(mediaEndPoint, null, 0, testPatternSource)
-        { }
+        {
+        }
 
         public VoIPMediaSession(
             MediaEndPoints mediaEndPoint,
             IPAddress bindAddress = null,
             int bindPort = 0,
-             VideoTestPatternSource testPatternSource = null)
+            VideoTestPatternSource testPatternSource = null)
             : base(false, false, false, bindAddress, bindPort)
         {
             if (mediaEndPoint == null)
@@ -145,7 +147,8 @@ namespace SIPSorcery.Media
         private void AudioFormatsNegotiated(List<AudioFormat> audoFormats)
         {
             var audioFormat = audoFormats.First();
-            logger.LogDebug($"Setting audio sink and source format to {audioFormat.FormatID}:{audioFormat.Codec} {audioFormat.ClockRate}.");
+            logger.LogDebug(
+                $"Setting audio sink and source format to {audioFormat.FormatID}:{audioFormat.Codec} {audioFormat.ClockRate}.");
             Media.AudioSink?.SetAudioSinkFormat(audioFormat);
             Media.AudioSource?.SetAudioSourceFormat(audioFormat);
             _audioExtrasSource.SetAudioSourceFormat(audioFormat);
@@ -183,7 +186,8 @@ namespace SIPSorcery.Media
                         }
                         else
                         {
-                            logger.LogWarning($"Webcam video source failed before start, switching to test pattern source.");
+                            logger.LogWarning(
+                                $"Webcam video source failed before start, switching to test pattern source.");
 
                             // The webcam source failed to start. Switch to a test pattern source.
                             await _videoTestPatternSource.StartVideo().ConfigureAwait(false);
@@ -229,19 +233,22 @@ namespace SIPSorcery.Media
             }
         }
 
-        private void VideoSinkSampleReady(byte[] buffer, uint width, uint height, int stride, VideoPixelFormatsEnum pixelFormat)
+        private void VideoSinkSampleReady(byte[] buffer, uint width, uint height, int stride,
+            VideoPixelFormatsEnum pixelFormat)
         {
             OnVideoSinkSample?.Invoke(buffer, width, height, stride, pixelFormat);
         }
 
-        protected void RtpMediaPacketReceived(IPEndPoint remoteEndPoint, SDPMediaTypesEnum mediaType, RTPPacket rtpPacket)
+        protected void RtpMediaPacketReceived(IPEndPoint remoteEndPoint, SDPMediaTypesEnum mediaType,
+            RTPPacket rtpPacket)
         {
             var hdr = rtpPacket.Header;
             bool marker = rtpPacket.Header.MarkerBit > 0;
 
             if (mediaType == SDPMediaTypesEnum.audio && Media.AudioSink != null)
             {
-                Media.AudioSink.GotAudioRtp(remoteEndPoint, hdr.SyncSource, hdr.SequenceNumber, hdr.Timestamp, hdr.PayloadType, marker, rtpPacket.Payload);
+                Media.AudioSink.GotAudioRtp(remoteEndPoint, hdr.SyncSource, hdr.SequenceNumber, hdr.Timestamp,
+                    hdr.PayloadType, marker, rtpPacket.Payload);
             }
         }
 
@@ -275,7 +282,7 @@ namespace SIPSorcery.Media
 
             if (HasVideo)
             {
-                    await _videoTestPatternSource.PauseVideo();
+                await _videoTestPatternSource.PauseVideo();
 
                 //_videoTestPatternSource.SetEmbeddedTestPatternPath(VideoTestPatternSource.TEST_PATTERN_RESOURCE_PATH);
                 _videoTestPatternSource.SetFrameRate(TEST_PATTERN_FPS);

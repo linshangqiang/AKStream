@@ -21,10 +21,13 @@
  *
  * @author tim
  */
+
 namespace SIPSorcery.Net.Sctp
 {
     public class UnrecognizedParameters : KnownParam
     {
-        public UnrecognizedParameters(int t, string n) : base(t, n) { }
+        public UnrecognizedParameters(int t, string n) : base(t, n)
+        {
+        }
     }
 }

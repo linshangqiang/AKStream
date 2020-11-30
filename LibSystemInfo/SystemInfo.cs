@@ -5,13 +5,17 @@ using SystemInfoLibrary.OperatingSystem;
 
 namespace LibSystemInfo
 {
-    public class SystemInfo
+    public class SystemInfo : IDisposable
     {
         private static OperatingSystemInfo _operatingSystemInfo = OperatingSystemInfo.GetOperatingSystemInfo();
         private static HardwareInfo _hardwareInfo = _operatingSystemInfo.Hardware;
         private static OperatingSystemType _operatingSystemType = _operatingSystemInfo.OperatingSystemType;
         private static GlobalSystemInfo _globalSystemInfo = new GlobalSystemInfo();
         private static object lockObj = new object();
+        private static Thread _thread;
+        private static ThreadStart _threadStart;
+        private static bool _abort = false;
+        private static bool _ok = false;
 
         public SystemInfo()
         {
@@ -20,21 +24,24 @@ namespace LibSystemInfo
             _globalSystemInfo.CpuCores = Environment.ProcessorCount;
             _globalSystemInfo.FrameworkVersion = _operatingSystemInfo.FrameworkVersion.ToString();
             _globalSystemInfo.SystemType = _operatingSystemType.ToString();
-
-
-            new Thread(new ThreadStart(delegate
-            {
-                try
-                {
-                    GetInfo();
-                }
-                catch (Exception ex)
-                {
-                    //
-                }
-            })).Start();
+            _threadStart = GetInfo;
+            _thread = new Thread(_threadStart);
+            _thread.Start();
         }
 
+        public void Dispose()
+        {
+            _abort = true;
+            _operatingSystemInfo = null;
+            _hardwareInfo = null;
+            _globalSystemInfo = null;
+            _globalSystemInfo = null;
+        }
+
+        ~SystemInfo()
+        {
+            Dispose(); //释放非托管资源
+        }
 
         private MemoryInfo getMeminfo()
         {
@@ -55,6 +62,11 @@ namespace LibSystemInfo
             ushort j = 0;
             while (true)
             {
+                if (_abort)
+                {
+                    break;
+                }
+
                 i++;
                 j++;
                 if (ushort.MaxValue - i < 100)

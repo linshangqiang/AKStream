@@ -79,7 +79,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class CookieEchoChunk : Chunk
     {
-
         private static ILogger logger = Log.Logger;
 
         private byte[] _cookieData;
@@ -90,13 +89,16 @@ namespace SIPSorcery.Net.Sctp
             _body.GetBytes(_cookieData, _cookieData.Length);
         }
 
-        public CookieEchoChunk() : base(ChunkType.COOKIE_ECHO) { }
+        public CookieEchoChunk() : base(ChunkType.COOKIE_ECHO)
+        {
+        }
 
         public override void validate()
         {
             if (_cookieData.Length != Association.COOKIESIZE)
             {
-                throw new SctpPacketFormatException("cookie Echo wrong length for our association " + _cookieData.Length + " != " + Association.COOKIESIZE);
+                throw new SctpPacketFormatException("cookie Echo wrong length for our association " +
+                                                    _cookieData.Length + " != " + Association.COOKIESIZE);
             }
         }
 

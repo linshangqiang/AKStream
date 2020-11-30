@@ -30,7 +30,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class UDPForwardingStream : BlockingSCTPStream
     {
-
         private static ILogger logger = Log.Logger;
 
         Socket _udpSock;
@@ -63,6 +62,7 @@ namespace SIPSorcery.Net.Sctp
                             logger.LogWarning("truncated packet from " + _udpSock.RemoteEndPoint.ToString());
                             l = buff.Length;
                         }
+
                         byte[] pkt = new byte[l];
                         Array.Copy(buff, 0, pkt, 0, l);
                         send(pkt);
@@ -75,8 +75,8 @@ namespace SIPSorcery.Net.Sctp
             }
             catch (Exception)
             {
-
             }
+
             // clean up here.....
         }
 

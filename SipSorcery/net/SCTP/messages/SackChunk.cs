@@ -17,10 +17,10 @@
 // Modified by Andrés Leone Gámez
 
 
-
 using System.Collections.Generic;
 using System.Text;
 using SCTP4CS.Utils;
+
 /**
 *
 * @author Westhawk Ltd<thp@westhawk.co.uk>
@@ -29,7 +29,6 @@ namespace SIPSorcery.Net.Sctp
 {
     public class SackChunk : Chunk
     {
-
         /**
 		 * @return the cumuTSNAck
 		 */
@@ -93,20 +92,22 @@ namespace SIPSorcery.Net.Sctp
 		 */
 
 
-
         public class GapBlock
         {
             public ushort _start;
             public ushort _end;
+
             public GapBlock(ByteBuffer b)
             {
-                _start = (ushort)b.GetUShort();
-                _end = (ushort)b.GetUShort();
+                _start = (ushort) b.GetUShort();
+                _end = (ushort) b.GetUShort();
             }
+
             public GapBlock(ushort start)
             {
                 _start = start;
             }
+
             public void setEnd(ushort end)
             {
                 _end = end;
@@ -117,10 +118,12 @@ namespace SIPSorcery.Net.Sctp
                 b.Put(_start);
                 b.Put(_end);
             }
+
             public ushort getStart()
             {
                 return _start;
             }
+
             public ushort getEnd()
             {
                 return _end;
@@ -145,6 +148,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 _gaps[i] = new GapBlock(_body);
             }
+
             for (int i = 0; i < nDTSNs; i++)
             {
                 _duplicateTSNs[i] = _body.GetUInt();
@@ -155,10 +159,12 @@ namespace SIPSorcery.Net.Sctp
         {
             return _gaps;
         }
+
         public uint[] getDupTSNs()
         {
             return _duplicateTSNs;
         }
+
         public SackChunk() : base(ChunkType.SACK)
         {
             _gaps = new GapBlock[0];
@@ -180,10 +186,10 @@ namespace SIPSorcery.Net.Sctp
             long cuTsn = _cumuTSNAck;
             List<GapBlock> gaplist = new List<GapBlock>();
             GapBlock currentGap = null;
-            ushort prevoff = (ushort)0;
+            ushort prevoff = (ushort) 0;
             foreach (long t in seenTsns)
             {
-                ushort offs = (ushort)(t - cuTsn);
+                ushort offs = (ushort) (t - cuTsn);
                 if (currentGap == null)
                 {
                     currentGap = new GapBlock(offs);
@@ -203,8 +209,10 @@ namespace SIPSorcery.Net.Sctp
                         gaplist.Add(currentGap);
                     }
                 }
+
                 prevoff = offs;
             }
+
             _gaps = new GapBlock[gaplist.Count];
             int i = 0;
             foreach (GapBlock g in gaplist)
@@ -217,31 +225,35 @@ namespace SIPSorcery.Net.Sctp
         {
             ret.Put(_cumuTSNAck);
             ret.Put(_arWin);
-            ret.Put((ushort)_gaps.Length);
-            ret.Put((ushort)_duplicateTSNs.Length);
+            ret.Put((ushort) _gaps.Length);
+            ret.Put((ushort) _duplicateTSNs.Length);
             for (int i = 0; i < _gaps.Length; i++)
             {
                 _gaps[i].put(ret);
             }
+
             for (int i = 0; i < _duplicateTSNs.Length; i++)
             {
                 ret.Put(_duplicateTSNs[i]);
             }
         }
+
         public override string ToString()
         {
             StringBuilder ret = new StringBuilder("SACK cumuTSNAck=" + _cumuTSNAck)
-                    .Append(" _arWin=" + _arWin)
-                    .Append(" _gaps=" + _gaps.Length + " [");
+                .Append(" _arWin=" + _arWin)
+                .Append(" _gaps=" + _gaps.Length + " [");
             foreach (GapBlock g in _gaps)
             {
-                ret.Append("\n\t{" + (int)g._start + "," + (int)g._end + "}");
+                ret.Append("\n\t{" + (int) g._start + "," + (int) g._end + "}");
             }
+
             ret.Append("]\n _duplicateTSNs=" + _duplicateTSNs.Length);
             foreach (long t in _duplicateTSNs)
             {
                 ret.Append("\n\t" + t);
             }
+
             return ret.ToString();
         }
     }

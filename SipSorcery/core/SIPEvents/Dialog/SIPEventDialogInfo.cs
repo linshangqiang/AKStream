@@ -78,7 +78,8 @@ namespace SIPSorcery.SIP
         public List<SIPEventDialog> DialogItems = new List<SIPEventDialog>();
 
         public SIPEventDialogInfo()
-        { }
+        {
+        }
 
         public SIPEventDialogInfo(int version, SIPEventDialogInfoStateEnum state, SIPURI entity)
         {
@@ -94,9 +95,10 @@ namespace SIPSorcery.SIP
                 XNamespace ns = m_dialogXMLNS;
                 XDocument eventDialogDoc = XDocument.Parse(dialogInfoXMLStr);
 
-                Version = Convert.ToInt32(((XElement)eventDialogDoc.FirstNode).Attribute("version").Value);
-                State = (SIPEventDialogInfoStateEnum)Enum.Parse(typeof(SIPEventDialogInfoStateEnum), ((XElement)eventDialogDoc.FirstNode).Attribute("state").Value, true);
-                Entity = SIPURI.ParseSIPURI(((XElement)eventDialogDoc.FirstNode).Attribute("entity").Value);
+                Version = Convert.ToInt32(((XElement) eventDialogDoc.FirstNode).Attribute("version").Value);
+                State = (SIPEventDialogInfoStateEnum) Enum.Parse(typeof(SIPEventDialogInfoStateEnum),
+                    ((XElement) eventDialogDoc.FirstNode).Attribute("state").Value, true);
+                Entity = SIPURI.ParseSIPURI(((XElement) eventDialogDoc.FirstNode).Attribute("entity").Value);
 
                 var dialogElements = eventDialogDoc.Root.Elements(ns + "dialog");
                 foreach (XElement dialogElement in dialogElements)
@@ -127,7 +129,7 @@ namespace SIPSorcery.SIP
                 new XAttribute("version", Version),
                 new XAttribute("state", State),
                 new XAttribute("entity", Entity.ToString())
-                ));
+            ));
 
             DialogItems.ForEach((item) =>
             {

@@ -9,6 +9,7 @@ namespace SCTP4CS.Utils
         /// Network Byte order
         /// </summary>
         Big = 0,
+
         /// <summary>
         /// Intel/AMD
         /// </summary>
@@ -25,7 +26,7 @@ namespace SCTP4CS.Utils
 
         private static bool Option(Endianness endianness)
         {
-            return ((optSum + (int)endianness) % 2) == 0;
+            return ((optSum + (int) endianness) % 2) == 0;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -49,7 +50,8 @@ namespace SCTP4CS.Utils
             [FieldOffset(14)] public byte b14;
             [FieldOffset(15)] public byte b15;
 
-            public Decimal(byte b0, byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7, byte b8, byte b9, byte b10, byte b11, byte b12, byte b13, byte b14, byte b15)
+            public Decimal(byte b0, byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7, byte b8, byte b9,
+                byte b10, byte b11, byte b12, byte b13, byte b14, byte b15)
             {
                 Adecimal = 0;
                 this.b0 = b0;
@@ -69,6 +71,7 @@ namespace SCTP4CS.Utils
                 this.b14 = b14;
                 this.b15 = b15;
             }
+
             public Decimal(decimal Adecimal)
             {
                 b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = b9 = b10 = b11 = b12 = b13 = b14 = b15 = 0;
@@ -121,6 +124,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 15] = b15;
                 }
             }
+
             public decimal Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -161,6 +165,7 @@ namespace SCTP4CS.Utils
                     b14 = buffer[offset + 14];
                     b15 = buffer[offset + 15];
                 }
+
                 return Adecimal;
             }
         }
@@ -190,6 +195,7 @@ namespace SCTP4CS.Utils
                 this.b6 = b6;
                 this.b7 = b7;
             }
+
             public Double(double Adouble)
             {
                 b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0;
@@ -226,6 +232,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 7] = b7;
                 }
             }
+
             public double Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -250,9 +257,11 @@ namespace SCTP4CS.Utils
                     b6 = buffer[offset + 6];
                     b7 = buffer[offset + 7];
                 }
+
                 return Adouble;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Long
         {
@@ -278,6 +287,7 @@ namespace SCTP4CS.Utils
                 this.b6 = b6;
                 this.b7 = b7;
             }
+
             public Long(long Along)
             {
                 b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0;
@@ -314,6 +324,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 7] = b7;
                 }
             }
+
             public long Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -338,9 +349,11 @@ namespace SCTP4CS.Utils
                     b6 = buffer[offset + 6];
                     b7 = buffer[offset + 7];
                 }
+
                 return Along;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Ulong
         {
@@ -366,6 +379,7 @@ namespace SCTP4CS.Utils
                 this.b6 = b6;
                 this.b7 = b7;
             }
+
             public Ulong(ulong Aulong)
             {
                 b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0;
@@ -402,6 +416,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 7] = b7;
                 }
             }
+
             public ulong Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -426,6 +441,7 @@ namespace SCTP4CS.Utils
                     b6 = buffer[offset + 6];
                     b7 = buffer[offset + 7];
                 }
+
                 return Aulong;
             }
         }
@@ -447,6 +463,7 @@ namespace SCTP4CS.Utils
                 this.b2 = b2;
                 this.b3 = b3;
             }
+
             public Float(float Afloat)
             {
                 b0 = b1 = b2 = b3 = 0;
@@ -475,6 +492,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 3] = b3;
                 }
             }
+
             public float Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -491,9 +509,11 @@ namespace SCTP4CS.Utils
                     b2 = buffer[offset + 2];
                     b3 = buffer[offset + 3];
                 }
+
                 return Afloat;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Int
         {
@@ -511,6 +531,7 @@ namespace SCTP4CS.Utils
                 this.b2 = b2;
                 this.b3 = b3;
             }
+
             public Int(int Aint)
             {
                 b0 = b1 = b2 = b3 = 0;
@@ -539,6 +560,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 3] = b3;
                 }
             }
+
             public int Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -555,9 +577,11 @@ namespace SCTP4CS.Utils
                     b2 = buffer[offset + 2];
                     b3 = buffer[offset + 3];
                 }
+
                 return Aint;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Uint
         {
@@ -575,6 +599,7 @@ namespace SCTP4CS.Utils
                 this.b2 = b2;
                 this.b3 = b3;
             }
+
             public Uint(uint Auint)
             {
                 b0 = b1 = b2 = b3 = 0;
@@ -603,6 +628,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 3] = b3;
                 }
             }
+
             public uint Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -619,6 +645,7 @@ namespace SCTP4CS.Utils
                     b2 = buffer[offset + 2];
                     b3 = buffer[offset + 3];
                 }
+
                 return Auint;
             }
         }
@@ -636,6 +663,7 @@ namespace SCTP4CS.Utils
                 this.b0 = b0;
                 this.b1 = b1;
             }
+
             public Char(char Achar)
             {
                 b0 = b1 = 0;
@@ -660,6 +688,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 1] = b1;
                 }
             }
+
             public char Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -672,9 +701,11 @@ namespace SCTP4CS.Utils
                     b0 = buffer[offset];
                     b1 = buffer[offset + 1];
                 }
+
                 return Achar;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Short
         {
@@ -688,6 +719,7 @@ namespace SCTP4CS.Utils
                 this.b0 = b0;
                 this.b1 = b1;
             }
+
             public Short(short Ashort)
             {
                 b0 = b1 = 0;
@@ -712,6 +744,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 1] = b1;
                 }
             }
+
             public short Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -724,9 +757,11 @@ namespace SCTP4CS.Utils
                     b0 = buffer[offset];
                     b1 = buffer[offset + 1];
                 }
+
                 return Ashort;
             }
         }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct Ushort
         {
@@ -740,6 +775,7 @@ namespace SCTP4CS.Utils
                 this.b0 = b0;
                 this.b1 = b1;
             }
+
             public Ushort(ushort Aushort)
             {
                 b0 = b1 = 0;
@@ -764,6 +800,7 @@ namespace SCTP4CS.Utils
                     buffer[offset + 1] = b1;
                 }
             }
+
             public ushort Read(byte[] buffer, int offset, Endianness endianness)
             {
                 if (Option(endianness))
@@ -776,6 +813,7 @@ namespace SCTP4CS.Utils
                     b0 = buffer[offset];
                     b1 = buffer[offset + 1];
                 }
+
                 return Aushort;
             }
         }

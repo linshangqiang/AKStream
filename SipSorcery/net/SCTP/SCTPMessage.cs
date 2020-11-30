@@ -17,6 +17,7 @@
 // Modified by Andrés Leone Gámez
 
 using System;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using SCTP4CS.Utils;
 using SIPSorcery.Sys;
@@ -55,7 +56,7 @@ namespace SIPSorcery.Net.Sctp
 
         public SCTPMessage(string data, SCTPStream s)
         {
-            _data = (data.Length > 0) ? System.Text.Encoding.UTF8.GetBytes(data) : new byte[1];
+            _data = (data.Length > 0) ? Encoding.UTF8.GetBytes(data) : new byte[1];
             _stream = s;
             _pPid = (data.Length > 0) ? DataChunk.WEBRTCstring : DataChunk.WEBRTCstringEMPTY;
         }
@@ -68,10 +69,12 @@ namespace SIPSorcery.Net.Sctp
             {
                 throw new Exception("[IllegalArgumentException] must start with 'start' chunk");
             }
+
             if ((chunks.Last.getFlags() & DataChunk.ENDFLAG) == 0)
             {
                 throw new Exception("[IllegalArgumentException] must end with 'end' chunk");
             }
+
             _pPid = chunks.First.getPpid();
             foreach (DataChunk dc in chunks)
             {
@@ -79,9 +82,11 @@ namespace SIPSorcery.Net.Sctp
                 if (_pPid != dc.getPpid())
                 {
                     // aaagh 
-                    throw new Exception("[IllegalArgumentException] chunk has wrong ppid" + dc.getPpid() + " vs " + _pPid);
+                    throw new Exception("[IllegalArgumentException] chunk has wrong ppid" + dc.getPpid() + " vs " +
+                                        _pPid);
                 }
             }
+
             _data = new byte[tot];
             int offs = 0;
             foreach (DataChunk dc in chunks)
@@ -108,7 +113,8 @@ namespace SIPSorcery.Net.Sctp
 
         public virtual void setCompleteHandler(MessageCompleteHandler mch)
         {
-            throw new Exception("[UnsupportedOperationException] Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new Exception(
+                "[UnsupportedOperationException] Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         public bool hasMoreData()
@@ -143,7 +149,7 @@ namespace SIPSorcery.Net.Sctp
                     _offset += dsz;
                 }
             }
-            else// not first
+            else // not first
             if (remain <= dsz)
             {
                 // last chunk, this will all fit.
@@ -158,6 +164,7 @@ namespace SIPSorcery.Net.Sctp
                 dc.setData(_data, _offset, dsz);
                 _offset += dsz;
             }
+
             dc.setPpid(_pPid);
             dc.setsSeqNo(_mseq);
             _stream.outbound(dc);
@@ -181,6 +188,7 @@ namespace SIPSorcery.Net.Sctp
         {
             _mseq = mseq;
         }
+
         public int getSeq()
         {
             return _mseq;
@@ -200,7 +208,7 @@ namespace SIPSorcery.Net.Sctp
                     case DataChunk.WEBRTCBINARY:
                         if (typeof(SCTPByteStreamListener).IsAssignableFrom(_li.GetType()))
                         {
-                            ((SCTPByteStreamListener)_li).onMessage(_stream, data);
+                            ((SCTPByteStreamListener) _li).onMessage(_stream, data);
                             _delivered = true;
                         }
                         else
@@ -208,25 +216,27 @@ namespace SIPSorcery.Net.Sctp
                             _li.onDataMessage(_stream, _data);
                             _delivered = true;
                         }
+
                         break;
                     case DataChunk.WEBRTCstringEMPTY:
                         data = new byte[0];
                         goto case DataChunk.WEBRTCstring;
                     case DataChunk.WEBRTCstring:
-                        _li.onMessage(_stream, System.Text.Encoding.UTF8.GetString(_data));
+                        _li.onMessage(_stream, Encoding.UTF8.GetString(_data));
                         _delivered = true;
                         break;
                 }
             }
+
             if (!_delivered)
             {
-                logger.LogDebug("Undelivered message to " + (_stream == null ? "null stream" : _stream.getLabel()) + " via " + (_li == null ? "null listener" : _li.GetType().Name) + " ppid is " + _pPid);
+                logger.LogDebug("Undelivered message to " + (_stream == null ? "null stream" : _stream.getLabel()) +
+                                " via " + (_li == null ? "null listener" : _li.GetType().Name) + " ppid is " + _pPid);
             }
         }
 
         public void acked()
         {
         }
-
     }
 }

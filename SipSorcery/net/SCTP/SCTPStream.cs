@@ -73,6 +73,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 logger.LogError("Can't make immediate close for " + this._sno + " because " + ex.ToString());
             }
+
             return ret;
         }
 
@@ -80,7 +81,10 @@ namespace SIPSorcery.Net.Sctp
 
         enum State
         {
-            CLOSED, INBOUNDONLY, OUTBOUNDONLY, OPEN
+            CLOSED,
+            INBOUNDONLY,
+            OUTBOUNDONLY,
+            OPEN
         }
 
         public SCTPStream(Association a, int id)
@@ -103,7 +107,7 @@ namespace SIPSorcery.Net.Sctp
 
         public override string ToString()
         {
-            return $"Stream id {_sno}, label {_label}, state {state} behaviour { _behave.GetType().Name}.";
+            return $"Stream id {_sno}, label {_label}, state {state} behaviour {_behave.GetType().Name}.";
         }
 
         public Chunk[] append(DataChunk dc)
@@ -160,6 +164,7 @@ namespace SIPSorcery.Net.Sctp
             {
                 ret += d.getData().Length;
             }
+
             return ret;
         }
 
@@ -250,6 +255,7 @@ namespace SIPSorcery.Net.Sctp
                 case State.INBOUNDONLY:
                     break;
             }
+
             logger.LogDebug("Stream State for " + _sno + " is now " + state);
         }
 
@@ -267,6 +273,7 @@ namespace SIPSorcery.Net.Sctp
                 case State.OUTBOUNDONLY:
                     break;
             }
+
             logger.LogDebug("Stream State for " + _sno + " is now " + state);
         }
 

@@ -45,13 +45,18 @@ namespace SCTP4CS.Utils
         public T this[int index]
         {
             get { return list[index]; }
-            set { list[index] = value; list.Sort(); }
+            set
+            {
+                list[index] = value;
+                list.Sort();
+            }
         }
 
         public T First
         {
             get { return list[0]; }
         }
+
         public T Last
         {
             get { return list[list.Count - 1]; }
@@ -83,7 +88,9 @@ namespace SCTP4CS.Utils
                 get { return list[index]; }
             }
 
-            public void Dispose() { }
+            public void Dispose()
+            {
+            }
 
             public bool MoveNext()
             {
