@@ -1,6 +1,6 @@
 using System;
 
-namespace LibGB28181SipProxy
+namespace LibGB28181SipServer
 {
     [Serializable]
     /// <summary>

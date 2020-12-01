@@ -18,7 +18,7 @@ namespace LibLogger
             {
                 ILoggerRepository repository = LogManager.CreateRepository("NETCoreRepository");
                 XmlConfigurator.Configure(repository,
-                    new FileInfo(Environment.CurrentDirectory + "/Config/" + "logconfig.xml"));
+                    new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "/Config/logconfig.xml"));
                 _instance = LogManager.GetLogger(repository.Name, "AKStream");
             }
         }

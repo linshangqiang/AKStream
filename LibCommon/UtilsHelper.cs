@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace LibCommon
 {
@@ -105,7 +106,7 @@ namespace LibCommon
         {
             try
             {
-                var jsonStr = JsonHelper.ToJson(obj);
+                var jsonStr = JsonHelper.ToJson(obj,Formatting.Indented);
                 File.WriteAllText(filePath, jsonStr);
                 return true;
             }

@@ -55,7 +55,7 @@ namespace LibCommon
         /// <param name="obj">要序列化的对象。</param>
         /// <param name="p"></param>
         /// <returns></returns>
-        public static string ToJson(this object obj, MissingMemberHandling p = MissingMemberHandling.Error)
+        public static string ToJson(this object obj,Formatting formatting=Formatting.None,MissingMemberHandling p = MissingMemberHandling.Error )
         {
             _jsonSettings.MissingMemberHandling = p;
             try
@@ -63,7 +63,7 @@ namespace LibCommon
                 if (null == obj)
                     return null!;
 
-                return JsonConvert.SerializeObject(obj, Formatting.None, _jsonSettings);
+                return JsonConvert.SerializeObject(obj, formatting, _jsonSettings);
             }
             catch
             {
