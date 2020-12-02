@@ -1,4 +1,4 @@
-﻿namespace GB28181.Net.SDP
+﻿﻿namespace GB28181.Net.SDP
 {
     public class SDPConnectionInformation
     {

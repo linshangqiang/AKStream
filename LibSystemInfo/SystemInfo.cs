@@ -32,10 +32,10 @@ namespace LibSystemInfo
         public void Dispose()
         {
             _abort = true;
-            _operatingSystemInfo = null;
-            _hardwareInfo = null;
-            _globalSystemInfo = null;
-            _globalSystemInfo = null;
+            _operatingSystemInfo = null!;
+            _hardwareInfo = null!;
+            _globalSystemInfo = null!;
+            _globalSystemInfo = null!;
         }
 
         ~SystemInfo()

@@ -10,7 +10,7 @@ namespace LibSystemInfo
         public static double CPULOAD = 0f;
 
         private static ProcessHelper SystemInfoProcessHelper =
-            new ProcessHelper(p_StdOutputDataReceived, null, p_Process_Exited);
+            new ProcessHelper(p_StdOutputDataReceived, null!, p_Process_Exited!);
 
         private static void p_Process_Exited(object sender, EventArgs e)
         {

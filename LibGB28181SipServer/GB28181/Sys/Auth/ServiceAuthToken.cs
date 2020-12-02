@@ -1,4 +1,4 @@
-﻿namespace GB28181.Sys.Auth
+﻿﻿namespace GB28181.Sys.Auth
 {
     public class ServiceAuthToken
     {

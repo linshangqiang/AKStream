@@ -41,7 +41,7 @@ namespace LibSystemInfo
                         3);
                 return _memoryInfo;
             }
-            catch (Exception ex)
+            catch
             {
                 return _memoryInfo;
             }

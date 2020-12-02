@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace GB28181.Sys.XML

@@ -12,8 +12,8 @@ namespace LibCommon
 {
     public class IPInfo
     {
-        private string _ipV4;
-        private string _ipV6;
+        private string _ipV4 = null!;
+        private string _ipV6 = null!;
 
         public string IpV4
         {
@@ -92,7 +92,7 @@ namespace LibCommon
                 return ipInfo;
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace LibCommon
         {
             try
             {
-                var jsonStr = JsonHelper.ToJson(obj,Formatting.Indented);
+                var jsonStr = JsonHelper.ToJson(obj!,Formatting.Indented);
                 File.WriteAllText(filePath, jsonStr);
                 return true;
             }
@@ -129,15 +129,15 @@ namespace LibCommon
                 try
                 {
                     string tmpStr = File.ReadAllText(filePath);
-                    return JsonHelper.FromJson<T>(tmpStr);
+                    return JsonHelper.FromJson<T>(tmpStr)!;
                 }
                 catch
                 {
-                    return null;
+                    return null!;
                 }
             }
 
-            return null;
+            return null!;
         }
 
 
@@ -166,9 +166,9 @@ namespace LibCommon
         /// <returns>long</returns>  
         public static long ConvertDateTimeToInt(DateTime time)
         {
-            DateTime Time = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1, 0, 0, 0, 0));
-            long TimeStamp = (time.Ticks - Time.Ticks) / 10000; //除10000调整为13位     
-            return TimeStamp;
+            DateTime time2 = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1, 0, 0, 0, 0));
+            long timeStamp = (time.Ticks - time2.Ticks) / 10000; //除10000调整为13位     
+            return timeStamp;
         }
 
         /// <summary>  
@@ -178,8 +178,8 @@ namespace LibCommon
         /// <returns>long</returns>  
         public static DateTime ConvertDateTimeToInt(long time)
         {
-            DateTime Time = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1, 0, 0, 0, 0));
-            DateTime dateTime = Time.AddSeconds(time);
+            DateTime time2 = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1, 0, 0, 0, 0));
+            DateTime dateTime = time2.AddSeconds(time);
             return dateTime;
         }
 
@@ -234,7 +234,7 @@ namespace LibCommon
         /// 生成guid
         /// </summary>
         /// <returns></returns>
-        public static string? CreateUuid()
+        public static string? CreateGUID()
         {
             return Guid.NewGuid().ToString("D");
         }
@@ -244,7 +244,7 @@ namespace LibCommon
         /// </summary>
         /// <param name="strSrc"></param>
         /// <returns></returns>
-        public static bool IsUuidByError(string strSrc)
+        public static bool IsUUID(string strSrc)
         {
             if (String.IsNullOrEmpty(strSrc))
             {

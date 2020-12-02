@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using LibCommon;
@@ -8,10 +9,29 @@ namespace LibGB28181SipServer
 {
     public static class Common
     {
+        public const int  SIP_REGISTER_MIN_INTERVAL_SEC=30;//最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
         private static SipServerConfig _sipServerConfig = null;
         private static string _sipServerConfigPath = LibCommon.LibCommon.ConfigPath + "SipServerConfig.json";
+        
+        private static List<SipDevice> _sipDevices=new List<SipDevice>();
 
+        /// <summary>
+        /// 用于操作_sipDevices时的锁
+        /// </summary>
+        public static object SipDevicesLock = new object();
+
+        /// <summary>
+        /// sip设备列表
+        /// </summary>
+        public static List<SipDevice> SipDevices
+        {
+            get => _sipDevices;
+            set => _sipDevices = value;
+        }
+
+        
+        public static SipServer SipServer = null;
         /// <summary>
         /// Sip网关配置实例
         /// </summary>

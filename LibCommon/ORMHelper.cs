@@ -5,7 +5,7 @@ namespace LibCommon
 {
     public class ORMHelper
     {
-        public static IFreeSql Db = null;
+        public static IFreeSql Db = null!;
 
         public ORMHelper(string dbConnStr, string dbType)
         {

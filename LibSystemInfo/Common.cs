@@ -6,15 +6,15 @@ namespace LibSystemInfo
     [Serializable]
     public class GlobalSystemInfo
     {
-        private string _systemType;
-        private string _Architecture;
-        private string _osName;
-        private string _frameworkVersion;
+        private string _systemType = null!;
+        private string _architecture = null!;
+        private string _osName = null!;
+        private string _frameworkVersion = null!;
         private int _cpuCores;
-        private MemoryInfo _memoryInfo;
+        private MemoryInfo _memoryInfo = null!;
         private double _cpuLoad;
-        private NetWorkStat _netWorkStat;
-        private List<DriveInfo> _driveInfo;
+        private NetWorkStat _netWorkStat = null!;
+        private List<DriveInfo> _driveInfo = null!;
         private DateTime _updateTime;
 
 
@@ -26,8 +26,8 @@ namespace LibSystemInfo
 
         public string Architecture
         {
-            get => _Architecture;
-            set => _Architecture = value;
+            get => _architecture;
+            set => _architecture = value;
         }
 
         public string OSName
@@ -184,6 +184,7 @@ namespace LibSystemInfo
         private long _currentRecvBytes;
         private DateTime _updateTime;
 
+        
         public string Mac
         {
             get => _mac;

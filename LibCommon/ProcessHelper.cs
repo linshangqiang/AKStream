@@ -6,13 +6,13 @@ namespace LibCommon
 {
     public class ProcessHelper
     {
-        private DataReceivedEventHandler _std = null;
-        private DataReceivedEventHandler _err = null;
-        private EventHandler _exitEventHandle = null;
+        private DataReceivedEventHandler _std = null!;
+        private DataReceivedEventHandler _err = null!;
+        private EventHandler _exitEventHandle = null!;
 
 
-        public ProcessHelper(DataReceivedEventHandler std = null, DataReceivedEventHandler err = null,
-            EventHandler exitEvent = null)
+        public ProcessHelper(DataReceivedEventHandler std = null!, DataReceivedEventHandler err = null!,
+            EventHandler exitEvent = null!)
         {
             _std = std;
             _err = err;
@@ -27,30 +27,24 @@ namespace LibCommon
         /// <returns></returns>
         public bool KillProcess(Process process)
         {
-            if (process != null && !process.HasExited)
+            if (!process.HasExited)
             {
                 process.Kill();
             }
 
-            if (process.StartInfo != null)
-            {
-                Process[] processes =
-                    Process.GetProcessesByName(Path.GetFileNameWithoutExtension(process.StartInfo.FileName));
-                return !(processes.Length > 0);
-            }
-
-            return true;
+            Process[] processes =
+                Process.GetProcessesByName(Path.GetFileNameWithoutExtension(process?.StartInfo.FileName));
+            return !(processes.Length > 0);
         }
-
 
         /// <summary>
         /// 检查进程是否正在运行
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="process"></param>
         /// <returns></returns>
         public int CheckProcessExists(Process process)
         {
-            if (process == null || process.StartInfo == null || process.HasExited)
+            if (process.HasExited)
             {
                 return -1;
             }
