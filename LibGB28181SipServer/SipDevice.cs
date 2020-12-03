@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Timers;
 using GB28181.Sys.XML;
+using LibLogger;
 using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
 {
-    public class SipDevice
+    public class SipDevice : IDisposable
     {
         private string _guid;
         private SIPEndPoint _remoteEndPoint;
@@ -18,6 +20,23 @@ namespace LibGB28181SipServer
         private string? _password;
         private DateTime _keepAliveTime;
         private int _keepAliveLostTime;
+        private Timer _keepAliveCheckTimer = null;
+        public event Common.DoKickSipDevice KickMe = null!;
+
+
+        public void Dispose()
+        {
+            if (_keepAliveCheckTimer != null)
+            {
+                _keepAliveCheckTimer.Dispose();
+                _keepAliveCheckTimer = null;
+            }
+        }
+
+        ~SipDevice()
+        {
+            Dispose(); //释放非托管资源
+        }
 
         /// <summary>
         /// 设备在系统中唯一id
@@ -116,6 +135,49 @@ namespace LibGB28181SipServer
         {
             get => _keepAliveLostTime;
             set => _keepAliveLostTime = value;
+        }
+
+        public SipDevice()
+        {
+            _keepAliveCheckTimer = new Timer(Common.SipServerConfig.KeepAliveInterval * 1000);
+            // _keepAliveCheckTimer.Interval = Common.SipServerConfig.KeepAliveInterval*1000; //设置计时器触发时间
+            _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
+            _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
+            _keepAliveCheckTimer.AutoReset = true; //不需要自动reset
+            _keepAliveCheckTimer.Start(); //启动计时器
+        }
+
+        /// <summary>
+        /// 定时触发，检查心跳周期并计算失去多少次心跳
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void OnTimedEvent(object source, System.Timers.ElapsedEventArgs e)
+        {
+            if ((DateTime.Now - _keepAliveTime).Seconds > Common.SipServerConfig.KeepAliveInterval + 1)
+            {
+                _keepAliveLostTime++;
+            }
+            else
+            {
+                _keepAliveLostTime--;
+                if (_keepAliveLostTime < 0)
+                {
+                    _keepAliveLostTime = 0;
+                }
+            }
+
+            //做踢除
+            if (_keepAliveLostTime >= Common.SipServerConfig.KeepAliveLostNumber)
+            {
+                if (KickMe != null)
+                {
+                    _keepAliveCheckTimer.Enabled = false;
+                    _keepAliveCheckTimer.Stop();
+
+                    KickMe?.Invoke(_guid);
+                }
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace LibCommon
      
         public static string BasePath = AppDomain.CurrentDomain.BaseDirectory + "/";
         public static string ConfigPath = BasePath + "Config/";
-        
+        public static bool Start = false; 
        
         static LibCommon()
         {
@@ -17,6 +17,7 @@ namespace LibCommon
             {
                 Directory.CreateDirectory(ConfigPath);
             }
+
             //初始化错误代码
             ErrorMessage.Init();
         }

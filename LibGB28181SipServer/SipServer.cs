@@ -1,5 +1,4 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using LibCommon;
 using SIPSorcery.SIP;
@@ -11,6 +10,7 @@ namespace LibGB28181SipServer
     /// </summary>
     public class SipServer
     {
+        
         /// <summary>
         /// SIP传输通道
         /// </summary>
@@ -32,6 +32,7 @@ namespace LibGB28181SipServer
             set => _sipTransport = value;
         }
 
+        
 
         /// <summary>
         /// 停止Sip服务

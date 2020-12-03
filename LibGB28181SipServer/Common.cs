@@ -4,11 +4,19 @@ using System.IO;
 using System.Threading;
 using LibCommon;
 using LibSystemInfo;
+using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
 {
     public static class Common
     {
+        public delegate void DoKickSipDevice(string guid);
+        public delegate void RegisterDelegate(string sipDeviceJson);
+
+        public delegate void UnRegisterDelegate(string sipDeviceJson);
+
+        public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
+        
         public const int  SIP_REGISTER_MIN_INTERVAL_SEC=30;//最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
         private static SipServerConfig _sipServerConfig = null;
@@ -161,7 +169,6 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         public static int ReadSipServerConfig(out ResponseStruct rs)
         {
-            long a = DateTime.Now.Ticks;
             if (!File.Exists(_sipServerConfigPath))
             {
                 var config = initSipServerConfig(out rs);
@@ -220,10 +227,7 @@ namespace LibGB28181SipServer
                     };
                     return -1;
                 }
-                finally
-                {
-                    Console.WriteLine((DateTime.Now.Ticks - a) / 10000);
-                }
+               
             }
 
             rs = new ResponseStruct()

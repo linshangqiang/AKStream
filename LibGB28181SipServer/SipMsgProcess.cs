@@ -6,6 +6,7 @@ using GB28181.Sys.XML;
 using LibCommon;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
+
 #pragma warning disable 4014
 
 namespace LibGB28181SipServer
@@ -13,13 +14,7 @@ namespace LibGB28181SipServer
     public static class SipMsgProcess
     {
         #region 各类事件
-
-        public delegate void RegisterDelegate(string sipDeviceJson);
-
-        public delegate bool UnRegisterDelegate(string sipDeviceJson);
-
-        public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
-
+        
         /// <summary>
         /// sip服务状态
         /// </summary>
@@ -93,20 +88,22 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备注册时
         /// </summary>
-        public static event RegisterDelegate OnRegisterReceived = null!;
+        public static event Common.RegisterDelegate OnRegisterReceived = null!;
 
         /// <summary>
         /// 设备注销时
         /// </summary>
-        public static event UnRegisterDelegate OnUnRegisterReceived = null!;
+        public static event Common.UnRegisterDelegate OnUnRegisterReceived = null!;
 
         /// <summary>
         /// 设备有警告时
         /// </summary>
-        public static event DeviceAlarmSubscribeDelegate OnDeviceAlarmSubscribe = null!;
+        public static event Common.DeviceAlarmSubscribeDelegate OnDeviceAlarmSubscribe = null!;
+        
+        
+    
 
         #endregion
-
 
 
         private static async Task SendKeepAliveOk(SIPRequest sipRequest)
@@ -115,34 +112,65 @@ namespace LibGB28181SipServer
             SIPResponse okResponse = SIPResponse.GetResponse(sipRequest, keepAliveResponse, null);
             await Common.SipServer.SipTransport.SendResponseAsync(okResponse);
         }
+
         private static async Task MessageProcess(SIPEndPoint localSipEndPoint, SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
             string bodyStr = sipRequest.Body;
-            XElement bodyXml=XElement.Parse(bodyStr);
+            XElement bodyXml = XElement.Parse(bodyStr);
             string cmdType = bodyXml.Element("CmdType")?.Value.ToUpper()!;
             if (!string.IsNullOrEmpty(cmdType))
             {
                 switch (cmdType)
                 {
-                    case "KEEPALIVE"://处理心跳
+                    case "KEEPALIVE": //处理心跳
                         string sipDeviceId = bodyXml.Element("DeviceID")?.Value.ToUpper()!;
                         var tmpSipDevice = Common.SipDevices.FindLast((x => x.DeviceInfo.DeviceID.Equals(sipDeviceId)));
                         if (tmpSipDevice != null)
                         {
                             tmpSipDevice.KeepAliveTime = DateTime.Now;
-                            tmpSipDevice.KeepAliveLostTime = 0; 
                             await SendKeepAliveOk(sipRequest);
                             LibLogger.Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的心跳->\r\n{sipRequest}\r\n");
                         }
+
                         break;
-                    
                 }
             }
-
         }
 
+
+
+        /// <summary>
+        /// 处理心跳检测失败的设备，认为这类设备已经离线，需要踢除
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public static  void DoKickSipDevice(string guid)
+        {
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.Guid.Equals(guid));
+            string tmpSipDeviceStr = JsonHelper.ToJson(tmpSipDevice);
+            OnUnRegisterReceived?.Invoke(tmpSipDeviceStr);
+            
+            lock (Common.SipDevicesLock)
+            {
+                if (tmpSipDevice != null)
+                {
+            
+                    Common.SipDevices.Remove(tmpSipDevice);
+                    tmpSipDevice.Dispose();
+                    
+                    LibLogger.Logger.Info(
+                        $"[{Common.LoggerHead}]->Sip设备心跳丢失超过限制，已经注销->{tmpSipDeviceStr}");
+
+                }
+            } 
+            LibLogger.Logger.Debug(
+                $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
+
+           
+        }
+        
         /// <summary>
         /// 处理sip设备注册事件
         /// </summary>
@@ -181,7 +209,12 @@ namespace LibGB28181SipServer
                             lock (Common.SipDevicesLock)
                             {
                                 Common.SipDevices.Remove(tmpSipDevice);
+                                tmpSipDevice.Dispose();
+                                
                             }
+                            LibLogger.Logger.Debug(
+                                $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
+
                         }
                         catch (Exception ex)
                         {
@@ -203,6 +236,7 @@ namespace LibGB28181SipServer
                     if (tmpSipDevice == null)
                     {
                         tmpSipDevice = new SipDevice();
+                        tmpSipDevice.KickMe += DoKickSipDevice;
                         tmpSipDevice.Guid = UtilsHelper.generalGuid();
                         tmpSipDevice.Username = "";
                         tmpSipDevice.Password = "";
@@ -221,6 +255,9 @@ namespace LibGB28181SipServer
                             }
 
                             OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
+                            LibLogger.Logger.Debug(
+                                $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
+
                         }
                         catch (Exception ex)
                         {
@@ -250,7 +287,6 @@ namespace LibGB28181SipServer
                         {
                             LibLogger.Logger.Debug(
                                 $"[{Common.LoggerHead}]->Sip设备注册消息重复发送，已忽略->{sipRequest.ToString()}");
-                         
                         }
                     }
                 }
