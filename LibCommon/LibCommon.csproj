@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FreeSql.All" Version="2.0.101" />
+      <PackageReference Include="FreeSql.All" Version="2.0.102" />
       <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     </ItemGroup>

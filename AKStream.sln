@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibLogger", "LibLogger\LibL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibGB28181SipServer", "LibGB28181SipServer\LibGB28181SipServer.csproj", "{C185DBE3-EE02-4918-B2A3-3495095256C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Other", "Test_Other\Test_Other.csproj", "{C129159F-6594-413A-90A8-2B6E24CD9668}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,9 +36,5 @@ Global
 		{C185DBE3-EE02-4918-B2A3-3495095256C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C185DBE3-EE02-4918-B2A3-3495095256C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C185DBE3-EE02-4918-B2A3-3495095256C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C129159F-6594-413A-90A8-2B6E24CD9668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C129159F-6594-413A-90A8-2B6E24CD9668}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C129159F-6594-413A-90A8-2B6E24CD9668}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C129159F-6594-413A-90A8-2B6E24CD9668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
