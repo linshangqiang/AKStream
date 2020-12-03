@@ -14,7 +14,7 @@ namespace LibGB28181SipServer
     public static class SipMsgProcess
     {
         #region 各类事件
-        
+
         /// <summary>
         /// sip服务状态
         /// </summary>
@@ -99,9 +99,6 @@ namespace LibGB28181SipServer
         /// 设备有警告时
         /// </summary>
         public static event Common.DeviceAlarmSubscribeDelegate OnDeviceAlarmSubscribe = null!;
-        
-        
-    
 
         #endregion
 
@@ -140,37 +137,33 @@ namespace LibGB28181SipServer
         }
 
 
-
         /// <summary>
         /// 处理心跳检测失败的设备，认为这类设备已经离线，需要踢除
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public static  void DoKickSipDevice(string guid)
+        public static void DoKickSipDevice(string guid)
         {
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.Guid.Equals(guid));
             string tmpSipDeviceStr = JsonHelper.ToJson(tmpSipDevice);
             OnUnRegisterReceived?.Invoke(tmpSipDeviceStr);
-            
+
             lock (Common.SipDevicesLock)
             {
                 if (tmpSipDevice != null)
                 {
-            
                     Common.SipDevices.Remove(tmpSipDevice);
                     tmpSipDevice.Dispose();
-                    
+
                     LibLogger.Logger.Info(
                         $"[{Common.LoggerHead}]->Sip设备心跳丢失超过限制，已经注销->{tmpSipDeviceStr}");
-
                 }
-            } 
+            }
+
             LibLogger.Logger.Debug(
                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
-
-           
         }
-        
+
         /// <summary>
         /// 处理sip设备注册事件
         /// </summary>
@@ -210,11 +203,10 @@ namespace LibGB28181SipServer
                             {
                                 Common.SipDevices.Remove(tmpSipDevice);
                                 tmpSipDevice.Dispose();
-                                
                             }
+
                             LibLogger.Logger.Debug(
                                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
-
                         }
                         catch (Exception ex)
                         {
@@ -257,7 +249,6 @@ namespace LibGB28181SipServer
                             OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
                             LibLogger.Logger.Debug(
                                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
-
                         }
                         catch (Exception ex)
                         {

@@ -11,18 +11,20 @@ namespace LibGB28181SipServer
     public static class Common
     {
         public delegate void DoKickSipDevice(string guid);
+
         public delegate void RegisterDelegate(string sipDeviceJson);
 
         public delegate void UnRegisterDelegate(string sipDeviceJson);
 
         public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
-        
-        public const int  SIP_REGISTER_MIN_INTERVAL_SEC=30;//最小Sip设备注册间隔
+
+
+        public const int SIP_REGISTER_MIN_INTERVAL_SEC = 30; //最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
         private static SipServerConfig _sipServerConfig = null;
-        private static string _sipServerConfigPath = LibCommon.LibCommon.ConfigPath + "SipServerConfig.json";
-        
-        private static List<SipDevice> _sipDevices=new List<SipDevice>();
+        private static string _sipServerConfigPath = GCommon.ConfigPath + "SipServerConfig.json";
+
+        private static List<SipDevice> _sipDevices = new List<SipDevice>();
 
         /// <summary>
         /// 用于操作_sipDevices时的锁
@@ -38,8 +40,9 @@ namespace LibGB28181SipServer
             set => _sipDevices = value;
         }
 
-        
+
         public static SipServer SipServer = null;
+
         /// <summary>
         /// Sip网关配置实例
         /// </summary>
@@ -227,7 +230,6 @@ namespace LibGB28181SipServer
                     };
                     return -1;
                 }
-               
             }
 
             rs = new ResponseStruct()

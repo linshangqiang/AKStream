@@ -3,14 +3,14 @@ using System.IO;
 
 namespace LibCommon
 {
-    public static class LibCommon
+    public static class GCommon
     {
      
         public static string BasePath = AppDomain.CurrentDomain.BaseDirectory + "/";
         public static string ConfigPath = BasePath + "Config/";
         public static bool Start = false; 
        
-        static LibCommon()
+        static GCommon()
         {
             
             if (!Directory.Exists(ConfigPath))//如果配置文件目录不存在，则创建目录
