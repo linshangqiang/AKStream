@@ -1,6 +1,6 @@
 ﻿﻿using System;
 
-namespace GB28181.Sys
+ namespace GB28181.Sys
 {
     public class EnvironmentVariables
     {

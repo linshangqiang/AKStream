@@ -1,7 +1,7 @@
 ﻿﻿using System;
-using System.Text.RegularExpressions;
+ using System.Text.RegularExpressions;
 
-namespace GB28181.Net.SDP
+ namespace GB28181.Net.SDP
 {
     public enum SDPMediaFormatsEnum
     {

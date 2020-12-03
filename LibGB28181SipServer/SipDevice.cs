@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using GB28181.Sys.XML;
-using LibLogger;
 using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
@@ -152,7 +151,7 @@ namespace LibGB28181SipServer
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        private void OnTimedEvent(object source, System.Timers.ElapsedEventArgs e)
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if ((DateTime.Now - _keepAliveTime).Seconds > Common.SipServerConfig.KeepAliveInterval + 1)
             {

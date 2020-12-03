@@ -14,7 +14,6 @@
 // BSD 3-Clause "New" or "Revised" License, see included LICENSE.md file.
 //-----------------------------------------------------------------------------
 
-using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 

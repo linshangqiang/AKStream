@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using GB28181.Sys.XML;
 using LibCommon;
+using LibLogger;
 using SIPSorcery.SIP;
-using SIPSorcery.SIP.App;
 
 #pragma warning disable 4014
 
@@ -127,7 +127,7 @@ namespace LibGB28181SipServer
                         {
                             tmpSipDevice.KeepAliveTime = DateTime.Now;
                             await SendKeepAliveOk(sipRequest);
-                            LibLogger.Logger.Debug(
+                            Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的心跳->\r\n{sipRequest}\r\n");
                         }
 
@@ -155,12 +155,12 @@ namespace LibGB28181SipServer
                     Common.SipDevices.Remove(tmpSipDevice);
                     tmpSipDevice.Dispose();
 
-                    LibLogger.Logger.Info(
+                    Logger.Info(
                         $"[{Common.LoggerHead}]->Sip设备心跳丢失超过限制，已经注销->{tmpSipDeviceStr}");
                 }
             }
 
-            LibLogger.Logger.Debug(
+            Logger.Debug(
                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
         }
 
@@ -174,7 +174,7 @@ namespace LibGB28181SipServer
         private static async Task RegisterProcess(SIPEndPoint localSipEndPoint, SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
-            LibLogger.Logger.Debug(
+            Logger.Debug(
                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的Sip设备注册信息->\r\n{sipRequest}\r\n");
 
             string sipDeviceId = sipRequest.Header.From.FromURI.User;
@@ -197,7 +197,7 @@ namespace LibGB28181SipServer
                         try
                         {
                             OnUnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                            LibLogger.Logger.Info(
+                            Logger.Info(
                                 $"[{Common.LoggerHead}]->Sip设备销完成->{JsonHelper.ToJson(tmpSipDevice)}");
                             lock (Common.SipDevicesLock)
                             {
@@ -205,7 +205,7 @@ namespace LibGB28181SipServer
                                 tmpSipDevice.Dispose();
                             }
 
-                            LibLogger.Logger.Debug(
+                            Logger.Debug(
                                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
                         }
                         catch (Exception ex)
@@ -247,7 +247,7 @@ namespace LibGB28181SipServer
                             }
 
                             OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                            LibLogger.Logger.Debug(
+                            Logger.Debug(
                                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
                         }
                         catch (Exception ex)
@@ -262,7 +262,7 @@ namespace LibGB28181SipServer
                             throw new AKStreamException(rs);
                         }
 
-                        LibLogger.Logger.Info(
+                        Logger.Info(
                             $"[{Common.LoggerHead}]->Sip设备注册完成->{JsonHelper.ToJson(tmpSipDevice)}");
                     }
                     else
@@ -271,12 +271,12 @@ namespace LibGB28181SipServer
                         {
                             tmpSipDevice.RegisterTime = DateTime.Now;
                             OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                            LibLogger.Logger.Info(
+                            Logger.Info(
                                 $"[{Common.LoggerHead}]->Sip设备发起重新注册事件，已更新注册时间->{JsonHelper.ToJson(tmpSipDevice)}");
                         }
                         else
                         {
-                            LibLogger.Logger.Debug(
+                            Logger.Debug(
                                 $"[{Common.LoggerHead}]->Sip设备注册消息重复发送，已忽略->{sipRequest.ToString()}");
                         }
                     }
@@ -327,7 +327,7 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPResponse sipResponse)
         {
-            LibLogger.Logger.Debug(
+            Logger.Debug(
                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}");
         }
     }

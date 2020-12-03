@@ -55,8 +55,14 @@ namespace LibGB28181SipServer
         {
             try
             {
-                _sipTransport.SIPTransportRequestReceived -= SipMsgProcess.SipTransportRequestReceived;
-                _sipTransport.SIPTransportResponseReceived -= SipMsgProcess.SipTransportResponseReceived;
+                switch (Common.SipServerConfig.GbVersion.Trim().ToUpper())
+                {
+                    case "GB-2016":
+                        _sipTransport.SIPTransportRequestReceived -= SipMsgProcess.SipTransportRequestReceived;
+                        _sipTransport.SIPTransportResponseReceived -= SipMsgProcess.SipTransportResponseReceived;
+                        break;
+                }
+
                 _sipTransport.Shutdown();
                 rs = new ResponseStruct()
                 {
@@ -148,7 +154,7 @@ namespace LibGB28181SipServer
                 }
 
 
-                switch (Common.SipServerConfig.GbVersion)
+                switch (Common.SipServerConfig.GbVersion.Trim().ToUpper())
                 {
                     case "GB-2016":
                         _sipTransport.SIPTransportRequestReceived += SipMsgProcess.SipTransportRequestReceived;

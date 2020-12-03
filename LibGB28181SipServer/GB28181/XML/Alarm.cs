@@ -1,6 +1,6 @@
 ﻿﻿using System.Xml.Serialization;
 
-namespace GB28181.Sys.XML
+ namespace GB28181.Sys.XML
 {
     /// <summary>
     /// 报警通知
