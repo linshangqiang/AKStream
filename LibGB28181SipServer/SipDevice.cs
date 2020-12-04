@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Timers;
 using GB28181.Sys.XML;
+using Newtonsoft.Json;
 using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
 {
+    [Serializable]
     public class SipDevice : IDisposable
     {
         private string _guid;
+        private IPAddress _ipAddress;
+        private int _port;
         private SIPEndPoint _remoteEndPoint;
         private SIPEndPoint _localSipEndPoint;
-        private string? _ipAddress;
         private List<SipChannel> _sipChannels;
         private DeviceInfo _deviceInfo;
         private DateTime _registerTime;
@@ -20,11 +24,16 @@ namespace LibGB28181SipServer
         private DateTime _keepAliveTime;
         private int _keepAliveLostTime;
         private Timer _keepAliveCheckTimer = null;
+        private SIPRequest _firstSipRequest;
+        private SIPURI _contactUri;
+        private SIPChannel _sipChannelLayout;
+
         public event Common.DoKickSipDevice KickMe = null!;
 
 
         public void Dispose()
         {
+            
             if (_keepAliveCheckTimer != null)
             {
                 _keepAliveCheckTimer.Dispose();
@@ -47,6 +56,26 @@ namespace LibGB28181SipServer
         }
 
         /// <summary>
+        /// 设备ip地址
+        /// </summary>
+        public IPAddress IpAddress
+        {
+            get => _ipAddress;
+            set => _ipAddress = value;
+        }
+
+        /// <summary>
+        /// 设备端口
+        /// </summary>
+        public int Port
+        {
+            get => _port;
+            set => _port = value;
+        }
+
+
+        [JsonIgnore]
+        /// <summary>
         /// sip设备ip端口协议
         /// </summary>
         public SIPEndPoint RemoteEndPoint
@@ -54,7 +83,7 @@ namespace LibGB28181SipServer
             get => _remoteEndPoint;
             set => _remoteEndPoint = value;
         }
-
+        [JsonIgnore]
         /// <summary>
         /// sip服务ip端口协议
         /// </summary>
@@ -64,14 +93,7 @@ namespace LibGB28181SipServer
             set => _localSipEndPoint = value;
         }
 
-        /// <summary>
-        /// 设备ip地址
-        /// </summary>
-        public string? IpAddress
-        {
-            get => _ipAddress;
-            set => _ipAddress = value;
-        }
+       
 
         /// <summary>
         /// 设备所属通道信息
@@ -144,6 +166,37 @@ namespace LibGB28181SipServer
             _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
             _keepAliveCheckTimer.AutoReset = true; //不需要自动reset
             _keepAliveCheckTimer.Start(); //启动计时器
+        }
+        
+        /// <summary>
+        /// 注册时的sipRequest
+        /// </summary>
+
+        [JsonIgnore]
+        public SIPRequest FirstSipRequest
+        {
+            get => _firstSipRequest;
+            set => _firstSipRequest = value;
+        }
+
+        [JsonIgnore]
+        /// <summary>
+        /// 注册时候的uri
+        /// </summary>
+        public SIPURI ContactUri
+        {
+            get => _contactUri;
+            set => _contactUri = value;
+        }
+
+        [JsonIgnore]
+        /// <summary>
+        /// 设备所在的Sip通道实例
+        /// </summary>
+        public SIPChannel SipChannelLayout
+        {
+            get => _sipChannelLayout;
+            set => _sipChannelLayout = value;
         }
 
         /// <summary>

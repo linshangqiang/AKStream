@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using GB28181.SIP;
+using GB28181.Sys.XML;
 using LibCommon;
 using LibLogger;
 using SIPSorcery.SIP;
@@ -43,6 +48,69 @@ namespace LibGB28181SipServer
         {
             get => _sipTransport;
             set => _sipTransport = value;
+        }
+
+
+        private async Task sendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
+            string xmlBody,bool needResponse)
+        {
+            var to = sipDevice.FirstSipRequest.Header.To;
+            var from = sipDevice.FirstSipRequest.Header.From;
+            var fromUri = sipDevice.FirstSipRequest.URI;
+
+            bool isIpV6 = (sipDevice.SipChannelLayout.ListeningIPAddress.AddressFamily == AddressFamily.InterNetworkV6)
+                ? true
+                : false;
+            SIPRequest req = SIPRequest.GetRequest(method, sipDevice.ContactUri,
+                new SIPToHeader(to.ToName, to.ToURI, ""), new SIPFromHeader(fromUri.User, fromUri, "AKStream"),
+                new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
+                    new IPEndPoint(
+                        isIpV6
+                            ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
+                            : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
+
+            req.Header.Allow = null;
+            req.Header.Contact = new List<SIPContactHeader>()
+            {
+                new SIPContactHeader(fromUri.User, fromUri)
+            };
+            req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+            req.Header.ContentType = contentType;
+            req.Header.Subject = subject;
+            req.Body = xmlBody;
+            req.Header.CallId = CallProperties.CreateNewCallId();
+            req.Header.CSeq = UtilsHelper.CreateNewCSeq();
+            Logger.Info($"[{Common.LoggerHead}]->发送Sip请求->{req}");
+
+            if (needResponse)
+            {
+                Common.NeedResponseRequests.TryAdd(req.Header.CallId, req);
+            }
+            await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
+        }
+
+        /// <summary>
+        /// 设备目录查询请求
+        /// </summary>
+        /// <param name="sipDeviceId"></param>
+        public void DeviceCatalogQuery(string sipDeviceId)
+        {
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo.DeviceID.Equals(sipDeviceId));
+            if (tmpSipDevice != null)
+            {
+                SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
+                string subject =
+                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceInfo.DeviceID}:{new Random().Next(100, ushort.MaxValue)}";
+                CatalogQuery catalogQuery = new CatalogQuery()
+                {
+                    CommandType = CommandType.Catalog,
+                    DeviceID = tmpSipDevice.DeviceInfo.DeviceID,
+                    SN = new Random().Next(1, ushort.MaxValue),
+                };
+                string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
+                Func<SipDevice, SIPMethodsEnum, string, string, string,bool, Task> request = sendRequest;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,true);
+            }
         }
 
 
@@ -158,7 +226,6 @@ namespace LibGB28181SipServer
                 {
                     case "GB-2016":
                         _sipTransport.SIPTransportRequestReceived += SipMsgProcess.SipTransportRequestReceived;
-
                         _sipTransport.SIPTransportResponseReceived += SipMsgProcess.SipTransportResponseReceived;
 
                         break;

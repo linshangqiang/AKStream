@@ -1,8 +1,12 @@
-﻿﻿using System.Collections.Generic;
- using System.Xml.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
- namespace GB28181.Sys.XML
+namespace GB28181.Sys.XML
 {
+    [Serializable]
     /// <summary>
     /// 设备目录查询结果信息
     /// </summary>
@@ -47,6 +51,7 @@
         [XmlElement("DeviceList")]
         public DevList DeviceList { get; set; }
 
+        [Serializable]
         /// <summary>
         /// 设备列表
         /// </summary>
@@ -64,6 +69,7 @@
             }
         }
 
+        [Serializable]
         /// <summary>
         /// 设备信息
         /// </summary>
@@ -72,6 +78,7 @@
             /// <summary>
             /// 设备/区域/系统编码(必选)
             /// </summary>
+            [JsonProperty("ChannelID")]
             [XmlElement("DeviceID")]
             public string DeviceID { get; set; }
 
@@ -291,6 +298,7 @@
             /// <summary>
             /// 设备状态(必选)
             /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
             [XmlElement("Status")]
             public DevStatus Status { get; set; }
 
@@ -332,6 +340,7 @@
             public string RemoteEP { get; set; }
         }
 
+        [Serializable]
         /// <summary>
         /// 扩展信息
         /// </summary>
@@ -782,6 +791,7 @@
             /// <summary>
             /// 设备状态(必选)
             /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
             [XmlElement("Status")]
             public DevStatus Status { get; set; }
 

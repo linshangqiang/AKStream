@@ -1,24 +1,31 @@
 using System;
+using System.Collections.Generic;
 using GB28181.Sys.XML;
 using LibCommon;
+using LibCommon.Structs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
 {
    
     [Serializable]
-    public class SipChannel
+    public class SipChannel: IDisposable
     {
         private string _guid;
+        private string __parentGuid;
         private SIPEndPoint _remoteEndPoint;
         private SIPEndPoint _localSipEndPoint;
-        private SipDevice _parentSipDevice;
-        private string _ipAddress;
         private DevicePushStatus _pushStatus;
         private DateTime? _pushOnTime;
         private DateTime _lastUpdateTime;
         private long? _pushOnlineTime;
-        private Catalog.Item _sipChannelItem;
+        private Common.SipChannelType _sipChannelType;
+        private DevStatus _sipChanneStatus;
+        private Catalog.Item _sipChannelDesc;
+        private List<MediaServerStreamInfo> _channelMediaServerStreamInfos=new List<MediaServerStreamInfo>();
+        
 
         /// <summary>
         /// 通道在系统中唯一id
@@ -28,6 +35,7 @@ namespace LibGB28181SipServer
             get => _guid;
             set => _guid = value;
         }
+        [JsonIgnore]
 
         /// <summary>
         /// sip设备的ip端口协议
@@ -38,6 +46,7 @@ namespace LibGB28181SipServer
             set => _remoteEndPoint = value;
         }
 
+        [JsonIgnore]
         /// <summary>
         /// sip服务的ip端口协议
         /// </summary>
@@ -48,23 +57,15 @@ namespace LibGB28181SipServer
         }
 
         /// <summary>
-        /// 通道所属的sip设备信息
+        /// 父节点的guid
         /// </summary>
-        public SipDevice ParentSipDevice
+        public string ParentGuid
         {
-            get => _parentSipDevice;
-            set => _parentSipDevice = value;
+            get => __parentGuid;
+            set => __parentGuid = value;
         }
 
-        /// <summary>
-        /// ip地址
-        /// </summary>
-        public string IpAddress
-        {
-            get => _ipAddress;
-            set => _ipAddress = value;
-        }
-
+        [JsonConverter(typeof(StringEnumConverter))]
         /// <summary>
         /// 通道推流情况，idle,pushon空闲,推流中
         /// </summary>
@@ -102,12 +103,57 @@ namespace LibGB28181SipServer
         }
 
         /// <summary>
+        /// 通道类型
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Common.SipChannelType SipChannelType
+        {
+            get => _sipChannelType;
+            set => _sipChannelType = value;
+        }
+
+        /// <summary>
+        /// 通道状态
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public DevStatus SipChanneStatus
+        {
+            get => _sipChanneStatus;
+            set => _sipChanneStatus = value;
+        }
+
+        /// <summary>
         /// 通道信息
         /// </summary>
-        public Catalog.Item SipChannelItem
+        public Catalog.Item SipChannelDesc
         {
-            get => _sipChannelItem;
-            set => _sipChannelItem = value;
+            get => _sipChannelDesc;
+            set => _sipChannelDesc = value;
+        }
+
+        /// <summary>
+        /// 额外的流媒体信息
+        /// </summary>
+      
+        
+
+        public void Dispose()
+        {
+            _sipChannelDesc = null;
+        }
+
+        /// <summary>
+        /// Sip通道的流媒体相关信息
+        /// </summary>
+        public List<MediaServerStreamInfo> ChannelMediaServerStreamInfos
+        {
+            get => _channelMediaServerStreamInfos;
+            set => _channelMediaServerStreamInfos = value;
+        }
+
+        ~SipChannel()
+        {
+            Dispose(); //释放非托管资源
         }
     }
 }

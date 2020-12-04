@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using GB28181.Sys.XML;
 using LibCommon;
 using LibLogger;
+using Newtonsoft.Json;
 using SIPSorcery.SIP;
 
-#pragma warning disable 4014
 
 namespace LibGB28181SipServer
 {
@@ -103,6 +104,72 @@ namespace LibGB28181SipServer
         #endregion
 
 
+        /// <summary>
+        /// 普通消息回复状态OK
+        /// </summary>
+        /// <param name="sipRequest"></param>
+        /// <returns></returns>
+        private static async Task SendOkMessage(SIPRequest sipRequest)
+        {
+            SIPResponseStatusCodesEnum messaageResponse = SIPResponseStatusCodesEnum.Ok;
+            SIPResponse okResponse = SIPResponse.GetResponse(sipRequest, messaageResponse, null);
+            await Common.SipServer.SipTransport.SendResponseAsync(okResponse);
+        }
+
+        private static async Task processGetDeviceItems(Catalog catalog)
+        {
+            if (catalog != null)
+            {
+                var tmpSipDeviceList = Common.SipDevices.FindAll(x => x.DeviceInfo.DeviceID.Equals(catalog.DeviceID));
+                if (tmpSipDeviceList.Count > 0)
+                {
+                    foreach (var tmpSipDevice in tmpSipDeviceList)
+                    {
+                        foreach (var tmpChannelDev in catalog.DeviceList.Items)
+                        {
+                            lock (Common.SipChannelOptLock)
+                            {
+                                var oldC = tmpSipDevice.SipChannels.FindLast(x =>
+                                    x.SipChannelDesc.DeviceID.Equals(tmpChannelDev.DeviceID));
+                                if (oldC == null)
+                                {
+                                    var tmpSipC = new SipChannel()
+                                    {
+                                        Guid = UtilsHelper.CreateGUID(),
+                                        LastUpdateTime = DateTime.Now,
+                                        LocalSipEndPoint = tmpSipDevice.LocalSipEndPoint,
+                                        ParentGuid = tmpSipDevice.Guid,
+                                        PushOnlineTime = null,
+                                        PushOnTime = null,
+                                        PushStatus = DevicePushStatus.IDLE,
+                                        RemoteEndPoint = tmpSipDevice.RemoteEndPoint,
+                                        SipChannelDesc = tmpChannelDev,
+                                    };
+                                    if (tmpChannelDev.InfList!=null)
+                                    {
+                                        tmpSipC.SipChannelDesc.InfList = tmpChannelDev.InfList;
+                                    }
+
+                                    tmpSipC.SipChanneStatus = tmpChannelDev.Status;
+                                    tmpSipC.SipChannelType = Common.GetSipChannelType(tmpChannelDev.DeviceID);
+                                    tmpSipDevice.SipChannels.Add(tmpSipC);
+                                }
+                            }
+                        }
+
+                        tmpSipDevice.DeviceInfo.Channel = tmpSipDevice.SipChannels.Count;
+                    }
+                    
+                }
+                
+            }
+        }
+
+        /// <summary>
+        /// 保持心跳时的回复
+        /// </summary>
+        /// <param name="sipRequest"></param>
+        /// <returns></returns>
         private static async Task SendKeepAliveOk(SIPRequest sipRequest)
         {
             SIPResponseStatusCodesEnum keepAliveResponse = SIPResponseStatusCodesEnum.Ok;
@@ -110,7 +177,8 @@ namespace LibGB28181SipServer
             await Common.SipServer.SipTransport.SendResponseAsync(okResponse);
         }
 
-        private static async Task MessageProcess(SIPEndPoint localSipEndPoint, SIPEndPoint remoteEndPoint,
+        private static async Task MessageProcess(SIPChannel localSipChannel, SIPEndPoint localSipEndPoint,
+            SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
             string bodyStr = sipRequest.Body;
@@ -131,6 +199,14 @@ namespace LibGB28181SipServer
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的心跳->\r\n{sipRequest}\r\n");
                         }
 
+                        break;
+                    case "CATALOG":
+
+                        var xmlSerializer = new XmlSerializer(typeof(Catalog));
+                        Catalog catalog = (Catalog) xmlSerializer.Deserialize(bodyXml.CreateReader());
+                        
+                        await processGetDeviceItems(catalog);
+                        await SendOkMessage(sipRequest);
                         break;
                 }
             }
@@ -153,6 +229,7 @@ namespace LibGB28181SipServer
                 if (tmpSipDevice != null)
                 {
                     Common.SipDevices.Remove(tmpSipDevice);
+                    tmpSipDevice.SipChannels = null;
                     tmpSipDevice.Dispose();
 
                     Logger.Info(
@@ -171,7 +248,8 @@ namespace LibGB28181SipServer
         /// <param name="remoteEndPonit"></param>
         /// <param name="sipRequest"></param>
         /// <returns></returns>
-        private static async Task RegisterProcess(SIPEndPoint localSipEndPoint, SIPEndPoint remoteEndPoint,
+        private static async Task RegisterProcess(SIPChannel localSipChannel, SIPEndPoint localSipEndPoint,
+            SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
             Logger.Debug(
@@ -229,20 +307,26 @@ namespace LibGB28181SipServer
                     {
                         tmpSipDevice = new SipDevice();
                         tmpSipDevice.KickMe += DoKickSipDevice;
-                        tmpSipDevice.Guid = UtilsHelper.generalGuid();
+                        tmpSipDevice.Guid = UtilsHelper.CreateGUID();
                         tmpSipDevice.Username = "";
                         tmpSipDevice.Password = "";
-                        tmpSipDevice.IpAddress = remoteEndPoint.GetIPEndPoint().Address.ToString();
                         tmpSipDevice.RegisterTime = DateTime.Now;
                         tmpSipDevice.SipChannels = new List<SipChannel>();
                         tmpSipDevice.KeepAliveTime = DateTime.Now;
                         tmpSipDevice.KeepAliveLostTime = 0;
                         tmpSipDevice.DeviceInfo = new DeviceInfo();
                         tmpSipDevice.DeviceInfo.DeviceID = sipDeviceId;
+                        tmpSipDevice.LocalSipEndPoint = localSipEndPoint;
+                        tmpSipDevice.RemoteEndPoint = remoteEndPoint;
+                        tmpSipDevice.SipChannelLayout = localSipChannel;
+                        tmpSipDevice.IpAddress = remoteEndPoint.Address;
+                        tmpSipDevice.Port = remoteEndPoint.Port;
                         try
                         {
                             lock (Common.SipDevicesLock)
                             {
+                                tmpSipDevice.FirstSipRequest = sipRequest;
+                                tmpSipDevice.ContactUri = sipRequest.Header.Contact[0].ContactURI;
                                 Common.SipDevices.Add(tmpSipDevice);
                             }
 
@@ -301,17 +385,23 @@ namespace LibGB28181SipServer
         /// <param name="remoteEndPoint"></param>
         /// <param name="sipRequest"></param>
         /// <returns></returns>
-        public static async Task SipTransportRequestReceived(SIPEndPoint localSipEndPoint,
+        public static async Task SipTransportRequestReceived(SIPChannel localSipChannel, SIPEndPoint localSipEndPoint,
             SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
             switch (sipRequest.Method)
             {
                 case SIPMethodsEnum.REGISTER: //处理注册
-                    await Task.Run(() => { RegisterProcess(localSipEndPoint, remoteEndPoint, sipRequest); });
+                    await Task.Run(() =>
+                    {
+                        RegisterProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
+                    });
                     break;
                 case SIPMethodsEnum.MESSAGE: //心跳、目录查询、设备信息、设备状态等消息的内容处理
-                    await Task.Run(() => { MessageProcess(localSipEndPoint, remoteEndPoint, sipRequest); });
+                    await Task.Run(() =>
+                    {
+                        MessageProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
+                    });
                     break;
             }
         }
@@ -323,12 +413,21 @@ namespace LibGB28181SipServer
         /// <param name="remoteEndPoint"></param>
         /// <param name="sipResponse"></param>
         /// <returns></returns>
-        public static async Task SipTransportResponseReceived(SIPEndPoint localSipEndPoint,
+        public static async Task SipTransportResponseReceived(SIPChannel localSipChannel, SIPEndPoint localSipEndPoint,
             SIPEndPoint remoteEndPoint,
             SIPResponse sipResponse)
         {
-            Logger.Debug(
-                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}");
+            var ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId, out _);
+            if (ret)
+            {
+                Logger.Debug(
+                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
+            }
+            else
+            {
+                Logger.Debug(
+                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}");
+            }
         }
     }
 }

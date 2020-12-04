@@ -27,10 +27,10 @@ namespace SIPSorcery.SIP
         SIPEndPoint remoteEndPoint, byte[] buffer);
 
     // SIP Transport delegates.
-    public delegate Task SIPTransportRequestAsyncDelegate(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
+    public delegate Task SIPTransportRequestAsyncDelegate(SIPChannel localSipChannel,SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
         SIPRequest sipRequest);
 
-    public delegate Task SIPTransportResponseAsyncDelegate(SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
+    public delegate Task SIPTransportResponseAsyncDelegate(SIPChannel localSipChannel,SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
         SIPResponse sipResponse);
 
     public delegate void SIPTransportSIPBadMessageDelegate(SIPEndPoint localSIPEndPoint, SIPEndPoint remotePoint,

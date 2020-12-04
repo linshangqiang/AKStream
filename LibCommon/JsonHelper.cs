@@ -1,14 +1,67 @@
+using System;
 using System.IO;
+using System.Net;
+using LibLogger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace LibCommon
 {
+    class IPAddressConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(IPAddress));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            IPAddress ip = (IPAddress)value;
+            writer.WriteValue(ip.ToString());
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JToken token = JToken.Load(reader);
+            return IPAddress.Parse(token.Value<string>());
+        }
+    }
+
+    class IPEndPointConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(IPEndPoint));
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            IPEndPoint ep = (IPEndPoint)value;
+            writer.WriteStartObject();
+            writer.WritePropertyName("Address");
+            serializer.Serialize(writer, ep.Address);
+            writer.WritePropertyName("Port");
+            writer.WriteValue(ep.Port);
+            writer.WriteEndObject();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JObject jo = JObject.Load(reader);
+            IPAddress address = jo["Address"].ToObject<IPAddress>(serializer);
+            int port = jo["Port"].Value<int>();
+            return new IPEndPoint(address, port);
+        }
+    }
+
+    
     /// <summary>
     /// json工具类
     /// </summary>
     public static class JsonHelper
     {
+        private static string _loggerHead = "JsonHelper";
         private static JsonSerializerSettings _jsonSettings;
 
         static JsonHelper()
@@ -20,6 +73,9 @@ namespace LibCommon
             _jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             _jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             _jsonSettings.Converters.Add(datetimeConverter);
+            _jsonSettings.Converters.Add(new IPAddressConverter());
+            _jsonSettings.Converters.Add(new IPEndPointConverter());
+            
         }
 
 
@@ -65,8 +121,9 @@ namespace LibCommon
 
                 return JsonConvert.SerializeObject(obj, formatting, _jsonSettings);
             }
-            catch
+            catch(Exception ex)
             {
+                Logger.Error($"[{_loggerHead}]->Json序列化异常->{ex.Message}\r\n{ex.StackTrace}");
                 return null!;
             }
         }
@@ -85,8 +142,9 @@ namespace LibCommon
             {
                 return JsonConvert.DeserializeObject<T>(json, _jsonSettings)!;
             }
-            catch
+            catch(Exception ex)
             {
+                Logger.Error($"[{_loggerHead}]->Json返序列化异常->{ex.Message}\r\n{ex.StackTrace}");
                 return default(T)!;
             }
         }

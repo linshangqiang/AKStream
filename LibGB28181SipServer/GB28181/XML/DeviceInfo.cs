@@ -1,7 +1,11 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace GB28181.Sys.XML
 {
+    [Serializable]
     /// <summary>
     /// 设备信息查询响应结果
     /// </summary>
@@ -26,6 +30,7 @@ namespace GB28181.Sys.XML
         /// <summary>
         /// 命令类型：设备信息查询(必选)
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         [XmlElement("CmdType")]
         public CommandType CmdType { get; set; }
 

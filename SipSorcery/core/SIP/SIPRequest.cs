@@ -15,6 +15,7 @@
 //-----------------------------------------------------------------------------
 
 using System;
+using System.Net;
 using Microsoft.Extensions.Logging;
 
 namespace SIPSorcery.SIP
@@ -296,8 +297,9 @@ namespace SIPSorcery.SIP
         /// <param name="uri">The destination URI for the request.</param>
         /// <param name="to">The To header for the request.</param>
         /// <param name="from">The From header for the request.</param>
+        /// <param name="localIpEndPoint">本地端点设置</param>
         /// <returns>A SIP request object.</returns>
-        public static SIPRequest GetRequest(SIPMethodsEnum method, SIPURI uri, SIPToHeader to, SIPFromHeader from)
+        public static SIPRequest GetRequest(SIPMethodsEnum method, SIPURI uri, SIPToHeader to, SIPFromHeader from,SIPEndPoint localSipEndPoint=null)
         {
             SIPRequest request = new SIPRequest(method, uri);
 
@@ -305,7 +307,7 @@ namespace SIPSorcery.SIP
             request.Header = header;
             header.CSeqMethod = method;
             header.Allow = m_allowedSIPMethods;
-            header.Vias.PushViaHeader(SIPViaHeader.GetDefaultSIPViaHeader());
+            header.Vias.PushViaHeader(SIPViaHeader.GetDefaultSIPViaHeader(localSipEndPoint));
 
             return request;
         }

@@ -30,6 +30,24 @@ namespace LibCommon
 
     public static class UtilsHelper
     {
+        
+        
+        /// <summary>
+        /// 生成一个新的序列id
+        /// </summary>
+        /// <returns></returns>
+        public static int CreateNewCSeq()
+        {
+            var r = new Random();
+            return r.Next(1, ushort.MaxValue);
+        }
+        
+        /// <summary>
+        /// 通过mac地址获取ip地址
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="getIPV6"></param>
+        /// <returns></returns>
         public static IPInfo GetIpAddressByMacAddress(string mac, bool getIPV6 = false)
         {
             bool found = false;

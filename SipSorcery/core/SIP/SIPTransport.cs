@@ -904,7 +904,7 @@ namespace SIPSorcery.SIP
                                         }
                                         else
                                         {
-                                            SIPTransportResponseReceived?.Invoke(localEndPoint, remoteEndPoint,
+                                            SIPTransportResponseReceived?.Invoke(sipChannel, localEndPoint, remoteEndPoint,
                                                 sipResponse);
                                         }
                                     }
@@ -1070,7 +1070,7 @@ namespace SIPSorcery.SIP
                                             sipRequest.Header.Vias.UpateTopViaHeader(remoteEndPoint.GetIPEndPoint());
 
                                             // Stateful cores should create a transaction once they receive this event, stateless cores should not.
-                                            SIPTransportRequestReceived(localEndPoint, remoteEndPoint, sipRequest);
+                                            SIPTransportRequestReceived(sipChannel,localEndPoint, remoteEndPoint, sipRequest);
                                         }
                                     }
                                     catch (SIPValidationException sipRequestExcp)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -26,10 +27,16 @@ namespace LibGB28181SipServer
 
         private static List<SipDevice> _sipDevices = new List<SipDevice>();
 
+
         /// <summary>
         /// 用于操作_sipDevices时的锁
         /// </summary>
         public static object SipDevicesLock = new object();
+
+        /// <summary>
+        /// 对sip通道操作时的锁
+        /// </summary>
+        public static object SipChannelOptLock = new object();
 
         /// <summary>
         /// sip设备列表
@@ -66,6 +73,48 @@ namespace LibGB28181SipServer
         {
             get => _loggerHead;
             set => _loggerHead = value;
+        }
+
+        private static ConcurrentDictionary<string, SIPRequest> _needResponseRequests =
+            new ConcurrentDictionary<string, SIPRequest>();
+
+        /// <summary>
+        /// 需要信息回复的消息列表
+        /// </summary>
+        public static ConcurrentDictionary<string, SIPRequest> NeedResponseRequests
+        {
+            get => _needResponseRequests;
+            set => _needResponseRequests = value;
+        }
+
+        /// <summary>
+        /// Sip通道类型
+        /// </summary>
+        public enum SipChannelType
+        {
+            /// <summary>
+            /// 音视频流通道
+            /// </summary>
+            VIDEOCHANNEL,
+
+            /// <summary>
+            /// 报警通道
+            /// </summary>
+            ALARMCHANNEL,
+
+            /// <summary>
+            /// 音频流通道
+            /// </summary>
+            AUDIOCHANNEL,
+
+            /// <summary>
+            /// 其他通道
+            /// </summary>
+            OTHERCHANNEL,
+            /// <summary>
+            /// id位数不等于20,设置为未知设备
+            /// </summary>
+            UNKNOW,
         }
 
         /// <summary>
@@ -163,6 +212,39 @@ namespace LibGB28181SipServer
             return null;
         }
 
+        /// <summary>
+        /// 通过通道id获取通道类型
+        /// </summary>
+        /// <param name="sipChannelId"></param>
+        /// <returns></returns>
+        public static SipChannelType GetSipChannelType(string sipChannelId)
+        {
+            if (sipChannelId.Trim().Length != 20)
+            {
+                return SipChannelType.UNKNOW;
+            }
+            int extId = int.Parse(sipChannelId.Substring(10, 3));
+            if (extId == 131 || extId == 132 || extId == 137 || extId==138||extId==139)
+            {
+                return SipChannelType.VIDEOCHANNEL;
+            }
+            if (extId == 135 || extId==205)
+            {
+                return SipChannelType.ALARMCHANNEL;
+            }
+            if (extId == 137)
+            {
+                return SipChannelType.AUDIOCHANNEL;
+            }
+
+            if (extId >= 140 && extId <= 199)
+            {
+                return SipChannelType.VIDEOCHANNEL;
+            }
+
+            return SipChannelType.OTHERCHANNEL;
+
+        }
         /// <summary>
         /// 返加0说明文件存在并正确加载
         /// 返回1说明文件不存在已新建并加载

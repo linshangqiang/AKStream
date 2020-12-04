@@ -29,57 +29,66 @@
         /// <summary>
         /// 未知的
         /// </summary>
-        UnKnown,
+        
+        UNKNOWN,
 
         /// <summary>
         /// 平台根
         /// </summary>
-        Root,
+     
+        ROOT,
 
         /// <summary>
         /// 省级行政区划
         /// </summary>
-        ProviceCata,
+        PROVICECATA,
 
         /// <summary>
         /// 市级行政区划
         /// </summary>
-        CityCata,
+       
+        CITYCATA,
 
         /// <summary>
         /// 区县级行政区划
         /// </summary>
-        AreaCata,
+       
+        AREACATA,
 
         /// <summary>
         /// 基层接入单位行政区划
         /// </summary>
-        BasicUnit,
+       
+        BASICUNIT,
 
         /// <summary>
         /// 系统目录项
         /// </summary>
-        SystemCata,
+       
+        SYSTEMCATA,
 
         /// <summary>
         /// 业务分组目录项
         /// </summary>
-        BusinessGroupCata,
+      
+        BUSINESSGROUPCATA,
 
         /// <summary>
         /// 虚拟目录分组项
         /// </summary>
-        VirtualGroupCata,
+        
+        VIRTUALGROUPCATA,
 
         /// <summary>
         /// 设备
         /// </summary>
-        Device,
+     
+        DEVICE,
 
         /// <summary>
         /// 其他
         /// </summary>
-        Other
+        OTHER
     }
 
     public class DevType
@@ -91,49 +100,49 @@
         /// <returns></returns>
         public static DevCataType GetCataType(string devId)
         {
-            DevCataType devCata = DevCataType.UnKnown;
+           DevCataType DeviceType = DevCataType.UNKNOWN;
 
             switch (devId.Length)
             {
                 case 2:
-                    devCata = DevCataType.ProviceCata;
+                DeviceType = DevCataType.PROVICECATA;
                     break;
                 case 4:
-                    devCata = DevCataType.CityCata;
+                DeviceType = DevCataType.CITYCATA;
                     break;
                 case 6:
-                    devCata = DevCataType.AreaCata;
+                DeviceType = DevCataType.AREACATA;
                     break;
                 case 8:
-                    devCata = DevCataType.BasicUnit;
+                DeviceType = DevCataType.BASICUNIT;
                     break;
                 case 20:
                     int extId = int.Parse(devId.Substring(10, 3));
                     if (extId == 200) //ID编码11-13位采用200标识系统ID类型
                     {
-                        devCata = DevCataType.SystemCata;
+                        DeviceType = DevCataType.SYSTEMCATA;
                     }
                     else if (extId == 215) //业务分组标识，编码采用D.1中的20位ID格式，扩展215类型代表业务分组
                     {
-                        devCata = DevCataType.BusinessGroupCata;
+                        DeviceType = DevCataType.BUSINESSGROUPCATA;
                     }
                     else if (extId == 216) //虚拟组织标识，编码采用D.1中的20位ID格式，扩展216类型代表虚拟组织
                     {
-                        devCata = DevCataType.VirtualGroupCata;
+                        DeviceType = DevCataType.VIRTUALGROUPCATA;
                     }
                     else if (extId == 131 || extId == 132 || extId == 134 || extId == 137) //D.1中摄像机，网络摄像机编码
                     {
-                        devCata = DevCataType.Device;
+                        DeviceType = DevCataType.DEVICE;
                     }
                     else
                     {
-                        devCata = DevCataType.Other; //其他类型
+                        DeviceType = DevCataType.OTHER; //其他类型
                     }
 
                     break;
             }
 
-            return devCata;
+            return DeviceType;
         }
     }
 }
