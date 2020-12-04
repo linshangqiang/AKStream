@@ -121,18 +121,19 @@ namespace LibGB28181SipServer
         /// <param name="remoteEndPoint"></param>
         /// <param name="catalog"></param>
         /// <returns></returns>
-        private static async Task ProcessGetDeviceItems(SIPEndPoint remoteEndPoint, Catalog catalog)
+        private static void ProcessGetDeviceItems(SIPEndPoint remoteEndPoint, Catalog catalog)
         {
             if (catalog != null)
             {
                 var tmpSipDeviceList = Common.SipDevices.FindAll(x => x.DeviceInfo!.DeviceID.Equals(catalog.DeviceID));
+                
                 if (tmpSipDeviceList.Count > 0)
                 {
                     foreach (var tmpSipDevice in tmpSipDeviceList)
                     {
                         foreach (var tmpChannelDev in catalog.DeviceList.Items)
                         {
-                            lock (tmpSipDevice.SipChannelOptLock)//锁粒度在SipDevice中，不影响其他线程的效率
+                            lock (tmpSipDevice.SipChannelOptLock) //锁粒度在SipDevice中，不影响其他线程的效率
                             {
                                 SipChannel sipChannelInList = tmpSipDevice.SipChannels!.FindLast(x =>
                                     x.SipChannelDesc.DeviceID.Equals(tmpChannelDev.DeviceID))!;
@@ -198,21 +199,20 @@ namespace LibGB28181SipServer
                 switch (cmdType)
                 {
                     case "KEEPALIVE": //处理心跳
+                        await SendKeepAliveOk(sipRequest);
                         string sipDeviceId = bodyXml.Element("DeviceID")?.Value.ToUpper()!;
-                        var tmpSipDevice = Common.SipDevices.FindLast((x => x.DeviceInfo!.DeviceID.Equals(sipDeviceId)));
+                        var tmpSipDevice =
+                            Common.SipDevices.FindLast((x => x.DeviceInfo!.DeviceID.Equals(sipDeviceId)));
                         if (tmpSipDevice != null)
                         {
                             tmpSipDevice.KeepAliveTime = DateTime.Now;
-                            await SendKeepAliveOk(sipRequest);
                             Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
                         }
-
                         break;
                     case "CATALOG": //处理设备目录
-                        await ProcessGetDeviceItems(remoteEndPoint, UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         await SendOkMessage(sipRequest);
-
+                        ProcessGetDeviceItems(remoteEndPoint, UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         break;
                 }
             }
@@ -369,7 +369,10 @@ namespace LibGB28181SipServer
                         if ((DateTime.Now - tmpSipDevice.RegisterTime).Seconds > Common.SIP_REGISTER_MIN_INTERVAL_SEC)
                         {
                             tmpSipDevice.RegisterTime = DateTime.Now;
-                            await Task.Run(() => { OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice)); }); //抛线程出去处理
+                            await Task.Run(() =>
+                            {
+                                OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
+                            }); //抛线程出去处理
 
                             Logger.Info(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceInfo!.DeviceID}->已经更新注册时间，当前Sip设备数量:{Common.SipDevices}个");
@@ -409,16 +412,10 @@ namespace LibGB28181SipServer
             switch (sipRequest.Method)
             {
                 case SIPMethodsEnum.REGISTER: //处理注册
-                    await Task.Run(() =>
-                    {
-                        RegisterProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
-                    });
+                    await RegisterProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
                     break;
                 case SIPMethodsEnum.MESSAGE: //心跳、目录查询、设备信息、设备状态等消息的内容处理
-                    await Task.Run(() =>
-                    {
-                        MessageProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
-                    });
+                    await MessageProcess(localSipChannel, localSipEndPoint, remoteEndPoint, sipRequest);
                     break;
             }
         }
