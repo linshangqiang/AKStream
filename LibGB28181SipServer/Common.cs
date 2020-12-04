@@ -95,33 +95,33 @@ namespace LibGB28181SipServer
             /// <summary>
             /// 音视频流通道
             /// </summary>
-            VIDEOCHANNEL,
+            VideoChannel,
 
             /// <summary>
             /// 报警通道
             /// </summary>
-            ALARMCHANNEL,
+            AlarmChannel,
 
             /// <summary>
             /// 音频流通道
             /// </summary>
-            AUDIOCHANNEL,
+            AudioChannel,
 
             /// <summary>
             /// 其他通道
             /// </summary>
-            OTHERCHANNEL,
+            OtherChannel,
             /// <summary>
             /// id位数不等于20,设置为未知设备
             /// </summary>
-            UNKNOW,
+            Unknow,
         }
 
         /// <summary>
         /// 初始化一SipServerConfig
         /// </summary>
         /// <returns></returns>
-        private static SipServerConfig initSipServerConfig(out ResponseStruct rs)
+        private static SipServerConfig InitSipServerConfig(out ResponseStruct rs)
         {
             try
             {
@@ -221,28 +221,28 @@ namespace LibGB28181SipServer
         {
             if (sipChannelId.Trim().Length != 20)
             {
-                return SipChannelType.UNKNOW;
+                return SipChannelType.Unknow;
             }
             int extId = int.Parse(sipChannelId.Substring(10, 3));
             if (extId == 131 || extId == 132 || extId == 137 || extId==138||extId==139)
             {
-                return SipChannelType.VIDEOCHANNEL;
+                return SipChannelType.VideoChannel;
             }
             if (extId == 135 || extId==205)
             {
-                return SipChannelType.ALARMCHANNEL;
+                return SipChannelType.AlarmChannel;
             }
             if (extId == 137)
             {
-                return SipChannelType.AUDIOCHANNEL;
+                return SipChannelType.AudioChannel;
             }
 
             if (extId >= 140 && extId <= 199)
             {
-                return SipChannelType.VIDEOCHANNEL;
+                return SipChannelType.VideoChannel;
             }
 
-            return SipChannelType.OTHERCHANNEL;
+            return SipChannelType.OtherChannel;
 
         }
         /// <summary>
@@ -256,7 +256,7 @@ namespace LibGB28181SipServer
         {
             if (!File.Exists(_sipServerConfigPath))
             {
-                var config = initSipServerConfig(out rs);
+                var config = InitSipServerConfig(out rs);
                 if (config != null && rs.Code.Equals(ErrorNumber.None))
                 {
                     _sipServerConfig = config;

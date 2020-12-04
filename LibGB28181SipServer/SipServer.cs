@@ -51,7 +51,7 @@ namespace LibGB28181SipServer
         }
 
 
-        private async Task sendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
+        private async Task SendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
             string xmlBody,bool needResponse)
         {
             var to = sipDevice.FirstSipRequest.Header.To;
@@ -80,7 +80,7 @@ namespace LibGB28181SipServer
             req.Body = xmlBody;
             req.Header.CallId = CallProperties.CreateNewCallId();
             req.Header.CSeq = UtilsHelper.CreateNewCSeq();
-            Logger.Info($"[{Common.LoggerHead}]->发送Sip请求->{req}");
+            Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
 
             if (needResponse)
             {
@@ -108,7 +108,7 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
-                Func<SipDevice, SIPMethodsEnum, string, string, string,bool, Task> request = sendRequest;
+                Func<SipDevice, SIPMethodsEnum, string, string, string,bool, Task> request = SendRequest;
                 request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,true);
             }
         }

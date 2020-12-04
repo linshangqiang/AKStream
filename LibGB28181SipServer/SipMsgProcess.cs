@@ -6,9 +6,7 @@ using System.Xml.Serialization;
 using GB28181.Sys.XML;
 using LibCommon;
 using LibLogger;
-using Newtonsoft.Json;
 using SIPSorcery.SIP;
-
 
 namespace LibGB28181SipServer
 {
@@ -116,7 +114,13 @@ namespace LibGB28181SipServer
             await Common.SipServer.SipTransport.SendResponseAsync(okResponse);
         }
 
-        private static async Task processGetDeviceItems(Catalog catalog)
+        /// <summary>
+        /// 处理设备目录添加
+        /// </summary>
+        /// <param name="remoteEndPoint"></param>
+        /// <param name="catalog"></param>
+        /// <returns></returns>
+        private static async Task ProcessGetDeviceItems(SIPEndPoint remoteEndPoint, Catalog catalog)
         {
             if (catalog != null)
             {
@@ -129,11 +133,11 @@ namespace LibGB28181SipServer
                         {
                             lock (Common.SipChannelOptLock)
                             {
-                                var oldC = tmpSipDevice.SipChannels.FindLast(x =>
+                                SipChannel channelInList = tmpSipDevice.SipChannels.FindLast(x =>
                                     x.SipChannelDesc.DeviceID.Equals(tmpChannelDev.DeviceID));
-                                if (oldC == null)
+                                if (channelInList == null)
                                 {
-                                    var tmpSipC = new SipChannel()
+                                    var newSipChannnel = new SipChannel()
                                     {
                                         Guid = UtilsHelper.CreateGUID(),
                                         LastUpdateTime = DateTime.Now,
@@ -145,23 +149,26 @@ namespace LibGB28181SipServer
                                         RemoteEndPoint = tmpSipDevice.RemoteEndPoint,
                                         SipChannelDesc = tmpChannelDev,
                                     };
-                                    if (tmpChannelDev.InfList!=null)
+                                    if (tmpChannelDev.InfList != null)
                                     {
-                                        tmpSipC.SipChannelDesc.InfList = tmpChannelDev.InfList;
+                                        newSipChannnel.SipChannelDesc.InfList = tmpChannelDev.InfList;
                                     }
 
-                                    tmpSipC.SipChanneStatus = tmpChannelDev.Status;
-                                    tmpSipC.SipChannelType = Common.GetSipChannelType(tmpChannelDev.DeviceID);
-                                    tmpSipDevice.SipChannels.Add(tmpSipC);
+                                    newSipChannnel.SipChanneStatus = tmpChannelDev.Status;
+                                    newSipChannnel.SipChannelType = Common.GetSipChannelType(tmpChannelDev.DeviceID);
+                                    tmpSipDevice.SipChannels.Add(newSipChannnel);
+                                    Logger.Info(
+                                        $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备通道信息->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceInfo.DeviceID}->增加Sip通道成功->({newSipChannnel.SipChannelType.ToString()})->{newSipChannnel.Guid}:{newSipChannnel.SipChannelDesc.DeviceID}->此设备当前通道数量:{tmpSipDevice.SipChannels.Count}条");
                                 }
                             }
                         }
 
                         tmpSipDevice.DeviceInfo.Channel = tmpSipDevice.SipChannels.Count;
                     }
-                    
                 }
-                
+
+                Logger.Warn(
+                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的设备目录,处理添加时出现异常情况->Sip设备{catalog.DeviceID}不在系统列表中，已跳过处理");
             }
         }
 
@@ -181,8 +188,7 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
-            string bodyStr = sipRequest.Body;
-            XElement bodyXml = XElement.Parse(bodyStr);
+            XElement bodyXml = XElement.Parse(sipRequest.Body);
             string cmdType = bodyXml.Element("CmdType")?.Value.ToUpper()!;
             if (!string.IsNullOrEmpty(cmdType))
             {
@@ -196,17 +202,16 @@ namespace LibGB28181SipServer
                             tmpSipDevice.KeepAliveTime = DateTime.Now;
                             await SendKeepAliveOk(sipRequest);
                             Logger.Debug(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的心跳->\r\n{sipRequest}\r\n");
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
                         }
 
                         break;
-                    case "CATALOG":
-
+                    case "CATALOG": //查询设备目录
                         var xmlSerializer = new XmlSerializer(typeof(Catalog));
                         Catalog catalog = (Catalog) xmlSerializer.Deserialize(bodyXml.CreateReader());
-                        
-                        await processGetDeviceItems(catalog);
+                        await ProcessGetDeviceItems(remoteEndPoint, catalog);
                         await SendOkMessage(sipRequest);
+
                         break;
                 }
             }
@@ -244,8 +249,9 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 处理sip设备注册事件
         /// </summary>
+        /// <param name="localSipChannel"></param>
         /// <param name="localSipEndPoint"></param>
-        /// <param name="remoteEndPonit"></param>
+        /// <param name="remoteEndPoint"></param>
         /// <param name="sipRequest"></param>
         /// <returns></returns>
         private static async Task RegisterProcess(SIPChannel localSipChannel, SIPEndPoint localSipEndPoint,
@@ -253,7 +259,7 @@ namespace LibGB28181SipServer
             SIPRequest sipRequest)
         {
             Logger.Debug(
-                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的Sip设备注册信息->\r\n{sipRequest}\r\n");
+                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册信息->{sipRequest}");
 
             string sipDeviceId = sipRequest.Header.From.FromURI.User;
 
@@ -332,7 +338,7 @@ namespace LibGB28181SipServer
 
                             OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
                             Logger.Debug(
-                                $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
+                                $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}个");
                         }
                         catch (Exception ex)
                         {
@@ -381,6 +387,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// SipRequest数据处理
         /// </summary>
+        /// <param name="localSipChannel"></param>
         /// <param name="localSipEndPoint"></param>
         /// <param name="remoteEndPoint"></param>
         /// <param name="sipRequest"></param>
@@ -409,6 +416,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// sip Response 处理
         /// </summary>
+        /// <param name="localSipChannel"></param>
         /// <param name="localSipEndPoint"></param>
         /// <param name="remoteEndPoint"></param>
         /// <param name="sipResponse"></param>
