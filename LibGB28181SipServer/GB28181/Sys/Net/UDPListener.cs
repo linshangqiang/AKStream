@@ -51,7 +51,7 @@ namespace GB28181.Sys
             {
                 this.Close();
             }
-            catch (Exception excp)
+            catch
             {
                 //logger.Error("Exception Disposing UDPListener. " + excp.Message);
             }
@@ -80,7 +80,7 @@ namespace GB28181.Sys
                         // so that we know to stop sending.
                         continue;
                     }
-                    catch (Exception listenExcp)
+                    catch
                     {
                         // There is no point logging this as without processing the ICMP message it's not possible to know which socket the rejection came from.
                         //logger.Error("Exception listening on UDPListener. " + listenExcp.Message);
@@ -106,7 +106,7 @@ namespace GB28181.Sys
 
                 //logger.Debug("UDPListener socket on " + m_localEndPoint + " listening halted.");
             }
-            catch (Exception excp)
+            catch
             {
                 //logger.Error("Exception UDPListener Listen. " + excp.Message);
                 //throw excp;

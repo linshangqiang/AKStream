@@ -30,7 +30,7 @@ namespace LibSystemInfo
             set => _architecture = value;
         }
 
-        public string OSName
+        public string OsName
         {
             get => _osName;
             set => _osName = value;
@@ -177,7 +177,7 @@ namespace LibSystemInfo
     [Serializable]
     public class NetWorkStat
     {
-        private string _mac;
+        private string _mac = null!;
         private long _totalSendBytes;
         private long _totalRecvBytes;
         private long _currentSendBytes;

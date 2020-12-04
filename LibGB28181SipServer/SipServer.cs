@@ -19,27 +19,27 @@ namespace LibGB28181SipServer
         /// <summary>
         /// SIP传输通道
         /// </summary>
-        private SIPTransport _sipTransport;
+        private SIPTransport _sipTransport = null!;
 
         /// <summary>
         /// SipUDP通道(IPV4)
         /// </summary>
-        private SIPUDPChannel _sipUdpIpV4Channel;
+        private SIPUDPChannel _sipUdpIpV4Channel = null!;
 
         /// <summary>
         /// SipUDP通道(IPV6)
         /// </summary>
-        private SIPUDPChannel _sipUdpIpV6Channel;
+        private SIPUDPChannel _sipUdpIpV6Channel = null!;
 
         /// <summary>
         /// SipTCP通道(IPV4)
         /// </summary>
-        private SIPTCPChannel _sipTcpIpV4Channel;
+        private SIPTCPChannel _sipTcpIpV4Channel = null!;
 
         /// <summary>
         /// SipTCP通道(IPV6)
         /// </summary>
-        private SIPTCPChannel _sipTcpIpV6Channel;
+        private SIPTCPChannel _sipTcpIpV6Channel = null!;
 
         /// <summary>
         /// SIP传输通道(公开)
@@ -54,11 +54,11 @@ namespace LibGB28181SipServer
         private async Task SendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
             string xmlBody,bool needResponse)
         {
-            var to = sipDevice.FirstSipRequest.Header.To;
+            var to = sipDevice.FirstSipRequest!.Header.To;
             var from = sipDevice.FirstSipRequest.Header.From;
             var fromUri = sipDevice.FirstSipRequest.URI;
 
-            bool isIpV6 = (sipDevice.SipChannelLayout.ListeningIPAddress.AddressFamily == AddressFamily.InterNetworkV6)
+            bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily == AddressFamily.InterNetworkV6)
                 ? true
                 : false;
             SIPRequest req = SIPRequest.GetRequest(method, sipDevice.ContactUri,
@@ -95,12 +95,12 @@ namespace LibGB28181SipServer
         /// <param name="sipDeviceId"></param>
         public void DeviceCatalogQuery(string sipDeviceId)
         {
-            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo.DeviceID.Equals(sipDeviceId));
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDeviceId));
             if (tmpSipDevice != null)
             {
                 SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
                 string subject =
-                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceInfo.DeviceID}:{new Random().Next(100, ushort.MaxValue)}";
+                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceInfo!.DeviceID}:{new Random().Next(100, ushort.MaxValue)}";
                 CatalogQuery catalogQuery = new CatalogQuery()
                 {
                     CommandType = CommandType.Catalog,

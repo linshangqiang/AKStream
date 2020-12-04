@@ -8,19 +8,19 @@ namespace LibGB28181SipServer
     /// </summary>
     public class SipServerConfig
     {
-        private string _sipIpAddress;
+        private string _sipIpAddress = null!;
         private string? _sipIpV6Address;
-        private string _msgEncode;
-        private string _serverSipDeviceId;
+        private string _msgEncode = null!;
+        private string _serverSipDeviceId = null!;
         private ushort _sipPort;
-        private string _gbVersion;
+        private string _gbVersion = null!;
         private bool _authentication;
         private string? _sipUsername;
         private string? _sipPassword;
-        private string _msgProtocol;
+        private string _msgProtocol = null!;
         private int _keepAliveInterval;
         private int _keepAliveLostNumber;
-        private bool ipV6enable=false;
+        private bool _ipV6Enable=false;
         
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace LibGB28181SipServer
         /// </summary>
         public bool IpV6Enable
         {
-            get => ipV6enable;
-            set => ipV6enable = value;
+            get => _ipV6Enable;
+            set => _ipV6Enable = value;
         }
     }
 }

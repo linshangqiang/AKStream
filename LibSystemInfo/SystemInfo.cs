@@ -11,22 +11,19 @@ namespace LibSystemInfo
         private static HardwareInfo _hardwareInfo = _operatingSystemInfo.Hardware;
         private static OperatingSystemType _operatingSystemType = _operatingSystemInfo.OperatingSystemType;
         private static GlobalSystemInfo _globalSystemInfo = new GlobalSystemInfo();
-        private static object lockObj = new object();
-        private static Thread _thread;
-        private static ThreadStart _threadStart;
+        private static object _lockObj = new object();
         private static bool _abort = false;
-        private static bool _ok = false;
+       
 
         public SystemInfo()
         {
             _globalSystemInfo.Architecture = _operatingSystemInfo.Architecture;
-            _globalSystemInfo.OSName = _operatingSystemInfo.Name;
+            _globalSystemInfo.OsName = _operatingSystemInfo.Name;
             _globalSystemInfo.CpuCores = Environment.ProcessorCount;
             _globalSystemInfo.FrameworkVersion = _operatingSystemInfo.FrameworkVersion.ToString();
             _globalSystemInfo.SystemType = _operatingSystemType.ToString();
-            _threadStart = GetInfo;
-            _thread = new Thread(_threadStart);
-            _thread.Start();
+            Thread thread = new Thread(GetInfo);
+            thread.Start();
         }
 
         public void Dispose()
@@ -79,12 +76,12 @@ namespace LibSystemInfo
                     j = 0;
                 }
 
-                lock (lockObj)
+                lock (_lockObj)
                 {
                     if ((j % 10 == 0 || j == 1) && _operatingSystemType != OperatingSystemType.Windows) //10秒更新一次内存情况
                     {
-                        _operatingSystemInfo = null;
-                        _hardwareInfo = null;
+                        _operatingSystemInfo = null!;
+                        _hardwareInfo = null!;
                         _operatingSystemInfo = OperatingSystemInfo.GetOperatingSystemInfo();
                         _hardwareInfo = _operatingSystemInfo.Hardware;
                         _operatingSystemType = _operatingSystemInfo.OperatingSystemType;
@@ -128,7 +125,7 @@ namespace LibSystemInfo
 
         public string GetSystemInfoJson()
         {
-            lock (lockObj)
+            lock (_lockObj)
             {
                 return JsonHelper.ToJson(_globalSystemInfo);
             }
@@ -136,7 +133,7 @@ namespace LibSystemInfo
 
         public GlobalSystemInfo GetSystemInfoObject()
         {
-            lock (lockObj)
+            lock (_lockObj)
             {
                 return _globalSystemInfo;
             }

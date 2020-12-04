@@ -32,37 +32,35 @@ namespace LibSystemInfo
                             string[] strTmpArr = str.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                             if (strTmpArr.Length > 0)
                             {
-                                long tmpRecv = 0;
-                                long tmpSend = 0;
-                                long.TryParse(strTmpArr[1], out tmpRecv);
-                                long.TryParse(strTmpArr[9], out tmpSend);
+                                long.TryParse(strTmpArr[1], out var tmpRecv);
+                                long.TryParse(strTmpArr[9], out var tmpSend);
 
                                 if (tmpRecv > 0 && tmpSend > 0)
                                 {
-                                    if (perRecvBytes == 0 && perSendBytes == 0)
+                                    if (_perRecvBytes == 0 && _perSendBytes == 0)
                                     {
                                         lock (lockObj)
                                         {
-                                            perRecvBytes = tmpRecv;
-                                            perSendBytes = tmpSend;
-                                            _NetWorkStat.CurrentRecvBytes = 0;
-                                            _NetWorkStat.CurrentSendBytes = 0;
-                                            _NetWorkStat.TotalRecvBytes = 0;
-                                            _NetWorkStat.TotalSendBytes = 0;
-                                            _NetWorkStat.UpdateTime = DateTime.Now;
+                                            _perRecvBytes = tmpRecv;
+                                            _perSendBytes = tmpSend;
+                                            NetWorkStat.CurrentRecvBytes = 0;
+                                            NetWorkStat.CurrentSendBytes = 0;
+                                            NetWorkStat.TotalRecvBytes = 0;
+                                            NetWorkStat.TotalSendBytes = 0;
+                                            NetWorkStat.UpdateTime = DateTime.Now;
                                         }
                                     }
                                     else
                                     {
                                         lock (lockObj)
                                         {
-                                            _NetWorkStat.CurrentRecvBytes = tmpRecv - perRecvBytes;
-                                            _NetWorkStat.CurrentSendBytes = tmpSend - perSendBytes;
-                                            perRecvBytes += _NetWorkStat.CurrentRecvBytes;
-                                            perSendBytes += _NetWorkStat.CurrentSendBytes;
-                                            _NetWorkStat.TotalRecvBytes += _NetWorkStat.CurrentRecvBytes;
-                                            _NetWorkStat.TotalSendBytes += _NetWorkStat.CurrentSendBytes;
-                                            _NetWorkStat.UpdateTime = DateTime.Now;
+                                            NetWorkStat.CurrentRecvBytes = tmpRecv - _perRecvBytes;
+                                            NetWorkStat.CurrentSendBytes = tmpSend - _perSendBytes;
+                                            _perRecvBytes += NetWorkStat.CurrentRecvBytes;
+                                            _perSendBytes += NetWorkStat.CurrentSendBytes;
+                                            NetWorkStat.TotalRecvBytes += NetWorkStat.CurrentRecvBytes;
+                                            NetWorkStat.TotalSendBytes += NetWorkStat.CurrentSendBytes;
+                                            NetWorkStat.UpdateTime = DateTime.Now;
                                         }
                                     }
                                 }
@@ -81,12 +79,12 @@ namespace LibSystemInfo
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                ProcessHelper tmpProcess = new ProcessHelper(null, null, null);
-                tmpProcess.RunProcess("/usr/sbin/route", "", 1000, out string _std, out string _err);
+                ProcessHelper tmpProcess = new ProcessHelper(null!, null!, null!);
+                tmpProcess.RunProcess("/usr/sbin/route", "", 1000, out string std, out string err);
                 bool isFound = false;
-                if (!string.IsNullOrEmpty(_std))
+                if (!string.IsNullOrEmpty(std))
                 {
-                    string[] tmpStrArr = _std.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    string[] tmpStrArr = std.Split('\n', StringSplitOptions.RemoveEmptyEntries);
                     if (tmpStrArr.Length > 0)
                     {
                         foreach (var str in tmpStrArr)
@@ -105,12 +103,12 @@ namespace LibSystemInfo
                                     if (!string.IsNullOrEmpty(str1))
                                     {
                                         ethName = str1;
-                                        tmpProcess.RunProcess("/usr/sbin/ifconfig", str1, 1000, out string _std1,
-                                            out string _err1);
+                                        tmpProcess.RunProcess("/usr/sbin/ifconfig", str1, 1000, out string std1,
+                                            out string err1);
 
-                                        if (!string.IsNullOrEmpty(_std1))
+                                        if (!string.IsNullOrEmpty(std1))
                                         {
-                                            string[] tmpStrArr1 = _std1.Split('\n',
+                                            string[] tmpStrArr1 = std1.Split('\n',
                                                 StringSplitOptions.RemoveEmptyEntries);
                                             if (tmpStrArr1.Length > 0)
                                             {
@@ -122,7 +120,7 @@ namespace LibSystemInfo
                                                         var mac = Regex.Match(str2, regex);
                                                         if (mac.Value.Trim().Length == 17)
                                                         {
-                                                            _NetWorkStat.Mac = mac.Value.ToUpper().Replace(":", "-")
+                                                            NetWorkStat.Mac = mac.Value.ToUpper().Replace(":", "-")
                                                                 .Trim();
                                                             isFound = true;
                                                             break;
@@ -144,25 +142,25 @@ namespace LibSystemInfo
                     {
                         GetInfo();
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        //
+                        // ignored
                     }
                 })).Start();
             }
         }
 
 
-        private static long perSendBytes = 0;
-        private static long perRecvBytes = 0;
+        private static long _perSendBytes = 0;
+        private static long _perRecvBytes = 0;
 
-        public static NetWorkStat _NetWorkStat = new NetWorkStat();
+        public static NetWorkStat NetWorkStat = new NetWorkStat();
 
         public static NetWorkStat GetNetworkStat()
         {
             lock (lockObj)
             {
-                return _NetWorkStat;
+                return NetWorkStat;
             }
         }
     }

@@ -13,17 +13,15 @@ namespace LibGB28181SipServer
     [Serializable]
     public class SipChannel: IDisposable
     {
-        private string _guid;
-        private string __parentGuid;
-        private SIPEndPoint _remoteEndPoint;
-        private SIPEndPoint _localSipEndPoint;
+        private string _guid = null!;
+        private string _parentGuid = null!;
+        private SIPEndPoint _remoteEndPoint = null!;
+        private SIPEndPoint _localSipEndPoint = null!;
         private DevicePushStatus _pushStatus;
-        private DateTime? _pushOnTime;
         private DateTime _lastUpdateTime;
-        private long? _pushOnlineTime;
         private Common.SipChannelType _sipChannelType;
         private DevStatus _sipChanneStatus;
-        private Catalog.Item _sipChannelDesc;
+        private Catalog.Item _sipChannelDesc = null!;
         private List<MediaServerStreamInfo> _channelMediaServerStreamInfos=new List<MediaServerStreamInfo>();
         
 
@@ -61,8 +59,8 @@ namespace LibGB28181SipServer
         /// </summary>
         public string ParentGuid
         {
-            get => __parentGuid;
-            set => __parentGuid = value;
+            get => _parentGuid;
+            set => _parentGuid = value;
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -75,14 +73,7 @@ namespace LibGB28181SipServer
             set => _pushStatus = value;
         }
 
-        /// <summary>
-        /// 推流时间
-        /// </summary>
-        public DateTime? PushOnTime
-        {
-            get => _pushOnTime;
-            set => _pushOnTime = value;
-        }
+       
 
         /// <summary>
         /// 最后更新时间
@@ -92,16 +83,7 @@ namespace LibGB28181SipServer
             get => _lastUpdateTime;
             set => _lastUpdateTime = value;
         }
-
-        /// <summary>
-        /// 本次推流时长
-        /// </summary>
-        public long? PushOnlineTime
-        {
-            get => _pushOnlineTime;
-            set => _pushOnlineTime = value;
-        }
-
+        
         /// <summary>
         /// 通道类型
         /// </summary>
@@ -139,7 +121,7 @@ namespace LibGB28181SipServer
 
         public void Dispose()
         {
-            _sipChannelDesc = null;
+            _sipChannelDesc = null!;
         }
 
         /// <summary>

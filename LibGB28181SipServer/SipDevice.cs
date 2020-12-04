@@ -11,33 +11,38 @@ namespace LibGB28181SipServer
     [Serializable]
     public class SipDevice : IDisposable
     {
-        private string _guid;
-        private IPAddress _ipAddress;
+        private string? _guid;
+        private IPAddress? _ipAddress;
         private int _port;
-        private SIPEndPoint _remoteEndPoint;
-        private SIPEndPoint _localSipEndPoint;
-        private List<SipChannel> _sipChannels;
-        private DeviceInfo _deviceInfo;
+        private SIPEndPoint? _remoteEndPoint;
+        private SIPEndPoint? _localSipEndPoint;
+        private List<SipChannel>? _sipChannels;
+        private DeviceInfo? _deviceInfo;
         private DateTime _registerTime;
         private string? _username;
         private string? _password;
         private DateTime _keepAliveTime;
         private int _keepAliveLostTime;
         private Timer _keepAliveCheckTimer = null;
-        private SIPRequest _firstSipRequest;
-        private SIPURI _contactUri;
-        private SIPChannel _sipChannelLayout;
+        private SIPRequest? _firstSipRequest;
+        private SIPURI? _contactUri;
+        private SIPChannel? _sipChannelLayout;
 
         public event Common.DoKickSipDevice KickMe = null!;
 
-
+        
+        /// <summary>
+        /// 对sip通道操作时的锁
+        /// </summary>
+        [JsonIgnore]
+        public  object SipChannelOptLock = new object();
         public void Dispose()
         {
             
             if (_keepAliveCheckTimer != null)
             {
                 _keepAliveCheckTimer.Dispose();
-                _keepAliveCheckTimer = null;
+                _keepAliveCheckTimer = null!;
             }
         }
 
@@ -49,7 +54,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备在系统中唯一id
         /// </summary>
-        public string Guid
+        public string? Guid
         {
             get => _guid;
             set => _guid = value;
@@ -58,7 +63,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备ip地址
         /// </summary>
-        public IPAddress IpAddress
+        public IPAddress? IpAddress
         {
             get => _ipAddress;
             set => _ipAddress = value;
@@ -74,20 +79,22 @@ namespace LibGB28181SipServer
         }
 
 
-        [JsonIgnore]
+       
         /// <summary>
         /// sip设备ip端口协议
         /// </summary>
-        public SIPEndPoint RemoteEndPoint
+        [JsonIgnore]
+        public SIPEndPoint? RemoteEndPoint
         {
             get => _remoteEndPoint;
             set => _remoteEndPoint = value;
         }
-        [JsonIgnore]
+       
         /// <summary>
         /// sip服务ip端口协议
         /// </summary>
-        public SIPEndPoint LocalSipEndPoint
+        [JsonIgnore]
+        public SIPEndPoint? LocalSipEndPoint
         {
             get => _localSipEndPoint;
             set => _localSipEndPoint = value;
@@ -98,7 +105,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备所属通道信息
         /// </summary>
-        public List<SipChannel> SipChannels
+        public List<SipChannel>? SipChannels
         {
             get => _sipChannels;
             set => _sipChannels = value;
@@ -107,7 +114,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备信息
         /// </summary>
-        public DeviceInfo DeviceInfo
+        public DeviceInfo? DeviceInfo
         {
             get => _deviceInfo;
             set => _deviceInfo = value;
@@ -173,27 +180,29 @@ namespace LibGB28181SipServer
         /// </summary>
 
         [JsonIgnore]
-        public SIPRequest FirstSipRequest
+        public SIPRequest? FirstSipRequest
         {
             get => _firstSipRequest;
             set => _firstSipRequest = value;
         }
 
-        [JsonIgnore]
+       
         /// <summary>
         /// 注册时候的uri
         /// </summary>
-        public SIPURI ContactUri
+        [JsonIgnore]
+        public SIPURI? ContactUri
         {
             get => _contactUri;
             set => _contactUri = value;
         }
 
-        [JsonIgnore]
+       
         /// <summary>
         /// 设备所在的Sip通道实例
         /// </summary>
-        public SIPChannel SipChannelLayout
+        [JsonIgnore]
+        public SIPChannel? SipChannelLayout
         {
             get => _sipChannelLayout;
             set => _sipChannelLayout = value;
@@ -226,8 +235,7 @@ namespace LibGB28181SipServer
                 {
                     _keepAliveCheckTimer.Enabled = false;
                     _keepAliveCheckTimer.Stop();
-
-                    KickMe?.Invoke(_guid);
+                    KickMe?.Invoke(_guid!);
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace LibSystemInfo
         {
             lock (lockObj)
             {
-                return _NetWorkStat;
+                return NetWorkStat;
             }
         }
 
@@ -21,12 +21,12 @@ namespace LibSystemInfo
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                ProcessHelper tmpProcess = new ProcessHelper(null, null, null);
-                tmpProcess.RunProcess("/sbin/route", "-n get default", 1000, out string _std, out string _err);
+                ProcessHelper tmpProcess = new ProcessHelper(null!, null!, null!);
+                tmpProcess.RunProcess("/sbin/route", "-n get default", 1000, out string std, out string err);
                 bool isFound = false;
-                if (!string.IsNullOrEmpty(_std))
+                if (!string.IsNullOrEmpty(std))
                 {
-                    string[] tmpStrArr = _std.Split("\n", StringSplitOptions.RemoveEmptyEntries);
+                    string[] tmpStrArr = std.Split("\n", StringSplitOptions.RemoveEmptyEntries);
                     if (tmpStrArr.Length > 0)
                     {
                         foreach (var tmpStr in tmpStrArr)
@@ -41,11 +41,11 @@ namespace LibSystemInfo
                                 string str = tmpStr.Replace("interface:", "").Trim();
                                 if (!string.IsNullOrEmpty(str))
                                 {
-                                    tmpProcess.RunProcess("/sbin/ifconfig", str, 1000, out string _std1,
-                                        out string _err1);
-                                    if (!string.IsNullOrEmpty(_std1))
+                                    tmpProcess.RunProcess("/sbin/ifconfig", str, 1000, out string std1,
+                                        out string err1);
+                                    if (!string.IsNullOrEmpty(std1))
                                     {
-                                        string[] tmpStrArr1 = _std1.Split("\n", StringSplitOptions.RemoveEmptyEntries);
+                                        string[] tmpStrArr1 = std1.Split("\n", StringSplitOptions.RemoveEmptyEntries);
                                         if (tmpStrArr1.Length > 0)
                                         {
                                             foreach (var str2 in tmpStrArr1)
@@ -56,7 +56,7 @@ namespace LibSystemInfo
                                                         .Trim();
                                                     if (!string.IsNullOrEmpty(tmpS))
                                                     {
-                                                        _NetWorkStat.Mac = tmpS;
+                                                        NetWorkStat.Mac = tmpS;
                                                         isFound = true;
                                                         break;
                                                     }
@@ -75,12 +75,11 @@ namespace LibSystemInfo
         }
 
         private static ProcessHelper SystemInfoProcessHelper =
-            new ProcessHelper(p_StdOutputDataReceived, null, p_Process_Exited);
+            new ProcessHelper(p_StdOutputDataReceived, null!, p_Process_Exited!);
 
-        private static long perSendBytes = 0;
-        private static long perRecvBytes = 0;
+      
 
-        public static NetWorkStat _NetWorkStat = new NetWorkStat();
+        public static NetWorkStat NetWorkStat = new NetWorkStat();
 
         private static void p_Process_Exited(object sender, EventArgs e)
         {
@@ -151,11 +150,11 @@ namespace LibSystemInfo
 
                         lock (lockObj)
                         {
-                            _NetWorkStat.TotalRecvBytes += tmpRecvBytes;
-                            _NetWorkStat.TotalSendBytes += tmpSendBytes;
-                            _NetWorkStat.CurrentRecvBytes = tmpRecvBytes;
-                            _NetWorkStat.CurrentSendBytes = tmpSendBytes;
-                            _NetWorkStat.UpdateTime = DateTime.Now;
+                            NetWorkStat.TotalRecvBytes += tmpRecvBytes;
+                            NetWorkStat.TotalSendBytes += tmpSendBytes;
+                            NetWorkStat.CurrentRecvBytes = tmpRecvBytes;
+                            NetWorkStat.CurrentSendBytes = tmpSendBytes;
+                            NetWorkStat.UpdateTime = DateTime.Now;
                         }
                     }
                 }

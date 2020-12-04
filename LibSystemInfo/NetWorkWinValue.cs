@@ -15,12 +15,12 @@ namespace LibSystemInfo
         private static string binPath = AppDomain.CurrentDomain.BaseDirectory + "/WinNetworkStaCli.exe";
 
         private static ProcessHelper SystemInfoProcessHelper =
-            new ProcessHelper(p_StdOutputDataReceived, null, p_Process_Exited);
+            new ProcessHelper(p_StdOutputDataReceived, null!, p_Process_Exited!);
 
-        private static long perSendBytes = 0;
-        private static long perRecvBytes = 0;
-        private static string mac = "";
-        public static NetWorkStat _NetWorkStat = new NetWorkStat();
+        private static long _perSendBytes = 0;
+        private static long _perRecvBytes = 0;
+       
+        public static NetWorkStat NetWorkStat = new NetWorkStat();
 
         private static void p_Process_Exited(object sender, EventArgs e)
         {
@@ -40,7 +40,7 @@ namespace LibSystemInfo
                     {
                         if (tmpStr.Contains("MAC"))
                         {
-                            _NetWorkStat.Mac = tmpStr.Replace("MAC:", "").Trim();
+                            NetWorkStat.Mac = tmpStr.Replace("MAC:", "").Trim();
                         }
 
                         if (tmpStr.Contains("发送"))
@@ -64,32 +64,32 @@ namespace LibSystemInfo
 
                     if (tmpSendBytes > 0 && tmpRecvBytes > 0)
                     {
-                        if (perSendBytes == 0 && perRecvBytes == 0) //第一次
+                        if (_perSendBytes == 0 && _perRecvBytes == 0) //第一次
                         {
                             lock (lockObj)
                             {
-                                perSendBytes = tmpSendBytes;
-                                perRecvBytes = tmpRecvBytes;
-                                _NetWorkStat.CurrentRecvBytes = 0;
-                                _NetWorkStat.CurrentSendBytes = 0;
-                                _NetWorkStat.TotalRecvBytes = 0;
-                                _NetWorkStat.TotalSendBytes = 0;
-                                _NetWorkStat.UpdateTime = DateTime.Now;
+                                _perSendBytes = tmpSendBytes;
+                                _perRecvBytes = tmpRecvBytes;
+                                NetWorkStat.CurrentRecvBytes = 0;
+                                NetWorkStat.CurrentSendBytes = 0;
+                                NetWorkStat.TotalRecvBytes = 0;
+                                NetWorkStat.TotalSendBytes = 0;
+                                NetWorkStat.UpdateTime = DateTime.Now;
                             }
                         }
                         else //有数据以后，每次计算差值
                         {
                             lock (lockObj)
                             {
-                                long subSendBytes = tmpSendBytes - perSendBytes;
-                                long subRecvBytes = tmpRecvBytes - perRecvBytes;
-                                perSendBytes = tmpSendBytes;
-                                perRecvBytes = tmpRecvBytes;
-                                _NetWorkStat.CurrentRecvBytes = subRecvBytes;
-                                _NetWorkStat.CurrentSendBytes = subSendBytes;
-                                _NetWorkStat.TotalRecvBytes += subRecvBytes;
-                                _NetWorkStat.TotalSendBytes += subSendBytes;
-                                _NetWorkStat.UpdateTime = DateTime.Now;
+                                long subSendBytes = tmpSendBytes - _perSendBytes;
+                                long subRecvBytes = tmpRecvBytes - _perRecvBytes;
+                                _perSendBytes = tmpSendBytes;
+                                _perRecvBytes = tmpRecvBytes;
+                                NetWorkStat.CurrentRecvBytes = subRecvBytes;
+                                NetWorkStat.CurrentSendBytes = subSendBytes;
+                                NetWorkStat.TotalRecvBytes += subRecvBytes;
+                                NetWorkStat.TotalSendBytes += subSendBytes;
+                                NetWorkStat.UpdateTime = DateTime.Now;
                             }
                         }
                     }
@@ -104,11 +104,11 @@ namespace LibSystemInfo
             {
                 //Windows下，父亲进程退出后，子进程没有被退出
                 Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(binPath));
-                if (processes != null && processes.Length > 0)
+                if (processes.Length > 0)
                 {
                     foreach (var process in processes)
                     {
-                        if (process != null && process.HasExited == false)
+                        if (process.HasExited == false)
                         {
                             process.Kill();
                         }
@@ -127,7 +127,7 @@ namespace LibSystemInfo
         {
             lock (lockObj)
             {
-                return _NetWorkStat;
+                return NetWorkStat;
             }
         }
     }

@@ -7,7 +7,7 @@ namespace LibCommon.Structs
     public class MediaServerStreamPlayerInfo
     {
         private long _playerId;
-        private string _ipAddress;
+        private string _ipAddress = null!;
         private string? _playerParams;
         private ushort _port;
         private long? _streamBytes;
@@ -83,15 +83,15 @@ namespace LibCommon.Structs
     [Serializable]
     public class MediaServerStreamInfo
     {
-        private string _mediaServerId;
-        private string _mediaServerIp;
+        private string _mediaServerId = null!;
+        private string _mediaServerIp = null!;
         private DateTime _startTime;
         private long _streamBytes;
-        private string _vhost;
-        private string _app;
+        private string _vhost = null!;
+        private string _app = null!;
         private string? _schema;
-        private string _stream;
-        private string _playUrl;
+        private string _stream = null!;
+        private string _playUrl = null!;
         private List<MediaServerStreamPlayerInfo> _playerList= new List<MediaServerStreamPlayerInfo>();
 
         /// <summary>

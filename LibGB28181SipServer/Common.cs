@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using LibCommon;
+using LibCommon.Structs;
 using LibSystemInfo;
 using SIPSorcery.SIP;
 
@@ -11,20 +12,30 @@ namespace LibGB28181SipServer
 {
     public static class Common
     {
+        /// <summary>
+        /// 踢掉掉线的sip设备
+        /// </summary>
+        /// <param name="guid"></param>
         public delegate void DoKickSipDevice(string guid);
-
+        /// <summary>
+        /// 当sip设备注册时
+        /// </summary>
+        /// <param name="sipDeviceJson"></param>
         public delegate void RegisterDelegate(string sipDeviceJson);
-
+        /// <summary>
+        /// 当sip设备注销时
+        /// </summary>
+        /// <param name="sipDeviceJson"></param>
         public delegate void UnRegisterDelegate(string sipDeviceJson);
-
+        /// <summary>
+        /// 当设备报警订阅时
+        /// </summary>
+        /// <param name="sipTransaction"></param>
         public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
-
-
         public const int SIP_REGISTER_MIN_INTERVAL_SEC = 30; //最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
-        private static SipServerConfig _sipServerConfig = null;
+        private static SipServerConfig _sipServerConfig = null!;
         private static string _sipServerConfigPath = GCommon.ConfigPath + "SipServerConfig.json";
-
         private static List<SipDevice> _sipDevices = new List<SipDevice>();
 
 
@@ -33,10 +44,7 @@ namespace LibGB28181SipServer
         /// </summary>
         public static object SipDevicesLock = new object();
 
-        /// <summary>
-        /// 对sip通道操作时的锁
-        /// </summary>
-        public static object SipChannelOptLock = new object();
+       
 
         /// <summary>
         /// sip设备列表
@@ -48,7 +56,10 @@ namespace LibGB28181SipServer
         }
 
 
-        public static SipServer SipServer = null;
+        /// <summary>
+        /// sip服务实例
+        /// </summary>
+        public static SipServer SipServer = null!;
 
         /// <summary>
         /// Sip网关配置实例
@@ -69,6 +80,9 @@ namespace LibGB28181SipServer
             set => _sipServerConfigPath = value;
         }
 
+        /// <summary>
+        /// 日志头标识
+        /// </summary>
         public static string LoggerHead
         {
             get => _loggerHead;
@@ -125,10 +139,9 @@ namespace LibGB28181SipServer
         {
             try
             {
-                SipServerConfig sipServerConfig = null;
+                SipServerConfig sipServerConfig = null!;
                 SystemInfo systemInfo = new SystemInfo();
                 string macAddr = "";
-                string ipAddr = "";
                 var sys = systemInfo.GetSystemInfoObject();
                 int i = 0;
                 while (sys == null || sys.NetWorkStat == null || i < 50)
@@ -150,7 +163,7 @@ namespace LibGB28181SipServer
                         Code = ErrorNumber.Sys_GetMacAddressExcept,
                         Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_GetMacAddressExcept],
                     };
-                    return null; //mac 地址没找到了，报错出去
+                    return null!; //mac 地址没找到了，报错出去
                 }
 
                 IPInfo ipInfo = UtilsHelper.GetIpAddressByMacAddress(macAddr, true);
@@ -201,7 +214,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
-                return null;
+                return null!;
             }
 
             rs = new ResponseStruct()
@@ -209,7 +222,7 @@ namespace LibGB28181SipServer
                 Code = ErrorNumber.Other,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.Other],
             };
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -283,7 +296,7 @@ namespace LibGB28181SipServer
                 try
                 {
                     _sipServerConfig =
-                        UtilsHelper.ReadJsonConfig<SipServerConfig>(_sipServerConfigPath) as SipServerConfig;
+                        (UtilsHelper.ReadJsonConfig<SipServerConfig>(_sipServerConfigPath) as SipServerConfig)!;
                     if (_sipServerConfig != null)
                     {
                         rs = new ResponseStruct()

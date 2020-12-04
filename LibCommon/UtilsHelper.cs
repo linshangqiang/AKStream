@@ -6,31 +6,29 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using LibCommon.Structs;
 using Newtonsoft.Json;
 
 namespace LibCommon
 {
-    public class IPInfo
-    {
-        private string _ipV4 = null!;
-        private string _ipV6 = null!;
-
-        public string IpV4
-        {
-            get => _ipV4;
-            set => _ipV4 = value;
-        }
-
-        public string IpV6
-        {
-            get => _ipV6;
-            set => _ipV6 = value;
-        }
-    }
-
+    /// <summary>
+    /// 常用工具类
+    /// </summary>
     public static class UtilsHelper
     {
-        
+        /// <summary>
+        /// XML转类实例
+        /// </summary>
+        /// <param name="xmlBody"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T XMLToObject<T>(XElement xmlBody)
+        {
+            var xmlSerializer = new XmlSerializer(typeof(T));
+            return (T) xmlSerializer.Deserialize(xmlBody.CreateReader());
+        }
         
         /// <summary>
         /// 生成一个新的序列id

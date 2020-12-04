@@ -8,36 +8,36 @@ using Newtonsoft.Json.Linq;
 
 namespace LibCommon
 {
-    class IPAddressConverter : JsonConverter
+    class IpAddressConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
             return (objectType == typeof(IPAddress));
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            IPAddress ip = (IPAddress)value;
+            IPAddress ip = (IPAddress)value!;
             writer.WriteValue(ip.ToString());
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             JToken token = JToken.Load(reader);
             return IPAddress.Parse(token.Value<string>());
         }
     }
 
-    class IPEndPointConverter : JsonConverter
+    class IpEndPointConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
             return (objectType == typeof(IPEndPoint));
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            IPEndPoint ep = (IPEndPoint)value;
+            IPEndPoint ep = (IPEndPoint)value!;
             writer.WriteStartObject();
             writer.WritePropertyName("Address");
             serializer.Serialize(writer, ep.Address);
@@ -46,11 +46,11 @@ namespace LibCommon
             writer.WriteEndObject();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            IPAddress address = jo["Address"].ToObject<IPAddress>(serializer);
-            int port = jo["Port"].Value<int>();
+            IPAddress address = jo["Address"]!.ToObject<IPAddress>(serializer)!;
+            int port = jo["Port"]!.Value<int>();
             return new IPEndPoint(address, port);
         }
     }
@@ -73,8 +73,8 @@ namespace LibCommon
             _jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             _jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             _jsonSettings.Converters.Add(datetimeConverter);
-            _jsonSettings.Converters.Add(new IPAddressConverter());
-            _jsonSettings.Converters.Add(new IPEndPointConverter());
+            _jsonSettings.Converters.Add(new IpAddressConverter());
+            _jsonSettings.Converters.Add(new IpEndPointConverter());
             
         }
 
@@ -109,6 +109,7 @@ namespace LibCommon
         /// 将指定的对象序列化成 JSON 数据。
         /// </summary>
         /// <param name="obj">要序列化的对象。</param>
+        /// <param name="formatting"></param>
         /// <param name="p"></param>
         /// <returns></returns>
         public static string ToJson(this object obj,Formatting formatting=Formatting.None,MissingMemberHandling p = MissingMemberHandling.Error )
@@ -116,9 +117,6 @@ namespace LibCommon
             _jsonSettings.MissingMemberHandling = p;
             try
             {
-                if (null == obj)
-                    return null!;
-
                 return JsonConvert.SerializeObject(obj, formatting, _jsonSettings);
             }
             catch(Exception ex)
