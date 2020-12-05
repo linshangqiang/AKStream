@@ -10,7 +10,6 @@ namespace LibGB28181SipServer
     {
         private string _sipIpAddress = null!;
         private string? _sipIpV6Address;
-        private string _msgEncode = null!;
         private string _serverSipDeviceId = null!;
         private ushort _sipPort;
         private string _gbVersion = null!;
@@ -41,14 +40,7 @@ namespace LibGB28181SipServer
             set => _sipIpV6Address = value;
         }
 
-        /// <summary>
-        /// sip服务中消息的编码格式
-        /// </summary>
-        public string MsgEncode
-        {
-            get => _msgEncode;
-            set => _msgEncode = value;
-        }
+      
 
         /// <summary>
         /// sip服务器id

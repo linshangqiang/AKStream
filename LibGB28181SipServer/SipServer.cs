@@ -169,7 +169,6 @@ namespace LibGB28181SipServer
             Logger.Info($"[{Common.LoggerHead}]->配置情况->启用IPV6->{Common.SipServerConfig.IpV6Enable}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务端口->{Common.SipServerConfig.SipPort}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务协议->{Common.SipServerConfig.MsgProtocol}");
-            Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务端字符集->{Common.SipServerConfig.MsgEncode}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->GB28181协议版本->{Common.SipServerConfig.GbVersion}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务是否启用鉴权->{Common.SipServerConfig.Authentication}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务鉴权用户名->{Common.SipServerConfig.SipUsername}");
@@ -184,9 +183,11 @@ namespace LibGB28181SipServer
 
                 //创建sip传输层
                 _sipTransport = new SIPTransport();
+               
                 // 创建ipv4 udp传输层
                 _sipUdpIpV4Channel = new SIPUDPChannel(new IPEndPoint(IPAddress.Any,
                     Common.SipServerConfig.SipPort));
+                
                 if (Common.SipServerConfig.MsgProtocol.Trim().ToUpper().Equals("TCP"))
                 {
                     _sipTcpIpV4Channel = new SIPTCPChannel(new IPEndPoint(IPAddress.Any,
@@ -227,7 +228,6 @@ namespace LibGB28181SipServer
                     case "GB-2016":
                         _sipTransport.SIPTransportRequestReceived += SipMsgProcess.SipTransportRequestReceived;
                         _sipTransport.SIPTransportResponseReceived += SipMsgProcess.SipTransportResponseReceived;
-
                         break;
                 }
 

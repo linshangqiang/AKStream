@@ -436,12 +436,12 @@ namespace LibGB28181SipServer
             if (ret)
             {
                 Logger.Debug(
-                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
+                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
             }
             else
             {
                 Logger.Debug(
-                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint.ToString()}的SipResponse->{sipResponse.ToString()}");
+                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}");
             }
         }
     }

@@ -173,7 +173,6 @@ namespace LibGB28181SipServer
                     sipServerConfig.Authentication = false;
                     sipServerConfig.SipUsername = "admin";
                     sipServerConfig.SipPassword = "123456";
-                    sipServerConfig.MsgEncode = "GB2312";
                     sipServerConfig.GbVersion = "GB-2016";
                     sipServerConfig.MsgProtocol = "UDP";
                     sipServerConfig.SipPort = 5060;
