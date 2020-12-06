@@ -2,11 +2,11 @@ using System;
 
 namespace LibCommon
 {
-    public class AKStreamException:Exception
+    public class AkStreamException:Exception
     {
         public ResponseStruct ResponseStruct;
 
-        public AKStreamException(ResponseStruct rs)
+        public AkStreamException(ResponseStruct rs)
         {
             ResponseStruct = rs;
         }

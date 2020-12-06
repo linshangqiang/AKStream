@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using GB28181.Sys.XML;
 using LibCommon;
 using LibLogger;
@@ -280,10 +279,12 @@ namespace LibGB28181SipServer
                     {
                         try
                         {
-                            await Task.Run(() =>
+
+                            OnUnRegisterReceived?.BeginInvoke(JsonHelper.ToJson(tmpSipDevice), null!, null!);
+                            /*await Task.Run(() =>
                             {
                                 OnUnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                            }); //抛线程出去处理
+                            }); //抛线程出去处理*/
                             Logger.Info(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceInfo!.DeviceID}->已经注销，当前Sip设备数量:{Common.SipDevices}个");
 
@@ -302,7 +303,7 @@ namespace LibGB28181SipServer
                                 ExceptMessage = ex.Message,
                                 ExceptStackTrace = ex.StackTrace,
                             };
-                            throw new AKStreamException(rs);
+                            throw new AkStreamException(rs);
                         }
                     }
                 }
@@ -338,10 +339,11 @@ namespace LibGB28181SipServer
                                     0) //保证不存在
                                 {
                                     Common.SipDevices.Add(tmpSipDevice);
-                                    Task.Run(() =>
+                                    OnRegisterReceived?.BeginInvoke(JsonHelper.ToJson(tmpSipDevice),null!,null!);//抛线程出去处理
+                                    /*Task.Run(() =>
                                     {
                                         OnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                                    }); //抛线程出去处理
+                                    }); //抛线程出去处理*/
                                     Logger.Info(
                                         $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceInfo.DeviceID}->注册完成，当前Sip设备数量:{Common.SipDevices}个");
                                 }
@@ -361,7 +363,7 @@ namespace LibGB28181SipServer
                                 ExceptMessage = ex.Message,
                                 ExceptStackTrace = ex.StackTrace,
                             };
-                            throw new AKStreamException(rs);
+                            throw new AkStreamException(rs);
                         }
                     }
                     else

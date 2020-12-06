@@ -118,7 +118,7 @@ namespace LibGB28181SipServer
         /// 停止Sip服务
         /// </summary>
         /// <param name="rs"></param>
-        /// <exception cref="AKStreamException"></exception>
+        /// <exception cref="AkStreamException"></exception>
         public void Stop(out ResponseStruct rs)
         {
             try
@@ -147,7 +147,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
-                throw new AKStreamException(rs);
+                throw new AkStreamException(rs);
             }
         }
 
@@ -246,7 +246,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
-                throw new AKStreamException(rs);
+                throw new AkStreamException(rs);
             }
         }
 
@@ -259,7 +259,7 @@ namespace LibGB28181SipServer
             if (ret < 0 || !rs.Code.Equals(ErrorNumber.None))
             {
                 Logger.Error($"[{Common.LoggerHead}]->加载配置文件失败->{Common.SipServerConfigPath}");
-                throw new AKStreamException(rs);
+                throw new AkStreamException(rs);
             }
 
             Common.SipServer = this;
