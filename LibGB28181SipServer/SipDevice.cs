@@ -14,10 +14,11 @@ namespace LibGB28181SipServer
         private string? _guid;
         private IPAddress? _ipAddress;
         private int _port;
+        private string _deviceId=null!;
         private SIPEndPoint? _remoteEndPoint;
         private SIPEndPoint? _localSipEndPoint;
-        private List<SipChannel>? _sipChannels;
-        private DeviceInfo? _deviceInfo;
+        private List<SipChannel>? _sipChannels=new List<SipChannel>();
+        private DeviceInfo? _deviceInfo=new DeviceInfo();
         private DateTime _registerTime;
         private string? _username;
         private string? _password;
@@ -58,6 +59,15 @@ namespace LibGB28181SipServer
         {
             get => _guid;
             set => _guid = value;
+        }
+
+        /// <summary>
+        /// 设备ID
+        /// </summary>
+        public string DeviceId
+        {
+            get => _deviceId;
+            set => _deviceId = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -168,10 +178,9 @@ namespace LibGB28181SipServer
         public SipDevice()
         {
             _keepAliveCheckTimer = new Timer(Common.SipServerConfig.KeepAliveInterval * 1000);
-            // _keepAliveCheckTimer.Interval = Common.SipServerConfig.KeepAliveInterval*1000; //设置计时器触发时间
             _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
             _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
-            _keepAliveCheckTimer.AutoReset = true; //不需要自动reset
+            _keepAliveCheckTimer.AutoReset = true; //需要自动reset
             _keepAliveCheckTimer.Start(); //启动计时器
         }
         

@@ -15,6 +15,8 @@ namespace LibGB28181SipServer
     {
         private string _guid = null!;
         private string _parentGuid = null!;
+        private string _ParentId = null!;
+        private string _sipChannelId = null!;
         private SIPEndPoint _remoteEndPoint = null!;
         private SIPEndPoint _localSipEndPoint = null!;
         private DevicePushStatus _pushStatus;
@@ -61,6 +63,24 @@ namespace LibGB28181SipServer
         {
             get => _parentGuid;
             set => _parentGuid = value;
+        }
+
+        /// <summary>
+        /// 父节点的SipDeviceId
+        /// </summary>
+        public string ParentId
+        {
+            get => _ParentId;
+            set => _ParentId = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 自己的通道ID
+        /// </summary>
+        public string SipChannelId
+        {
+            get => _sipChannelId;
+            set => _sipChannelId = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         [JsonConverter(typeof(StringEnumConverter))]

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using GB28181.Sys.XML;
 using LibCommon;
 using LibCommon.Structs;
 using LibSystemInfo;
@@ -27,6 +28,19 @@ namespace LibGB28181SipServer
         /// </summary>
         /// <param name="sipDeviceJson"></param>
         public delegate void UnRegisterDelegate(string sipDeviceJson);
+        
+       /// <summary>
+       /// 当收到心跳数据时
+       /// </summary>
+       /// <param name="deviceId"></param>
+       /// <param name="keepAliveTime"></param>
+       /// <param name="lostTimes"></param>
+        public delegate void KeepaliveReceived(string deviceId,DateTime keepAliveTime,int lostTimes);
+        /// <summary>
+        /// 当收到设备目录时
+        /// </summary>
+        /// <param name="sipChannel"></param>
+        public delegate void CatalogReceived(SipChannel sipChannel);
         /// <summary>
         /// 当设备报警订阅时
         /// </summary>
