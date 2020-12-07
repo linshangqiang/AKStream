@@ -1,5 +1,8 @@
+using System;
+
 namespace LibCommon.Structs
 {
+    [Serializable]
     public class IPInfo
     {
         private string _ipV4 = null!;

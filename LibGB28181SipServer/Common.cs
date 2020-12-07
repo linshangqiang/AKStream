@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using GB28181.Sys.XML;
 using LibCommon;
+using LibCommon.Enums;
 using LibCommon.Structs;
 using LibSystemInfo;
 using SIPSorcery.SIP;
@@ -13,6 +13,7 @@ namespace LibGB28181SipServer
 {
     public static class Common
     {
+        #region 各类事件委托
         /// <summary>
         /// 踢掉掉线的sip设备
         /// </summary>
@@ -46,20 +47,19 @@ namespace LibGB28181SipServer
         /// </summary>
         /// <param name="sipTransaction"></param>
         public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
+        #endregion
+
         public const int SIP_REGISTER_MIN_INTERVAL_SEC = 30; //最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
         private static SipServerConfig _sipServerConfig = null!;
         private static string _sipServerConfigPath = GCommon.ConfigPath + "SipServerConfig.json";
         private static List<SipDevice> _sipDevices = new List<SipDevice>();
-
-
+        
         /// <summary>
         /// 用于操作_sipDevices时的锁
         /// </summary>
         public static object SipDevicesLock = new object();
-
-       
-
+        
         /// <summary>
         /// sip设备列表
         /// </summary>
@@ -68,8 +68,6 @@ namespace LibGB28181SipServer
             get => _sipDevices;
             set => _sipDevices = value;
         }
-
-
         /// <summary>
         /// sip服务实例
         /// </summary>
@@ -115,35 +113,7 @@ namespace LibGB28181SipServer
             set => _needResponseRequests = value;
         }
 
-        /// <summary>
-        /// Sip通道类型
-        /// </summary>
-        public enum SipChannelType
-        {
-            /// <summary>
-            /// 音视频流通道
-            /// </summary>
-            VideoChannel,
-
-            /// <summary>
-            /// 报警通道
-            /// </summary>
-            AlarmChannel,
-
-            /// <summary>
-            /// 音频流通道
-            /// </summary>
-            AudioChannel,
-
-            /// <summary>
-            /// 其他通道
-            /// </summary>
-            OtherChannel,
-            /// <summary>
-            /// id位数不等于20,设置为未知设备
-            /// </summary>
-            Unknow,
-        }
+       
 
         /// <summary>
         /// 初始化一SipServerConfig

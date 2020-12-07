@@ -15,6 +15,7 @@ namespace LibCommon
 
         static GCommon()
         {
+            
             if (!Directory.Exists(ConfigPath)) //如果配置文件目录不存在，则创建目录
             {
                 Directory.CreateDirectory(ConfigPath);

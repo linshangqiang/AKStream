@@ -7,6 +7,7 @@ using GB28181.Sys.XML;
 using LibCommon;
 using LibLogger;
 using SIPSorcery.SIP;
+using SIPSorcery.SIP.App;
 
 namespace LibGB28181SipServer
 {
@@ -150,7 +151,7 @@ namespace LibGB28181SipServer
                                         RemoteEndPoint = tmpSipDevice.RemoteEndPoint!,
                                         SipChannelDesc = tmpChannelDev,
                                         ParentId = tmpSipDevice.DeviceId,
-                                        SipChannelId = tmpChannelDev.DeviceID,
+                                        DeviceId = tmpChannelDev.DeviceID,
                                     };
                                     if (tmpChannelDev.InfList != null)
                                     {
@@ -210,7 +211,12 @@ namespace LibGB28181SipServer
                         if (tmpSipDevice != null)
                         {
                             var time = DateTime.Now;
-                            OnKeepaliveReceived?.BeginInvoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime,null, null);
+                            Task.Run(() =>
+                            {
+                                OnKeepaliveReceived?.Invoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime);
+                            }); //抛线程出去处理
+                            // OnKeepaliveReceived?.Invoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime);
+                            //   OnKeepaliveReceived?.BeginInvoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime,null, null);
                             tmpSipDevice.KeepAliveTime = time;
                             Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
@@ -286,11 +292,10 @@ namespace LibGB28181SipServer
                     {
                         try
                         {
-                            OnUnRegisterReceived?.BeginInvoke(JsonHelper.ToJson(tmpSipDevice), null!, null!);
-                            /*await Task.Run(() =>
+                            await Task.Run(() =>
                             {
                                 OnUnRegisterReceived?.Invoke(JsonHelper.ToJson(tmpSipDevice));
-                            }); //抛线程出去处理*/
+                            }); //抛线程出去处理
                             Logger.Info(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->已经注销，当前Sip设备数量:{Common.SipDevices}个");
 
@@ -315,6 +320,54 @@ namespace LibGB28181SipServer
                 }
                 else
                 {
+                    if (Common.SipServerConfig.Authentication)
+                    {
+                        if (sipRequest.Header.AuthenticationHeader == null)
+                        {
+                            SIPAuthenticationHeader authHeader =
+                                new SIPAuthenticationHeader(SIPAuthorisationHeadersEnum.WWWAuthenticate,
+                                    Common.SipServerConfig.Realm, SIPRequestAuthenticator.GetNonce());
+                            var unAuthorisedHead =
+                                new SIPRequestAuthenticationResult(SIPResponseStatusCodesEnum.Unauthorised, authHeader);
+                            unAuthorisedHead.AuthenticationRequiredHeader.SIPDigest.Opaque = "";
+                            unAuthorisedHead.AuthenticationRequiredHeader.SIPDigest.Algorithhm =
+                                SIPAuthorisationDigest.AUTH_ALGORITHM;
+
+                            var unAuthorizedResponse = SIPResponse.GetResponse(sipRequest,
+                                SIPResponseStatusCodesEnum.Unauthorized, null);
+                            unAuthorizedResponse.Header.AuthenticationHeader =
+                                unAuthorisedHead.AuthenticationRequiredHeader;
+                            unAuthorizedResponse.Header.Allow = null;
+                            unAuthorizedResponse.Header.Expires = 7200;
+                            await Common.SipServer.SipTransport.SendResponseAsync(unAuthorizedResponse);
+                            return;
+                        }
+                        else
+                        {
+                            /*GB28181Sip注册鉴权算法：
+                            HA1=MD5(username:realm:passwd) //username和realm在字段“Authorization”中可以找到，passwd这个是由客户端和服务器协商得到的，一般情况下UAC端存一个UAS也知道的密码就行了
+                             HA2=MD5(Method:Uri)//Method一般有INVITE, ACK, OPTIONS, BYE, CANCEL, REGISTER；Uri可以在字段“Authorization”找到
+                             response = MD5(HA1:nonce:HA2)
+                             */
+                            string ha1 = UtilsHelper.Md5(sipRequest.Header.AuthenticationHeader.SIPDigest.Username +
+                                                         ":" + sipRequest.Header.AuthenticationHeader.SIPDigest.Realm +
+                                                         ":" + Common.SipServerConfig.SipPassword);
+
+                            string ha2 = UtilsHelper.Md5("REGISTER" + ":" +
+                                                         sipRequest.Header.AuthenticationHeader.SIPDigest.URI);
+                            string ha3 = UtilsHelper.Md5(ha1 + ":" +
+                                                         sipRequest.Header.AuthenticationHeader.SIPDigest.Nonce + ":" +
+                                                         ha2);
+                            if (!ha3.Equals(sipRequest.Header.AuthenticationHeader.SIPDigest.Response))
+                            {
+                                Logger.Debug(
+                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->鉴权失败,注册失败");
+
+                                return; //验证通不过就不再回复，验证通过的话，就会往下走
+                            }
+                        }
+                    }
+
                     //设备注册
                     var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(sipDeviceId));
                     if (tmpSipDevice == null)

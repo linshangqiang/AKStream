@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GB28181.Sys.XML;
 using LibCommon;
+using LibCommon.Enums;
 using LibCommon.Structs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -15,13 +16,13 @@ namespace LibGB28181SipServer
     {
         private string _guid = null!;
         private string _parentGuid = null!;
-        private string _ParentId = null!;
-        private string _sipChannelId = null!;
+        private string _parentId = null!;
+        private string _deviceId = null!;
         private SIPEndPoint _remoteEndPoint = null!;
         private SIPEndPoint _localSipEndPoint = null!;
         private DevicePushStatus _pushStatus;
         private DateTime _lastUpdateTime;
-        private Common.SipChannelType _sipChannelType;
+        private SipChannelType _sipChannelType;
         private DevStatus _sipChanneStatus;
         private Catalog.Item _sipChannelDesc = null!;
         private List<MediaServerStreamInfo> _channelMediaServerStreamInfos=new List<MediaServerStreamInfo>();
@@ -70,17 +71,17 @@ namespace LibGB28181SipServer
         /// </summary>
         public string ParentId
         {
-            get => _ParentId;
-            set => _ParentId = value ?? throw new ArgumentNullException(nameof(value));
+            get => _parentId;
+            set => _parentId = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
         /// 自己的通道ID
         /// </summary>
-        public string SipChannelId
+        public string DeviceId
         {
-            get => _sipChannelId;
-            set => _sipChannelId = value ?? throw new ArgumentNullException(nameof(value));
+            get => _deviceId;
+            set => _deviceId = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -108,7 +109,7 @@ namespace LibGB28181SipServer
         /// 通道类型
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
-        public Common.SipChannelType SipChannelType
+        public SipChannelType SipChannelType
         {
             get => _sipChannelType;
             set => _sipChannelType = value;

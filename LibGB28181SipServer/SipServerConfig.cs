@@ -12,6 +12,7 @@ namespace LibGB28181SipServer
         private string? _sipIpV6Address;
         private string _serverSipDeviceId = null!;
         private ushort _sipPort;
+        private string? _realm;
         private string _gbVersion = null!;
         private bool _authentication;
         private string? _sipUsername;
@@ -58,6 +59,15 @@ namespace LibGB28181SipServer
         {
             get => _sipPort;
             set => _sipPort = value;
+        }
+
+        /// <summary>
+        /// 服务器域
+        /// </summary>
+        public string? Realm
+        {
+            get => _realm;
+            set => _realm = value;
         }
 
         /// <summary>
