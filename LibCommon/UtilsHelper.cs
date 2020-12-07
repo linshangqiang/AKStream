@@ -19,7 +19,16 @@ namespace LibCommon
     /// </summary>
     public static class UtilsHelper
     {
-        
+        /// <summary>
+        /// 判断是否为奇数
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public static bool IsOdd(int num)
+        {
+            return (num & 1) == 1;
+        }
+
         /// <summary>
         /// 获取MD5加密码值
         /// </summary>
@@ -39,6 +48,7 @@ namespace LibCommon
                 {
                     sTemp += bytHash[i].ToString("X").PadLeft(2, '0');
                 }
+
                 str = sTemp.ToLower();
             }
             catch (Exception e)
@@ -48,7 +58,7 @@ namespace LibCommon
 
             return str;
         }
-        
+
         /// <summary>
         /// XML转类实例
         /// </summary>
@@ -60,7 +70,7 @@ namespace LibCommon
             var xmlSerializer = new XmlSerializer(typeof(T));
             return (T) xmlSerializer.Deserialize(xmlBody.CreateReader());
         }
-        
+
         /// <summary>
         /// 生成一个新的序列id
         /// </summary>
@@ -70,7 +80,7 @@ namespace LibCommon
             var r = new Random();
             return r.Next(1, ushort.MaxValue);
         }
-        
+
         /// <summary>
         /// 通过mac地址获取ip地址
         /// </summary>
@@ -153,7 +163,7 @@ namespace LibCommon
         {
             try
             {
-                var jsonStr = JsonHelper.ToJson(obj!,Formatting.Indented);
+                var jsonStr = JsonHelper.ToJson(obj!, Formatting.Indented);
                 File.WriteAllText(filePath, jsonStr);
                 return true;
             }
