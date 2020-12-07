@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_SipGate", "Test_SipGat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMediaServer", "LibMediaServer\LibMediaServer.csproj", "{D1736AD7-7F80-4C61-A82A-FF528379345C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AKStreamWeb", "AKStreamWeb\AKStreamWeb.csproj", "{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AKStreamKeeper", "AKStreamKeeper\AKStreamKeeper.csproj", "{BC0786F9-DCAB-476A-9DA3-66C9DD03BD11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +52,13 @@ Global
 		{D1736AD7-7F80-4C61-A82A-FF528379345C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1736AD7-7F80-4C61-A82A-FF528379345C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1736AD7-7F80-4C61-A82A-FF528379345C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0786F9-DCAB-476A-9DA3-66C9DD03BD11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0786F9-DCAB-476A-9DA3-66C9DD03BD11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0786F9-DCAB-476A-9DA3-66C9DD03BD11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0786F9-DCAB-476A-9DA3-66C9DD03BD11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

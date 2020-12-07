@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LibCommon
 {
-    class IpAddressConverter : JsonConverter
+     class IpAddressConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -133,7 +133,8 @@ namespace LibCommon
         /// <param name="json">JSON 数据。</param>
         /// <param name="p"></param>
         /// <returns></returns>
-        public static T FromJson<T>(this string json, MissingMemberHandling p = MissingMemberHandling.Error)
+        /// MissingMemberHandling.Ignore实体类缺少字段时忽略它
+        public static T FromJson<T>(this string json, MissingMemberHandling p = MissingMemberHandling.Ignore)
         {
             _jsonSettings.MissingMemberHandling = p;
             try
