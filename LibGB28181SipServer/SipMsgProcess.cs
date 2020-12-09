@@ -246,6 +246,7 @@ namespace LibGB28181SipServer
                                 OnKeepaliveReceived?.Invoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime);
                             }); //抛线程出去处理
 
+                            tmpSipDevice.LastSipRequest = sipRequest;
                             tmpSipDevice.KeepAliveTime = time;
                             Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
@@ -425,7 +426,7 @@ namespace LibGB28181SipServer
                         tmpSipDevice.SipChannelLayout = localSipChannel;
                         tmpSipDevice.IpAddress = remoteEndPoint.Address;
                         tmpSipDevice.Port = remoteEndPoint.Port;
-                        tmpSipDevice.FirstSipRequest = sipRequest;
+                        tmpSipDevice.LastSipRequest = sipRequest;
                         tmpSipDevice.ContactUri = sipRequest.Header.Contact[0].ContactURI;
                         try
                         {

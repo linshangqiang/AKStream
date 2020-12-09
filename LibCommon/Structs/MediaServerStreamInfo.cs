@@ -92,6 +92,7 @@ namespace LibCommon.Structs
         private string? _schema;
         private string _stream = null!;
         private string _playUrl = null!;
+        private PushStreamSocketType? _pushSocketType = null;
         private List<MediaServerStreamPlayerInfo> _playerList= new List<MediaServerStreamPlayerInfo>();
 
         /// <summary>
@@ -173,6 +174,15 @@ namespace LibCommon.Structs
         {
             get => _playUrl;
             set => _playUrl = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 推流的socket类型 
+        /// </summary>
+        public PushStreamSocketType? PushSocketType
+        {
+            get => _pushSocketType;
+            set => _pushSocketType = value;
         }
 
         /// <summary>

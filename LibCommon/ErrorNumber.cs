@@ -16,10 +16,17 @@ namespace LibCommon
         Sys_JsonReadExcept = -1003, //Json读取异常
         Sys_ConfigDirNotExists = -1004,//配置文件目录不存在
         Sys_ConfigFileNotExists = -1005,//配置文件不存在
+        Sys_ParamsNotEnough = -1006, //参数不足
+        Sys_ParamsIsNotRight=-1007,//参数不正确
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
         Sip_Except_RegisterSipDevice = -2003, //Sip网关内部异常(注册Sip设备时)
+        Sip_Channel_NotExists =-2004, //Sip音视频通道不存在
+        Sip_Device_NotExists =-2005,//Sip设备不存在
+        Sip_OperationNotAllowed=-2006,//该设备类型下不允许这个操作
+     
+        
         Other = -6000 //其他异常
     }
 
@@ -41,13 +48,16 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sys_JsonReadExcept] = "Json读取异常";
             ErrorDic[ErrorNumber.Sys_ConfigDirNotExists] = "配置文件目录不存在";
             ErrorDic[ErrorNumber.Sys_ConfigFileNotExists] = "配置文件不存在";
-        
-            
+            ErrorDic[ErrorNumber.Sys_ParamsNotEnough] = "传入参数不足";
+            ErrorDic[ErrorNumber.Sys_ParamsIsNotRight] = "传入参数不正确";
             ErrorDic[ErrorNumber.Sip_StartExcept] = "启动Sip服务异常";
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";
             ErrorDic[ErrorNumber.Sip_Except_RegisterSipDevice] = "Sip网关内部异常(注册Sip设备时)";
-
+            ErrorDic[ErrorNumber.Sip_Channel_NotExists] = "Sip音视频通道不存在";
+            ErrorDic[ErrorNumber.Sip_Device_NotExists] = "Sip设备不存在";
+            ErrorDic[ErrorNumber.Sip_OperationNotAllowed] = "该类型的设备不允许做这个操作";
+            
             ErrorDic[ErrorNumber.Other] = "未知错误";
         }
     }

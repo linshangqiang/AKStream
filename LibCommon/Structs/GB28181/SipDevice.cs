@@ -25,7 +25,7 @@ namespace LibCommon.Structs.GB28181
         private DateTime _keepAliveTime;
         private int _keepAliveLostTime;
         private Timer _keepAliveCheckTimer;
-        private SIPRequest? _firstSipRequest;
+        private SIPRequest? _lastSipRequest;
         private SIPURI? _contactUri;
         private SIPChannel? _sipChannelLayout;
         private SipServerConfig _sipServerConfig;
@@ -185,14 +185,14 @@ namespace LibCommon.Structs.GB28181
         }
 
         /// <summary>
-        /// 注册时的sipRequest
+        ///最后一次SipRequest
         /// </summary>
 
         [JsonIgnore]
-        public SIPRequest? FirstSipRequest
+        public SIPRequest? LastSipRequest
         {
-            get => _firstSipRequest;
-            set => _firstSipRequest = value;
+            get => _lastSipRequest;
+            set => _lastSipRequest = value;
         }
 
 

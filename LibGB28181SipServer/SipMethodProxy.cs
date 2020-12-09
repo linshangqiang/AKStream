@@ -8,7 +8,7 @@ namespace LibGB28181SipServer
     /// <summary>
     /// sip方法操作代理
     /// </summary>
-    public class SipMethodProxy
+    public class SipMethodProxy:IDisposable
     {
         private  AutoResetEvent _autoResetEvent =new AutoResetEvent(false);
         private SipServer _sipServer;
@@ -18,7 +18,21 @@ namespace LibGB28181SipServer
         {
             _timeout = timeout;
         }
+        ~SipMethodProxy()
+        {
+            Dispose(); //释放非托管资源
+        }
 
+        public void Dispose()
+        {
+            if (_autoResetEvent != null)
+            {
+                _autoResetEvent.Dispose();
+            }
+        }
+
+
+       // public bool 
         /// <summary>
         /// 获取设备目录
         /// </summary>
@@ -26,13 +40,21 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         public bool DeviceCatalogQuery(SipDevice sipDevice)
         {
-            Common.SipServer.DeviceCatalogQuery(sipDevice,_autoResetEvent,_timeout);
-            var isTimeout = _autoResetEvent.WaitOne(_timeout);
-            if (!isTimeout)
+            try
             {
-                return false;
+                Common.SipServer.DeviceCatalogQuery(sipDevice, _autoResetEvent, _timeout);
+                var isTimeout = _autoResetEvent.WaitOne(_timeout);
+                if (!isTimeout)
+                {
+                    return false;
+                }
+
+                return true;
             }
-            return true;
+            finally
+            {
+              Dispose(); 
+            }
         }
         
     }
