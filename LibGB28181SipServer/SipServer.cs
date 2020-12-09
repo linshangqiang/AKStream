@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using GB28181.SIP;
-using GB28181.Sys.XML;
 using LibCommon;
+using LibCommon.Structs.GB28181;
+using LibCommon.Structs.GB28181.Net.SIP;
+using LibCommon.Structs.GB28181.XML;
 using LibLogger;
 using SIPSorcery.SIP;
 
@@ -85,17 +86,36 @@ namespace LibGB28181SipServer
             if (needResponse)
             {
                 Common.NeedResponseRequests.TryAdd(req.Header.CallId, req);
+               
             }
             await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
         }
 
+
+        /// <summary>
+        /// 请求实时视频流
+        /// </summary>
+        /// <param name="sipChannel"></param>
+        public void Invite(SipChannel sipChannel)
+        {
+            
+        }
+        /// <summary>
+        /// 请求终止实时视频流
+        /// </summary>
+        /// <param name="sipChannel"></param>
+        public void DeInvite(SipChannel sipChannel)
+        {
+            //请求终止实时视频流时，callid,from.tag,to.tag都要与invite时一致
+        }
+        
         /// <summary>
         /// 设备目录查询请求
         /// </summary>
         /// <param name="sipDeviceId"></param>
-        public void DeviceCatalogQuery(string sipDeviceId)
+        public void DeviceCatalogQuery(SipDevice sipDevice)
         {
-            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDeviceId));
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDevice.DeviceId));
             if (tmpSipDevice != null)
             {
                 SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;

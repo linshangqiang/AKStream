@@ -6,6 +6,7 @@ using System.Threading;
 using LibCommon;
 using LibCommon.Enums;
 using LibCommon.Structs;
+using LibCommon.Structs.GB28181;
 using LibSystemInfo;
 using SIPSorcery.SIP;
 
@@ -13,41 +14,7 @@ namespace LibGB28181SipServer
 {
     public static class Common
     {
-        #region 各类事件委托
-        /// <summary>
-        /// 踢掉掉线的sip设备
-        /// </summary>
-        /// <param name="guid"></param>
-        public delegate void DoKickSipDevice(string guid);
-        /// <summary>
-        /// 当sip设备注册时
-        /// </summary>
-        /// <param name="sipDeviceJson"></param>
-        public delegate void RegisterDelegate(string sipDeviceJson);
-        /// <summary>
-        /// 当sip设备注销时
-        /// </summary>
-        /// <param name="sipDeviceJson"></param>
-        public delegate void UnRegisterDelegate(string sipDeviceJson);
         
-       /// <summary>
-       /// 当收到心跳数据时
-       /// </summary>
-       /// <param name="deviceId"></param>
-       /// <param name="keepAliveTime"></param>
-       /// <param name="lostTimes"></param>
-        public delegate void KeepaliveReceived(string deviceId,DateTime keepAliveTime,int lostTimes);
-        /// <summary>
-        /// 当收到设备目录时
-        /// </summary>
-        /// <param name="sipChannel"></param>
-        public delegate void CatalogReceived(SipChannel sipChannel);
-        /// <summary>
-        /// 当设备报警订阅时
-        /// </summary>
-        /// <param name="sipTransaction"></param>
-        public delegate void DeviceAlarmSubscribeDelegate(SIPTransaction sipTransaction);
-        #endregion
 
         public const int SIP_REGISTER_MIN_INTERVAL_SEC = 30; //最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";

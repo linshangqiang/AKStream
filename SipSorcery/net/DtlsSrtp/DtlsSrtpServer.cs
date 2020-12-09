@@ -26,6 +26,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Utilities;
 using SIPSorcery.Sys;
+using CertificateRequest = Org.BouncyCastle.Crypto.Tls.CertificateRequest;
 
 namespace SIPSorcery.Net
 {

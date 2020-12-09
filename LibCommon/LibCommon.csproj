@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LibLogger\LibLogger.csproj" />
+      <ProjectReference Include="..\SipSorcery\SIPSorcery.csproj" />
     </ItemGroup>
 
 </Project>
