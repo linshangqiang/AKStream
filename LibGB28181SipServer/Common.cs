@@ -68,13 +68,13 @@ namespace LibGB28181SipServer
             set => _loggerHead = value;
         }
 
-        private static ConcurrentDictionary<string, SIPRequest> _needResponseRequests =
-            new ConcurrentDictionary<string, SIPRequest>();
+        private static ConcurrentDictionary<string, NeedReturnTask> _needResponseRequests =
+            new ConcurrentDictionary<string, NeedReturnTask>();
 
         /// <summary>
         /// 需要信息回复的消息列表
         /// </summary>
-        public static ConcurrentDictionary<string, SIPRequest> NeedResponseRequests
+        public static ConcurrentDictionary<string, NeedReturnTask> NeedResponseRequests
         {
             get => _needResponseRequests;
             set => _needResponseRequests = value;

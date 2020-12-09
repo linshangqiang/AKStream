@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using LibCommon;
 using LibCommon.Structs.GB28181;
@@ -53,7 +54,7 @@ namespace LibGB28181SipServer
 
 
         private async Task SendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
-            string xmlBody,bool needResponse)
+            string xmlBody,bool needResponse,AutoResetEvent evnt,int timeout)
         {
             var to = sipDevice.FirstSipRequest!.Header.To;
             var from = sipDevice.FirstSipRequest.Header.From;
@@ -85,7 +86,14 @@ namespace LibGB28181SipServer
 
             if (needResponse)
             {
-                Common.NeedResponseRequests.TryAdd(req.Header.CallId, req);
+               var nrt= new NeedReturnTask(Common.NeedResponseRequests)
+                {
+                    AutoResetEvent = evnt,
+                    CallId = req.Header.CallId,
+                    SipRequest = req,
+                    Timeout = timeout,
+                };
+                Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
                
             }
             await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
@@ -113,7 +121,7 @@ namespace LibGB28181SipServer
         /// 设备目录查询请求
         /// </summary>
         /// <param name="sipDeviceId"></param>
-        public void DeviceCatalogQuery(SipDevice sipDevice)
+        public void DeviceCatalogQuery(SipDevice sipDevice,AutoResetEvent evnt,int timeout=5000)
         {
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDevice.DeviceId));
             if (tmpSipDevice != null)
@@ -128,8 +136,11 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
-                Func<SipDevice, SIPMethodsEnum, string, string, string,bool, Task> request = SendRequest;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,true);
+                
+                //    private async Task SendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
+               // string xmlBody,bool needResponse,AutoResetEvent evnt,int timeout)
+                Func<SipDevice, SIPMethodsEnum, string, string, string,bool,AutoResetEvent ,int , Task> request = SendRequest;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,true,evnt,timeout);
             }
         }
 
