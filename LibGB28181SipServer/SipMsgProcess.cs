@@ -133,7 +133,7 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 线程处理队列中的设备目录
         /// </summary>
-        public static void ProcessThread()
+        public static void ProcessCatalogThread()
         {
             while (true)
             {
@@ -142,7 +142,7 @@ namespace LibGB28181SipServer
                     var ret = Common.TmpCatalogs.TryPeek(out Catalog tmpCatalog);
                     if (ret && tmpCatalog != null)
                     {
-                        ProcessGetDeviceItems(tmpCatalog);
+                        InsertDeviceItems(tmpCatalog);
                     }
                     Thread.Sleep(20);
                 }
@@ -154,7 +154,7 @@ namespace LibGB28181SipServer
         /// </summary>
         /// <param name="catalog"></param>
         /// <returns></returns>
-        private static void ProcessGetDeviceItems( Catalog catalog)
+        private static void InsertDeviceItems( Catalog catalog)
         {
             if (catalog != null)
             {

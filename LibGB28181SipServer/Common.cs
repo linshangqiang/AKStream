@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using LibCommon;
 using LibCommon.Enums;
 using LibCommon.Structs;
@@ -298,6 +299,7 @@ namespace LibGB28181SipServer
 
         static Common()
         {
+            
         }
     }
 }
