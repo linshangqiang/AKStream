@@ -39,10 +39,18 @@ namespace LibCommon
         /// <param name="keepAliveTime"></param>
         /// <param name="lostTimes"></param>
         public delegate void KeepaliveReceived(string deviceId,DateTime keepAliveTime,int lostTimes);
+
+        /// <summary>
+        /// 设备就绪通知
+        /// </summary>
+        /// <param name="sipDevice"></param>
+        public delegate void SipDeviceReadyReceived(SipDevice sipDevice);
+        
         /// <summary>
         /// 当收到设备目录时
         /// </summary>
         /// <param name="sipChannel"></param>
+
         public delegate void CatalogReceived(SipChannel sipChannel);
         /// <summary>
         /// 当设备报警订阅时

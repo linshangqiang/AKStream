@@ -7,6 +7,7 @@ using LibCommon;
 using LibCommon.Enums;
 using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
+using LibCommon.Structs.GB28181.XML;
 using LibSystemInfo;
 using SIPSorcery.SIP;
 
@@ -21,6 +22,7 @@ namespace LibGB28181SipServer
         private static SipServerConfig _sipServerConfig = null!;
         private static string _sipServerConfigPath = GCommon.ConfigPath + "SipServerConfig.json";
         private static List<SipDevice> _sipDevices = new List<SipDevice>();
+        private static ConcurrentQueue<Catalog> _tmpCatalogs= new ConcurrentQueue<Catalog>();
         
         /// <summary>
         /// 用于操作_sipDevices时的锁
@@ -80,7 +82,15 @@ namespace LibGB28181SipServer
             set => _needResponseRequests = value;
         }
 
-       
+        /// <summary>
+        /// 收到的设备目录线程安全队列，收到的设备目录先缓存在这里
+        /// </summary>
+        public static ConcurrentQueue<Catalog> TmpCatalogs
+        {
+            get => _tmpCatalogs;
+            set => _tmpCatalogs = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
 
         /// <summary>
         /// 初始化一SipServerConfig

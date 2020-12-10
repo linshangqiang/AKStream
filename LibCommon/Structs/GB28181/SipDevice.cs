@@ -29,6 +29,7 @@ namespace LibCommon.Structs.GB28181
         private SIPURI? _contactUri;
         private SIPChannel? _sipChannelLayout;
         private SipServerConfig _sipServerConfig;
+        private bool _isReday=false;
 
         public event GCommon.DoKickSipDevice KickMe = null!;
 
@@ -225,6 +226,15 @@ namespace LibCommon.Structs.GB28181
         {
             get => _sipServerConfig;
             set => _sipServerConfig = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 设备是否已经准备好，第一次心跳以后算准备就绪
+        /// </summary>
+        public bool IsReday
+        {
+            get => _isReday;
+            set => _isReday = value;
         }
 
         public SipDevice(SipServerConfig sipServerConfig)
