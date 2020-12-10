@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using LibCommon;
 using LibCommon.Structs.GB28181;
+using LibCommon.Structs.GB28181.Net.SIP;
 using LibCommon.Structs.GB28181.XML;
 using LibLogger;
 using SIPSorcery.SIP;
@@ -181,7 +182,6 @@ namespace LibGB28181SipServer
                 }
                 else
                 {
-
                     Logger.Warn(
                         $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的设备目录,处理添加时出现异常情况->Sip设备{catalog.DeviceID}不在系统列表中，已跳过处理");
                 }
@@ -248,8 +248,8 @@ namespace LibGB28181SipServer
 
                             tmpSipDevice.LastSipRequest = sipRequest;
                             tmpSipDevice.KeepAliveTime = time;
-                            Logger.Debug(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
+                            /*Logger.Debug(
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");*/
                         }
                         else
                         {
@@ -261,7 +261,7 @@ namespace LibGB28181SipServer
                         break;
                     case "CATALOG": //处理设备目录
                         await SendOkMessage(sipRequest);
-                        Logger.Debug("收到目录信息"+sipRequest.ToString());
+                        Logger.Debug("收到目录信息" + sipRequest.ToString());
                         ProcessGetDeviceItems(remoteEndPoint, UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         break;
                 }
@@ -518,6 +518,52 @@ namespace LibGB28181SipServer
             }
         }
 
+        private static async Task InviteEnd(SIPResponse sipResponse, SipChannel sipChannel)
+        {
+                var from = sipResponse.Header.From;
+                var to = sipResponse.Header.To;
+                string callId = sipResponse.Header.CallId;
+
+                SIPRequest req = SIPRequest.GetRequest(SIPMethodsEnum.BYE, sipResponse.Header.To.ToURI,
+                    new SIPToHeader(to.ToName, to.ToURI, to.ToTag),
+                    new SIPFromHeader(@from.FromTag, @from.FromURI, @from.FromTag));
+                req.Header.Contact = new List<SIPContactHeader>()
+                    {new SIPContactHeader(sipResponse.Header.From.FromName, sipResponse.Header.From.FromURI)};
+                req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+                req.Header.Allow = null;
+                req.Header.Vias = sipResponse.Header.Vias;
+                req.Header.CallId = callId;
+                sipChannel.PushStatus = DevicePushStatus.IDLE; //设置为正在推流
+
+                Logger.Debug(
+                    $"[{Common.LoggerHead}]->回复终止实时流请求状态Bye{sipResponse.RemoteSIPEndPoint}->{req}");
+                await Common.SipServer.SipTransport.SendRequestAsync(sipResponse.RemoteSIPEndPoint, req);
+           
+          
+        }
+
+        private static async Task InviteOk(SIPResponse sipResponse, SipChannel sipChannel)
+        {
+            var from = sipResponse.Header.From;
+            var to = sipResponse.Header.To;
+            string callId = sipResponse.Header.CallId;
+            sipChannel.InviteSipResponse = sipResponse;
+
+            SIPRequest req = SIPRequest.GetRequest(SIPMethodsEnum.ACK, sipResponse.Header.To.ToURI,
+                new SIPToHeader(to.ToName, to.ToURI, to.ToTag),
+                new SIPFromHeader(@from.FromTag, @from.FromURI, @from.FromTag));
+            req.Header.Contact = new List<SIPContactHeader>()
+                {new SIPContactHeader(sipResponse.Header.From.FromName, sipResponse.Header.From.FromURI)};
+            req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+            req.Header.Allow = null;
+            req.Header.Vias = sipResponse.Header.Vias;
+            req.Header.CallId = callId;
+            sipChannel.PushStatus = DevicePushStatus.PUSHON;//设置为正在推流
+            Logger.Debug(
+                $"[{Common.LoggerHead}]->回复实时流请求状态ACK{sipResponse.RemoteSIPEndPoint}->{req}");
+            await Common.SipServer.SipTransport.SendRequestAsync(sipResponse.RemoteSIPEndPoint, req);
+        }
+
         /// <summary>
         /// sip Response 处理
         /// </summary>
@@ -530,21 +576,34 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPResponse sipResponse)
         {
-            var ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId, out NeedReturnTask _task);
-            if (ret && _task != null)
+            var status = sipResponse.Status;
+            switch (status)
             {
-                Logger.Debug(
-                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
-                _task.AutoResetEvent.Set();//通知调用者任务完成,凋用者后续要做dispose操作
+                case SIPResponseStatusCodesEnum.Ok:
+                    var method = sipResponse.Header.CSeqMethod;
+                    var ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId, out NeedReturnTask _task);
+                    if (ret && _task != null )
+                    {
+                        switch (method)
+                        {
+                            case SIPMethodsEnum.INVITE: //请求实时流成功回复
+                                await InviteOk(sipResponse, _task.SipChannel);
+                                break;
+                            case SIPMethodsEnum.BYE: //停止实时流成功回复
+                                await InviteEnd(sipResponse, _task.SipChannel);
+                                break;
+                        }
+                        Logger.Debug(
+                            $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
+                        _task.AutoResetEvent.Set(); //通知调用者任务完成,凋用者后续要做dispose操作
+                    }
+                    else
+                    {
+                        Logger.Debug(
+                            $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}");
+                    }
+                    break;
             }
-            else
-            {
-                Logger.Debug(
-                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}"); 
-            }
-            
-            
-            
         }
     }
 }

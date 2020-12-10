@@ -27,6 +27,7 @@ namespace LibCommon.Structs.GB28181
         private List<MediaServerStreamInfo> _channelMediaServerStreamInfos=new List<MediaServerStreamInfo>();
         private SIPRequest _inviteSipRequest; //要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
         private SIPResponse _inviteSipResponse;//要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
+        private SIPRequest _lastSipRequest; //保存最后一次sipRequest
 
         /// <summary>
         /// 通道在系统中唯一id
@@ -169,8 +170,16 @@ namespace LibCommon.Structs.GB28181
             get => _inviteSipResponse;
             set => _inviteSipResponse = value ?? throw new ArgumentNullException(nameof(value));
         }
+        /// <summary>
+        /// 保存最后一次SipRequest
+        /// </summary>
+        [JsonIgnore]
+        public SIPRequest LastSipRequest
+        {
+            get => _lastSipRequest;
+            set => _lastSipRequest = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
-        // public MediaServerStreamInfo LiveVideo()
 
         ~SipChannel()
         {

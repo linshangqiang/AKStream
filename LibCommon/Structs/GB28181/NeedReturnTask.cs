@@ -19,6 +19,8 @@ namespace LibCommon.Structs.GB28181
         private Timer _timeoutCheckTimer;
         private DateTime _createTime;
         private static ConcurrentDictionary<string, NeedReturnTask> _needResponseRequests = null;
+        private SipChannel _sipChannel;
+        private SipDevice _sipDevice;
 
 
 
@@ -58,8 +60,26 @@ namespace LibCommon.Structs.GB28181
             set => _timeout = value;
         }
 
+        /// <summary>
+        /// 操作针对的sipchannnel
+        /// </summary>
+        public SipChannel SipChannel
+        {
+            get => _sipChannel;
+            set => _sipChannel = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         
-        
+        /// <summary>
+        /// 操作针对的sipdevice
+        /// </summary>
+        public SipDevice SipDevice
+        {
+            get => _sipDevice;
+            set => _sipDevice = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+
         public NeedReturnTask(ConcurrentDictionary<string, NeedReturnTask> c)
         {
             _createTime=DateTime.Now;
