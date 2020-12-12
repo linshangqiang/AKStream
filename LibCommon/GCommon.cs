@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using SIPSorcery.SIP;
@@ -13,7 +14,7 @@ namespace LibCommon
         public static string? WorkSpacePath = AppDomain.CurrentDomain.BaseDirectory; //程序运行的目录
         public static string? WorkSpaceFullPath = Environment.GetCommandLineArgs()[0];//程序运行的全路径
         public static string? CommandLine = Environment.CommandLine;//程序启动命令
-        public static string ConfigPath = BaseStartPath + "/Config/";
+        public static string ConfigPath = BaseStartPath + "/Config";
         
         #region 各类事件委托
         /// <summary>
@@ -63,6 +64,8 @@ namespace LibCommon
         static GCommon()
         {
             
+            //使用CodePagesEncodingProvider去注册扩展编码,以支持utf-x以外的字符集
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             if (!Directory.Exists(ConfigPath)) //如果配置文件目录不存在，则创建目录
             {
                 Directory.CreateDirectory(ConfigPath);

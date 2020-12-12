@@ -68,7 +68,7 @@ namespace LibCommon
         public static T XMLToObject<T>(XElement xmlBody)
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
-            return (T) xmlSerializer.Deserialize(xmlBody.CreateReader(), xmlBody.Document?.Declaration.Encoding);
+            return (T) xmlSerializer.Deserialize(xmlBody.CreateReader());
         }
 
         /// <summary>

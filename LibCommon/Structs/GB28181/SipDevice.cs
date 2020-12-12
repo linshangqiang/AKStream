@@ -29,6 +29,7 @@ namespace LibCommon.Structs.GB28181
         private SIPURI? _contactUri;
         private SIPChannel? _sipChannelLayout;
         private SipServerConfig _sipServerConfig;
+        private DeviceStatus _deviceStatus = null;
         private bool _isReday=false;
 
         public event GCommon.DoKickSipDevice KickMe = null!;
@@ -226,6 +227,15 @@ namespace LibCommon.Structs.GB28181
         {
             get => _sipServerConfig;
             set => _sipServerConfig = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 设备的状态信息
+        /// </summary>
+        public DeviceStatus DeviceStatus
+        {
+            get => _deviceStatus;
+            set => _deviceStatus = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>

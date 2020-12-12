@@ -34,6 +34,53 @@ namespace LibGB28181SipServer
         }
 
 
+        /// <summary>
+        /// 获取设备的状态信息
+        /// </summary>
+        /// <param name="sipDevice"></param>
+        /// <returns></returns>
+        public bool GetSipDeviceStatus(SipDevice sipDevice)
+        {
+            try
+            {
+                ResponseStruct rs = null;
+                Common.SipServer.GetDeviceStatus(sipDevice , _autoResetEvent,out rs, _timeout);
+                var isTimeout = _autoResetEvent.WaitOne(_timeout);
+                if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
+                {
+                    return false;
+                }
+                return true;
+            }
+            finally
+            {
+                Dispose(); 
+            }   
+        }
+        
+        /// <summary>
+        /// 获取SIP设备信息
+        /// </summary>
+        /// <param name="sipDevice"></param>
+        /// <returns></returns>
+        public bool GetSipDeviceInfo(SipDevice sipDevice)
+        {
+            try
+            {
+                ResponseStruct rs = null;
+                Common.SipServer.GetDeviceInfo(sipDevice , _autoResetEvent,out rs, _timeout);
+                var isTimeout = _autoResetEvent.WaitOne(_timeout);
+                if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
+                {
+                    return false;
+                }
+                return true;
+            }
+            finally
+            {
+                Dispose(); 
+            }   
+        }
 
         /// <summary>
         /// 请求终止时实流
@@ -64,11 +111,11 @@ namespace LibGB28181SipServer
         /// <param name="sipChannel"></param>
         /// <param name="pushMediaInfo"></param>
         /// <returns></returns>
-        public bool Invite(SipChannel sipChannel,PushMediaInfo pushMediaInfo)
+        public bool Invite(SipChannel sipChannel,PushMediaInfo pushMediaInfo,out ResponseStruct rs)
         {
             try
             {
-                ResponseStruct rs = null;
+              
                 Common.SipServer.Invite(sipChannel,pushMediaInfo , _autoResetEvent,out rs, _timeout);
                 var isTimeout = _autoResetEvent.WaitOne(_timeout);
                 if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))

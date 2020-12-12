@@ -298,6 +298,75 @@ namespace LibGB28181SipServer
             return "";
         }
 
+
+        /// <summary>
+        /// 获取设备状态信息
+        /// </summary>
+        /// <param name="sipDevice"></param>
+        /// <param name="evnt"></param>
+        /// <param name="rs"></param>
+        /// <param name="timeout"></param>
+        public void GetDeviceStatus(SipDevice sipDevice, AutoResetEvent evnt,
+            out ResponseStruct rs, int timeout = 5000)
+        {
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.Guid.Equals(sipDevice.Guid));
+            if (tmpSipDevice != null)
+            {
+                SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
+                string subject =
+                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
+                var body = new CatalogQuery()
+                {
+                    CommandType = CommandType.DeviceStatus,
+                    DeviceID = tmpSipDevice.DeviceId,
+                    SN = new Random().Next(1, ushort.MaxValue),
+                };
+                var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
+                Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
+                    SendRequestViaSipDevice;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);
+            }
+        }
+
+        /// <summary>
+        /// 获取设备信息
+        /// </summary>
+        /// <param name="sipDevice"></param>
+        /// <param name="evnt"></param>
+        /// <param name="rs"></param>
+        /// <param name="timeout"></param>
+        public void GetDeviceInfo(SipDevice sipDevice, AutoResetEvent evnt,
+            out ResponseStruct rs, int timeout = 5000)
+        {
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.Guid.Equals(sipDevice.Guid));
+            if (tmpSipDevice != null)
+            {
+                SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
+                string subject =
+                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
+                var body = new CatalogQuery()
+                {
+                    CommandType = CommandType.DeviceInfo,
+                    DeviceID = tmpSipDevice.DeviceId,
+                    SN = new Random().Next(1, ushort.MaxValue),
+                };
+                var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
+                Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
+                    SendRequestViaSipDevice;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);
+            }
+        }
+
         /// <summary>
         /// 请求实时视频流
         /// </summary>
@@ -381,6 +450,7 @@ namespace LibGB28181SipServer
             req.Header.Contact[0].ContactName = null;
             req.Header.Allow = null;
             req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+            req.Header.CSeq = sipChannel.InviteSipResponse.Header.CSeq + 1;
 
             var nrt = new NeedReturnTask(Common.NeedResponseRequests)
             {
@@ -407,7 +477,7 @@ namespace LibGB28181SipServer
             {
                 SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
                 string subject =
-                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceInfo!.DeviceID}:{new Random().Next(100, ushort.MaxValue)}";
+                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
                 CatalogQuery catalogQuery = new CatalogQuery()
                 {
                     CommandType = CommandType.Catalog,
@@ -415,9 +485,6 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
-
-                //    private async Task SendRequest(SipDevice sipDevice, SIPMethodsEnum method, string contentType, string subject,
-                // string xmlBody,bool needResponse,AutoResetEvent evnt,int timeout)
                 Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
                     SendRequestViaSipDevice;
                 request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);

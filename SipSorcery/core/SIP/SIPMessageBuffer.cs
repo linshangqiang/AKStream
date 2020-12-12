@@ -54,6 +54,17 @@ namespace SIPSorcery.SIP
         public SIPEndPoint LocalSIPEndPoint; // The local SIP socket the message was received on or sent from.
 
         /// <summary>
+        /// byte数组转string
+        /// </summary>
+        /// <param name="bt"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+       private static String ByteToStr(Byte[] bt,Encoding encoding)
+        {
+            return encoding.GetString(bt);
+        }
+        
+        /// <summary>
         /// Attempts to parse a SIP message from a single buffer that can only contain a single message.
         /// </summary>
         /// <param name="buffer">The buffer that will be parsed for a SIP message.</param>
@@ -84,7 +95,13 @@ namespace SIPSorcery.SIP
                 }
                 else
                 {
-                    message = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
+                    message = ByteToStr(buffer, Encoding.UTF8);
+                    if (message.ToUpper().Contains("ENCODING=\"GBK\"")
+                        || message.ToUpper().Contains("ENCODING=\"GB2312\""))
+                    {
+                        message = ByteToStr(buffer, Encoding.GetEncoding("GBK"));//兼容gbk,gb2312编码中文字符串
+                    }
                     SIPMessageBuffer sipMessageBuffer = ParseSIPMessage(message, localSIPEndPoint, remoteSIPEndPoint);
 
                     if (sipMessageBuffer != null)

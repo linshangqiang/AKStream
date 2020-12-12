@@ -9,6 +9,7 @@ using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.Net.SIP;
 using LibCommon.Structs.GB28181.XML;
 using LibLogger;
+using Newtonsoft.Json;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
 
@@ -137,12 +138,22 @@ namespace LibGB28181SipServer
         {
             while (true)
             {
+                
                 while (!Common.TmpCatalogs.IsEmpty)
                 {
-                    var ret = Common.TmpCatalogs.TryPeek(out Catalog tmpCatalog);
+                    var ret = Common.TmpCatalogs.TryDequeue(out Catalog tmpCatalog);
                     if (ret && tmpCatalog != null)
                     {
-                        InsertDeviceItems(tmpCatalog);
+                        try
+                        {
+                            InsertDeviceItems(tmpCatalog);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(
+                                $"[{Common.LoggerHead}]->插入设备目录时发生异常->{ex.Message}\r\n{ex.StackTrace}");
+
+                        }
                     }
                     Thread.Sleep(20);
                 }
@@ -252,8 +263,8 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
+            
             XElement bodyXml = XElement.Parse(sipRequest.Body);
-
             string cmdType = bodyXml.Element("CmdType")?.Value.ToUpper()!;
             if (!string.IsNullOrEmpty(cmdType))
             {
@@ -284,12 +295,12 @@ namespace LibGB28181SipServer
 
                             tmpSipDevice.LastSipRequest = sipRequest;
                             tmpSipDevice.KeepAliveTime = time;
-                            Logger.Debug(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");
+                            /*Logger.Debug(
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");*/
                         }
                         else
                         {
-                            Logger.Debug(
+                            Logger.Warn(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}->但是Sip设备不存在，发送BadRequest消息,使设备重新注册");
                             await SendKeepAliveExcept(sipRequest);
                         }
@@ -298,7 +309,40 @@ namespace LibGB28181SipServer
                     case "CATALOG": //处理设备目录
                         await SendOkMessage(sipRequest);
                         Common.TmpCatalogs.Enqueue(UtilsHelper.XMLToObject<Catalog>(bodyXml));
-                        Logger.Debug("收到目录信息" + sipRequest.ToString());
+                        Logger.Debug(
+                            $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备目录信息->{sipRequest}");
+                     
+                        break;
+                    case "DEVICEINFO":
+                        await SendOkMessage(sipRequest);
+                        var tmpDeviceInfo = UtilsHelper.XMLToObject<DeviceInfo>(bodyXml);
+                        if (tmpDeviceInfo != null)
+                        {
+                            var tmpSipDeviceFind=Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceInfo.DeviceID));
+                            if (tmpSipDeviceFind != null)
+                            {
+                                tmpSipDeviceFind.DeviceInfo = tmpDeviceInfo;
+                                tmpSipDeviceFind.DeviceInfo.Channel = tmpSipDeviceFind.SipChannels.Count;
+                                Logger.Debug(
+                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备信息->{sipRequest}");
+                            }
+                        }
+
+                        break;
+                    case "DEVICESTATUS":
+                        await SendOkMessage(sipRequest);
+                        var tmpDeviceStatus = UtilsHelper.XMLToObject<DeviceStatus>(bodyXml);
+                        if (tmpDeviceStatus != null)
+                        {
+                            var tmpSipDeviceFind=Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceStatus.DeviceID));
+                            if (tmpSipDeviceFind != null)
+                            {
+                                tmpSipDeviceFind.DeviceStatus = tmpDeviceStatus;
+                                Logger.Debug(
+                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备状态信息->{sipRequest}");
+                            }
+                        }
+                       
                         break;
                 }
             }
@@ -617,12 +661,29 @@ namespace LibGB28181SipServer
             SIPResponse sipResponse)
         {
             var status = sipResponse.Status;
+            Console.WriteLine("===>Status:"+status);
+            if (status != SIPResponseStatusCodesEnum.Ok)
+            {
+                Console.WriteLine("-------------->"+sipResponse);
+            }
+
+            SIPMethodsEnum method;
+            bool ret;
+            NeedReturnTask _task;
             switch (status)
             {
+                /*case SIPResponseStatusCodesEnum.CallLegTransactionDoesNotExist:
+                     method = sipResponse.Header.CSeqMethod;
+                     ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId,
+                        out  _task);
+                     Logger.Warn(
+                         $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息");
+                     
+                    break;*/  //这里操作失败了，因为设备通道不存在
                 case SIPResponseStatusCodesEnum.Ok:
-                    var method = sipResponse.Header.CSeqMethod;
-                    var ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId,
-                        out NeedReturnTask _task);
+                     method = sipResponse.Header.CSeqMethod;
+                     ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId,
+                        out  _task);
                     if (ret && _task != null)
                     {
                         switch (method)
