@@ -14,7 +14,7 @@ namespace LibCommon
         public static string? WorkSpacePath = AppDomain.CurrentDomain.BaseDirectory; //程序运行的目录
         public static string? WorkSpaceFullPath = Environment.GetCommandLineArgs()[0];//程序运行的全路径
         public static string? CommandLine = Environment.CommandLine;//程序启动命令
-        public static string ConfigPath = BaseStartPath + "/Config";
+        public static string ConfigPath = BaseStartPath + "/Config/";
         
         #region 各类事件委托
         /// <summary>

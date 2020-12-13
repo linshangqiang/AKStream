@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using LibCommon.Structs;
+using LibCommon.Structs.GB28181;
 using Newtonsoft.Json;
 
 namespace LibCommon
@@ -19,6 +20,33 @@ namespace LibCommon
     /// </summary>
     public static class UtilsHelper
     {
+     /// <summary>
+     /// 获取ssrc值
+     /// </summary>
+     /// <param name="pushMediaInfoToCreateSsrc"></param>
+     /// <returns></returns>
+        public static KeyValuePair<string, uint> GetSSRCValue(PushMediaInfoToCreateSSRC pushMediaInfoToCreateSsrc)
+        {
+            var tmpSSRC = pushMediaInfoToCreateSsrc.MediaServerId + pushMediaInfoToCreateSsrc.MediaServerIp +
+                          pushMediaInfoToCreateSsrc.Vhost + pushMediaInfoToCreateSsrc.App +
+                          pushMediaInfoToCreateSsrc.SipDeviceId +
+                          pushMediaInfoToCreateSsrc.SipChannelId + pushMediaInfoToCreateSsrc.PushStreamSocketType;
+            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.StartTime))//用于回放流
+            {
+                tmpSSRC += pushMediaInfoToCreateSsrc.StartTime + "-";
+            } 
+            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.Endtime))//用于回放流
+            {
+                tmpSSRC += pushMediaInfoToCreateSsrc.Endtime;
+            }
+
+          
+            var uintSSRC = CRC32Helper.GetCRC32(tmpSSRC);
+            var stringSSRC = string.Format("{0:X8}", uintSSRC);
+            KeyValuePair<string, uint> tmpKeyValuePair = new KeyValuePair<string, uint>(stringSSRC, uintSSRC);
+            return tmpKeyValuePair;
+        }
+
         /// <summary>
         /// 判断是否为奇数
         /// </summary>

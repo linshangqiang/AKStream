@@ -35,7 +35,6 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备目录接收
         /// </summary>
-        
         public static event GCommon.CatalogReceived OnCatalogReceived = null!;
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace LibGB28181SipServer
         /// 设备就绪通知，当设备准备好的时候触发
         /// </summary>
         public static event GCommon.SipDeviceReadyReceived OnDeviceReadyReceived = null;
-            
+
         /// <summary>
         /// 设备状态查询接收
         /// </summary>
@@ -138,7 +137,6 @@ namespace LibGB28181SipServer
         {
             while (true)
             {
-                
                 while (!Common.TmpCatalogs.IsEmpty)
                 {
                     var ret = Common.TmpCatalogs.TryDequeue(out Catalog tmpCatalog);
@@ -152,20 +150,22 @@ namespace LibGB28181SipServer
                         {
                             Logger.Error(
                                 $"[{Common.LoggerHead}]->插入设备目录时发生异常->{ex.Message}\r\n{ex.StackTrace}");
-
                         }
                     }
+
                     Thread.Sleep(20);
                 }
+
                 Thread.Sleep(1000);
             }
         }
+
         /// <summary>
         /// 处理设备目录添加
         /// </summary>
         /// <param name="catalog"></param>
         /// <returns></returns>
-        private static void InsertDeviceItems( Catalog catalog)
+        private static void InsertDeviceItems(Catalog catalog)
         {
             if (catalog != null)
             {
@@ -263,7 +263,6 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
-            
             XElement bodyXml = XElement.Parse(sipRequest.Body);
             string cmdType = bodyXml.Element("CmdType")?.Value.ToUpper()!;
             if (!string.IsNullOrEmpty(cmdType))
@@ -282,7 +281,7 @@ namespace LibGB28181SipServer
                             if (!tmpSipDevice.IsReday)
                             {
                                 tmpSipDevice.IsReday = true; //设备已就绪
-                                Task.Run(() =>//设备就绪通知
+                                Task.Run(() => //设备就绪通知
                                 {
                                     OnDeviceReadyReceived?.Invoke(tmpSipDevice);
                                 });
@@ -311,14 +310,15 @@ namespace LibGB28181SipServer
                         Common.TmpCatalogs.Enqueue(UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         Logger.Debug(
                             $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备目录信息->{sipRequest}");
-                     
+
                         break;
                     case "DEVICEINFO":
                         await SendOkMessage(sipRequest);
                         var tmpDeviceInfo = UtilsHelper.XMLToObject<DeviceInfo>(bodyXml);
                         if (tmpDeviceInfo != null)
                         {
-                            var tmpSipDeviceFind=Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceInfo.DeviceID));
+                            var tmpSipDeviceFind =
+                                Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceInfo.DeviceID));
                             if (tmpSipDeviceFind != null)
                             {
                                 tmpSipDeviceFind.DeviceInfo = tmpDeviceInfo;
@@ -334,7 +334,8 @@ namespace LibGB28181SipServer
                         var tmpDeviceStatus = UtilsHelper.XMLToObject<DeviceStatus>(bodyXml);
                         if (tmpDeviceStatus != null)
                         {
-                            var tmpSipDeviceFind=Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceStatus.DeviceID));
+                            var tmpSipDeviceFind =
+                                Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpDeviceStatus.DeviceID));
                             if (tmpSipDeviceFind != null)
                             {
                                 tmpSipDeviceFind.DeviceStatus = tmpDeviceStatus;
@@ -342,7 +343,72 @@ namespace LibGB28181SipServer
                                     $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备状态信息->{sipRequest}");
                             }
                         }
-                       
+
+                        break;
+                    case "RECORDINFO":
+                        await SendOkMessage(sipRequest);
+                        string tmpSipDevId = sipRequest.Header.From.FromURI.User;
+                        var recordInfo = UtilsHelper.XMLToObject<RecordInfo>(bodyXml);
+                        var tmpSipDevice1 = Common.SipDevices.FindLast(x => x.DeviceId.Equals(tmpSipDevId));
+                        if (recordInfo != null && tmpSipDevice1 != null)
+                        {
+                            int tatolNum = recordInfo.SumNum;
+
+                            int sn = recordInfo.SN;
+                            var sipChannel1 =
+                                tmpSipDevice1.SipChannels.FindLast(x => x.DeviceId.Equals(recordInfo.DeviceID));
+                            if (sipChannel1 != null)
+                            {
+                                if (sipChannel1.LastRecordInfos.Count > 0 &&
+                                    sipChannel1.LastRecordInfos[0].Key.Equals(sn))
+                                {
+                                    foreach (var item in recordInfo.RecordItems.Items)
+                                    {
+                                        var tmp = sipChannel1.LastRecordInfos.FindLast(x =>
+                                            x.Value.FilePath.Equals(item.FilePath));
+                                        if (tmp.Value == null)
+                                        {
+                                            sipChannel1.LastRecordInfos.Add(
+                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                        }
+                                    }
+                                }
+
+                                if (sipChannel1.LastRecordInfos.Count > 0 &&
+                                    !sipChannel1.LastRecordInfos[0].Key.Equals(sn))
+                                {
+                                    sipChannel1.LastRecordInfos.Clear();
+                                    foreach (var item in recordInfo.RecordItems.Items)
+                                    {
+                                        var tmp = sipChannel1.LastRecordInfos.FindLast(x =>
+                                            x.Value.FilePath.Equals(item.FilePath));
+                                        if (tmp.Value == null)
+                                        {
+                                            sipChannel1.LastRecordInfos.Add(
+                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                        }
+                                    }
+                                }
+
+                                if (sipChannel1.LastRecordInfos.Count == 0)
+                                {
+                                    foreach (var item in recordInfo.RecordItems.Items)
+                                    {
+                                        var tmp = sipChannel1.LastRecordInfos.FindLast(x =>
+                                            x.Value.FilePath.Equals(item.FilePath));
+                                        if (tmp.Value == null)
+                                        {
+                                            sipChannel1.LastRecordInfos.Add(
+                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                        }
+                                    }
+                                }
+
+                                Logger.Info(
+                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的录像查询结果->{tmpSipDevice1.DeviceId}->{sipChannel1.DeviceId}->录像结果总数为:{tatolNum}->当前已获取数量:{sipChannel1.LastRecordInfos.Count}");
+                            }
+                        }
+
                         break;
                 }
             }
@@ -661,10 +727,10 @@ namespace LibGB28181SipServer
             SIPResponse sipResponse)
         {
             var status = sipResponse.Status;
-            Console.WriteLine("===>Status:"+status);
+            Console.WriteLine("===>Status:" + status);
             if (status != SIPResponseStatusCodesEnum.Ok)
             {
-                Console.WriteLine("-------------->"+sipResponse);
+                Console.WriteLine("-------------->" + sipResponse);
             }
 
             SIPMethodsEnum method;
@@ -679,11 +745,11 @@ namespace LibGB28181SipServer
                      Logger.Warn(
                          $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息");
                      
-                    break;*/  //这里操作失败了，因为设备通道不存在
+                    break;*/ //这里操作失败了，因为设备通道不存在
                 case SIPResponseStatusCodesEnum.Ok:
-                     method = sipResponse.Header.CSeqMethod;
-                     ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId,
-                        out  _task);
+                    method = sipResponse.Header.CSeqMethod;
+                    ret = Common.NeedResponseRequests.TryRemove(sipResponse.Header.CallId,
+                        out _task);
                     if (ret && _task != null)
                     {
                         switch (method)

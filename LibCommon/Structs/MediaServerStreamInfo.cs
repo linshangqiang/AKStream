@@ -92,8 +92,10 @@ namespace LibCommon.Structs
         private string? _schema;
         private string _stream = null!;
         private string _playUrl = null!;
+        private uint ssrc;
         private PushStreamSocketType? _pushSocketType = null;
         private List<MediaServerStreamPlayerInfo> _playerList= new List<MediaServerStreamPlayerInfo>();
+      
 
         /// <summary>
         /// 流媒体服务的ID
@@ -174,6 +176,15 @@ namespace LibCommon.Structs
         {
             get => _playUrl;
             set => _playUrl = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// gb28181的ssrc值
+        /// </summary>
+        public uint Ssrc
+        {
+            get => ssrc;
+            set => ssrc = value;
         }
 
         /// <summary>

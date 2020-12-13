@@ -19,7 +19,7 @@
         /// </summary>
         private string m_xml_path;
 
-        private static string m_dir = AppDomain.CurrentDomain.BaseDirectory + "\\Config\\";
+        private static string m_dir = GCommon.ConfigPath;
 
         /// <summary>
         /// 存储对象

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Timers;
+using LibCommon.Structs.GB28181.XML;
 using SIPSorcery.SIP;
 using Timer = System.Timers.Timer;
 
@@ -21,6 +22,7 @@ namespace LibCommon.Structs.GB28181
         private static ConcurrentDictionary<string, NeedReturnTask> _needResponseRequests = null;
         private SipChannel _sipChannel;
         private SipDevice _sipDevice;
+        private CommandType _commandType;
 
 
 
@@ -91,7 +93,16 @@ namespace LibCommon.Structs.GB28181
             _needResponseRequests = c;
 
         }
-        
+
+        /// <summary>
+        /// 命令类型 
+        /// </summary>
+        public CommandType CommandType
+        {
+            get => _commandType;
+            set => _commandType = value;
+        }
+
         public void Dispose()
         {
             if (_timeoutCheckTimer != null)

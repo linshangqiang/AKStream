@@ -28,6 +28,7 @@ namespace LibCommon.Structs.GB28181
         private SIPRequest _inviteSipRequest; //要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
         private SIPResponse _inviteSipResponse;//要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
         private SIPRequest _lastSipRequest; //保存最后一次sipRequest
+        private List<KeyValuePair<int,RecordInfo.Item>> _lastRecordInfos=new List<KeyValuePair<int,RecordInfo.Item>>();//最后一次获取到的录像文件列表
 
         /// <summary>
         /// 通道在系统中唯一id
@@ -178,6 +179,15 @@ namespace LibCommon.Structs.GB28181
         {
             get => _lastSipRequest;
             set => _lastSipRequest = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 最后一次获取到的录像文件列表
+        /// </summary>
+        public List<KeyValuePair<int,RecordInfo.Item>> LastRecordInfos
+        {
+            get => _lastRecordInfos;
+            set => _lastRecordInfos = value ?? throw new ArgumentNullException(nameof(value));
         }
 
 

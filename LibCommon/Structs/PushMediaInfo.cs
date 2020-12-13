@@ -14,6 +14,8 @@ namespace LibCommon.Structs
         private int _streamPort;
         private string? _recordPath;
         private bool? _startRecord;
+        private uint _ssrc;
+        
 
         /// <summary>
         /// 流媒体服务器id
@@ -77,6 +79,9 @@ namespace LibCommon.Structs
             get => _streamPort;
             set => _streamPort = value;
         }
+        /// <summary>
+        /// 录制文件自定义路径
+        /// </summary>
 
         public string? RecordPath
         {
@@ -84,10 +89,22 @@ namespace LibCommon.Structs
             set => _recordPath = value;
         }
 
+        /// <summary>
+        /// 是否启动录制
+        /// </summary>
         public bool? StartRecord
         {
             get => _startRecord;
             set => _startRecord = value;
+        }
+
+        /// <summary>
+        /// gb28181推流的ssrc值
+        /// </summary>
+        public uint Ssrc
+        {
+            get => _ssrc;
+            set => _ssrc = value;
         }
     }
 }

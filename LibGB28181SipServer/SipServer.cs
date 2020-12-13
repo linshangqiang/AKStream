@@ -70,7 +70,7 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         private async Task SendRequestViaSipChannel(SipDevice sipDevice, SipChannel sipChannel, SIPMethodsEnum method,
             string contentType,
-            string xmlBody, bool needResponse, AutoResetEvent evnt, int timeout)
+            string xmlBody, CommandType commandType, bool needResponse, AutoResetEvent evnt, int timeout)
         {
             IPAddress sipDeviceIpAddr = IPAddress.Parse(sipDevice.LastSipRequest.Header.Vias.Via[0].Host);
             int sipDevicePort = sipDevice.LastSipRequest.Header.Vias.Via[0].Port;
@@ -142,7 +142,7 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         private async Task SendRequestViaSipDevice(SipDevice sipDevice, SIPMethodsEnum method, string contentType,
             string subject,
-            string xmlBody, bool needResponse, AutoResetEvent evnt, int timeout)
+            string xmlBody, CommandType commandType, bool needResponse, AutoResetEvent evnt, int timeout)
         {
             var to = sipDevice.LastSipRequest!.Header.To;
             var from = sipDevice.LastSipRequest.Header.From;
@@ -181,6 +181,7 @@ namespace LibGB28181SipServer
                     SipRequest = req,
                     Timeout = timeout,
                     SipDevice = sipDevice,
+                    CommandType = commandType,
                 };
                 Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
             }
@@ -327,10 +328,56 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
-                    SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);
+                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
+                    request =
+                        SendRequestViaSipDevice;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType, true,
+                    evnt, timeout);
             }
+        }
+
+        /// <summary>
+        /// 获取通道的录像文件列表
+        /// </summary>
+        /// <param name="sipChannel"></param>
+        /// <param name="sipQueryRecordFile"></param>
+        /// <param name="evnt"></param>
+        /// <param name="rs"></param>
+        /// <param name="timeout"></param>
+
+        public void GetRecordFileList(SipChannel sipChannel, SipQueryRecordFile sipQueryRecordFile, AutoResetEvent evnt,
+            out ResponseStruct rs, int timeout = 5000)
+        {
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            CheckInviteParam(sipChannel, out rs); //检测各参数是否正常
+            if (!rs.Code.Equals(ErrorNumber.None))
+            {
+                return;
+            }
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.Guid.Equals(sipChannel.ParentGuid));
+            SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
+            string subject =
+                $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
+            var body = new RecordQuery()
+            {
+                DeviceID = sipChannel.DeviceId,
+                SN = new Random().Next(1, 3000),
+                CmdType = CommandType.RecordInfo,
+                Secrecy = 0,
+                StartTime = sipQueryRecordFile.StartTime,
+                EndTime = sipQueryRecordFile.EndTime,
+                Type = sipQueryRecordFile.SipRecordFileQueryType.ToString(),
+            };
+            var xmlBody = CatalogQuery.Instance.Save<RecordQuery>(body);
+            Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, CommandType, bool, AutoResetEvent, int, Task>
+                request =
+                    SendRequestViaSipChannel;
+            request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, xmlBody, body.CmdType, true, evnt,
+                timeout);
         }
 
         /// <summary>
@@ -361,9 +408,19 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
-                    SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);
+                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
+                    request =
+                        SendRequestViaSipDevice;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType, true,
+                    evnt, timeout);
+            }
+            else
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Device_NotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                };
             }
         }
 
@@ -390,9 +447,11 @@ namespace LibGB28181SipServer
             if (!string.IsNullOrEmpty(mediaSdp))
             {
                 SIPMethodsEnum method = SIPMethodsEnum.INVITE;
-                Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, bool, AutoResetEvent, int, Task> request =
+                Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, CommandType, bool, AutoResetEvent, int, Task
+                > request =
                     SendRequestViaSipChannel;
-                request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, mediaSdp, true, evnt, timeout);
+                request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, mediaSdp, CommandType.Unknown,
+                    true, evnt, timeout);
             }
         }
 
@@ -460,6 +519,7 @@ namespace LibGB28181SipServer
                 Timeout = timeout,
                 SipDevice = tmpSipDevice,
                 SipChannel = sipChannel,
+                CommandType = CommandType.Unknown,
             };
             Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
             Logger.Debug($"[{Common.LoggerHead}]->发送终止时实流请求->{req}");
@@ -470,8 +530,13 @@ namespace LibGB28181SipServer
         /// 设备目录查询请求
         /// </summary>
         /// <param name="sipDeviceId"></param>
-        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt, int timeout = 5000)
-        {
+        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt, out ResponseStruct rs,int timeout = 5000)
+        {   rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDevice.DeviceId));
             if (tmpSipDevice != null)
             {
@@ -485,9 +550,11 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, bool, AutoResetEvent, int, Task> request =
-                    SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, true, evnt, timeout);
+                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
+                    request =
+                        SendRequestViaSipDevice;
+                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,
+                    catalogQuery.CommandType, true, evnt, timeout);
             }
         }
 
