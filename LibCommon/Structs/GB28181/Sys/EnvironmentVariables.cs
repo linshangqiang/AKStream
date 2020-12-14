@@ -1,6 +1,6 @@
 ﻿using System;
 
- namespace LibCommon.Structs.GB28181.Sys
+namespace LibCommon.Structs.GB28181.Sys
 {
     public class EnvironmentVariables
     {

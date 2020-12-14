@@ -16,20 +16,18 @@ namespace LibGB28181SipServer
 {
     public static class Common
     {
-        
-
         public const int SIP_REGISTER_MIN_INTERVAL_SEC = 30; //最小Sip设备注册间隔
         private static string _loggerHead = "SipServer";
         private static SipServerConfig _sipServerConfig = null!;
         private static string _sipServerConfigPath = GCommon.ConfigPath + "SipServerConfig.json";
         private static List<SipDevice> _sipDevices = new List<SipDevice>();
-        private static ConcurrentQueue<Catalog> _tmpCatalogs= new ConcurrentQueue<Catalog>();
-        
+        private static ConcurrentQueue<Catalog> _tmpCatalogs = new ConcurrentQueue<Catalog>();
+
         /// <summary>
         /// 用于操作_sipDevices时的锁
         /// </summary>
         public static object SipDevicesLock = new object();
-        
+
         /// <summary>
         /// sip设备列表
         /// </summary>
@@ -38,6 +36,7 @@ namespace LibGB28181SipServer
             get => _sipDevices;
             set => _sipDevices = value;
         }
+
         /// <summary>
         /// sip服务实例
         /// </summary>
@@ -82,6 +81,7 @@ namespace LibGB28181SipServer
             get => _needResponseRequests;
             set => _needResponseRequests = value;
         }
+      
 
         /// <summary>
         /// 收到的设备目录线程安全队列，收到的设备目录先缓存在这里
@@ -197,15 +197,18 @@ namespace LibGB28181SipServer
             {
                 return SipChannelType.Unknow;
             }
+
             int extId = int.Parse(sipChannelId.Substring(10, 3));
-            if (extId == 131 || extId == 132 || extId == 137 || extId==138||extId==139)
+            if (extId == 131 || extId == 132 || extId == 137 || extId == 138 || extId == 139)
             {
                 return SipChannelType.VideoChannel;
             }
-            if (extId == 135 || extId==205)
+
+            if (extId == 135 || extId == 205)
             {
                 return SipChannelType.AlarmChannel;
             }
+
             if (extId == 137)
             {
                 return SipChannelType.AudioChannel;
@@ -217,8 +220,8 @@ namespace LibGB28181SipServer
             }
 
             return SipChannelType.OtherChannel;
-
         }
+
         /// <summary>
         /// 返加0说明文件存在并正确加载
         /// 返回1说明文件不存在已新建并加载
@@ -265,7 +268,7 @@ namespace LibGB28181SipServer
                             Code = ErrorNumber.None,
                             Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                         };
-                        
+
                         return 0;
                     }
 
@@ -299,7 +302,6 @@ namespace LibGB28181SipServer
 
         static Common()
         {
-            
         }
     }
 }

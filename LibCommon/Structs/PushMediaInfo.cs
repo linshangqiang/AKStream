@@ -7,6 +7,12 @@ namespace LibCommon.Structs
     {
         private string _mediaServerId;
         private string _mediaServerIpAddress;
+        private ushort _http_wsMediaServerPlayPort;
+        private ushort _rtmpMediaServerPlayPort;
+        private ushort _rtspMediaServerPlayPort;
+        private ushort _https_wssMediaServerPlayPort=0;
+        private ushort _rtmpsMediaServerPlayPort=0;
+        private ushort _rtspsMediaServerPlayPort=0;
         private string _app;
         private string _vhost;
         private string _stream;
@@ -15,7 +21,7 @@ namespace LibCommon.Structs
         private string? _recordPath;
         private bool? _startRecord;
         private uint _ssrc;
-        
+
 
         /// <summary>
         /// 流媒体服务器id
@@ -36,6 +42,59 @@ namespace LibCommon.Structs
         }
 
         /// <summary>
+        /// 流媒体http和ws的播放端口
+        /// </summary>
+        public ushort Http_WsMediaServerPlayPort
+        {
+            get => _http_wsMediaServerPlayPort;
+            set => _http_wsMediaServerPlayPort = value;
+        }
+
+        /// <summary>
+        /// rtmp的播放端口
+        /// </summary>
+        public ushort RtmpMediaServerPlayPort
+        {
+            get => _rtmpMediaServerPlayPort;
+            set => _rtmpMediaServerPlayPort = value;
+        }
+
+        /// <summary>
+        /// rtsp的播放端口
+        /// </summary>
+        public ushort RtspMediaServerPlayPort
+        {
+            get => _rtspMediaServerPlayPort;
+            set => _rtspMediaServerPlayPort = value;
+        }
+
+        /// <summary>
+        /// https，wss播放端口
+        /// </summary>
+        public ushort HttpsWssMediaServerPlayPort
+        {
+            get => _https_wssMediaServerPlayPort;
+            set => _https_wssMediaServerPlayPort = value;
+        }
+
+        /// <summary>
+        /// rtmps播放端口
+        /// </summary>
+        public ushort RtmpsMediaServerPlayPort
+        {
+            get => _rtmpsMediaServerPlayPort;
+            set => _rtmpsMediaServerPlayPort = value;
+        }
+        /// <summary>
+        /// rtsps播放端口
+        /// </summary>
+        public ushort RtspsMediaServerPlayPort
+        {
+            get => _rtspsMediaServerPlayPort;
+            set => _rtspsMediaServerPlayPort = value;
+        }
+
+        /// <summary>
         /// 流媒体服务器app
         /// </summary>
         public string App
@@ -43,6 +102,8 @@ namespace LibCommon.Structs
             get => _app;
             set => _app = value ?? throw new ArgumentNullException(nameof(value));
         }
+
+      
 
         /// <summary>
         /// 流媒体服务器vhost
@@ -79,6 +140,7 @@ namespace LibCommon.Structs
             get => _streamPort;
             set => _streamPort = value;
         }
+
         /// <summary>
         /// 录制文件自定义路径
         /// </summary>

@@ -21,11 +21,13 @@ namespace LibCommon.Structs
         private ZLMediaKitWebApiHelper _zlMediaKitWebApiHelper;
         private string _recordPath;
         private ushort _rtpPortMin;
-        private ushort _rtpPortMax;//仅使用min-max中的偶数类端口
-        private static ConcurrentDictionary<string, ushort> _rtpPortDictionary = new ConcurrentDictionary<string, ushort>();
+        private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
+
+        private static ConcurrentDictionary<string, ushort> _rtpPortDictionary =
+            new ConcurrentDictionary<string, ushort>();
+
         private GlobalSystemInfo _globalSystemInfo;
-        
-        
+
 
         public string IpAddress
         {

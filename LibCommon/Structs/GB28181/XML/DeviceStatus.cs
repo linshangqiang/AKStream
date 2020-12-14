@@ -4,13 +4,12 @@ using System.Xml.Serialization;
 
 namespace LibCommon.Structs.GB28181.XML
 {
-    
     [Serializable]
     public class Alarmstatus
     {
         private List<AlarmStatuItem> _statuItems = new List<AlarmStatuItem>();
 
-      
+
         /// <summary>
         /// 设备项
         /// </summary>
@@ -21,18 +20,19 @@ namespace LibCommon.Structs.GB28181.XML
         }
     }
 
-   
+
     public class AlarmStatuItem : XmlHelper<DeviceStatus>
     {
         private string _deviceId;
         private string _dutyStatus;
-        
+
         [XmlElement("DeviceID")]
         public string DeviceId
         {
             get => _deviceId;
             set => _deviceId = value ?? throw new ArgumentNullException(nameof(value));
         }
+
         [XmlElement("DutyStatus")]
         public string DutyStatus
         {
@@ -40,8 +40,8 @@ namespace LibCommon.Structs.GB28181.XML
             set => _dutyStatus = value ?? throw new ArgumentNullException(nameof(value));
         }
     }
-    
-    
+
+
     /// <summary>
     /// 设备状态
     /// </summary>
@@ -107,26 +107,29 @@ namespace LibCommon.Structs.GB28181.XML
         /// </summary>
         [XmlElement("Reason")]
         public string Reason { get; set; }
+
         /// <summary>
         /// 编码
         /// </summary>
         [XmlElement("Encode")]
         public string Encode { get; set; }
+
         /// <summary>
         /// 录制的
         /// </summary>
         [XmlElement("Record")]
         public string Record { get; set; }
+
         /// <summary>
         /// 设备时间
         /// </summary>
         [XmlElement("DeviceTime")]
         public DateTime DeviceTime { get; set; }
+
         /// <summary>
         /// 报警状态
         /// </summary>
         [XmlElement("Alarmstatus")]
         public Alarmstatus Alarmstatus { get; set; }
-        
     }
 }

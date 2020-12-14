@@ -29,13 +29,11 @@
         /// <summary>
         /// 未知的
         /// </summary>
-        
         UNKNOWN,
 
         /// <summary>
         /// 平台根
         /// </summary>
-     
         ROOT,
 
         /// <summary>
@@ -46,43 +44,36 @@
         /// <summary>
         /// 市级行政区划
         /// </summary>
-       
         CITYCATA,
 
         /// <summary>
         /// 区县级行政区划
         /// </summary>
-       
         AREACATA,
 
         /// <summary>
         /// 基层接入单位行政区划
         /// </summary>
-       
         BASICUNIT,
 
         /// <summary>
         /// 系统目录项
         /// </summary>
-       
         SYSTEMCATA,
 
         /// <summary>
         /// 业务分组目录项
         /// </summary>
-      
         BUSINESSGROUPCATA,
 
         /// <summary>
         /// 虚拟目录分组项
         /// </summary>
-        
         VIRTUALGROUPCATA,
 
         /// <summary>
         /// 设备
         /// </summary>
-     
         DEVICE,
 
         /// <summary>
@@ -100,21 +91,21 @@
         /// <returns></returns>
         public static DevCataType GetCataType(string devId)
         {
-           DevCataType DeviceType = DevCataType.UNKNOWN;
+            DevCataType DeviceType = DevCataType.UNKNOWN;
 
             switch (devId.Length)
             {
                 case 2:
-                DeviceType = DevCataType.PROVICECATA;
+                    DeviceType = DevCataType.PROVICECATA;
                     break;
                 case 4:
-                DeviceType = DevCataType.CITYCATA;
+                    DeviceType = DevCataType.CITYCATA;
                     break;
                 case 6:
-                DeviceType = DevCataType.AREACATA;
+                    DeviceType = DevCataType.AREACATA;
                     break;
                 case 8:
-                DeviceType = DevCataType.BASICUNIT;
+                    DeviceType = DevCataType.BASICUNIT;
                     break;
                 case 20:
                     int extId = int.Parse(devId.Substring(10, 3));

@@ -2,8 +2,6 @@ using System;
 
 namespace LibCommon.Enums
 {
-    
-    
     [Serializable]
     /// <summary>
     /// Sip通道类型
@@ -29,6 +27,7 @@ namespace LibCommon.Enums
         /// 其他通道
         /// </summary>
         OtherChannel,
+
         /// <summary>
         /// id位数不等于20,设置为未知设备
         /// </summary>

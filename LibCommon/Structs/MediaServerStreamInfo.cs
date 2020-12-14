@@ -77,6 +77,7 @@ namespace LibCommon.Structs
             set => _isOnline = value;
         }
     }
+
     /// <summary>
     /// 流媒体服务中的流信息
     /// </summary>
@@ -89,13 +90,12 @@ namespace LibCommon.Structs
         private long _streamBytes;
         private string _vhost = null!;
         private string _app = null!;
-        private string? _schema;
         private string _stream = null!;
-        private string _playUrl = null!;
+        private List<string> _playUrl = new List<string>();
         private uint ssrc;
         private PushStreamSocketType? _pushSocketType = null;
-        private List<MediaServerStreamPlayerInfo> _playerList= new List<MediaServerStreamPlayerInfo>();
-      
+        private List<MediaServerStreamPlayerInfo> _playerList = new List<MediaServerStreamPlayerInfo>();
+
 
         /// <summary>
         /// 流媒体服务的ID
@@ -151,14 +151,7 @@ namespace LibCommon.Structs
             set => _app = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        /// <summary>
-        /// 协议类型
-        /// </summary>
-        public string? Schema
-        {
-            get => _schema;
-            set => _schema = value;
-        }
+       
 
         /// <summary>
         /// 流ID
@@ -172,7 +165,7 @@ namespace LibCommon.Structs
         /// <summary>
         /// 播放地址
         /// </summary>
-        public string PlayUrl
+        public List<string> PlayUrl
         {
             get => _playUrl;
             set => _playUrl = value ?? throw new ArgumentNullException(nameof(value));
@@ -186,6 +179,8 @@ namespace LibCommon.Structs
             get => ssrc;
             set => ssrc = value;
         }
+
+      
 
         /// <summary>
         /// 推流的socket类型 

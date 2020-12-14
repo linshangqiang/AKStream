@@ -12,14 +12,14 @@ namespace LibSystemInfo
     public static class NetWorkWinValue
     {
         private static object lockObj = new object();
-        private static string binPath =  GCommon.BaseStartPath+ "/WinNetworkStaCli.exe";
+        private static string binPath = GCommon.BaseStartPath + "/WinNetworkStaCli.exe";
 
         private static ProcessHelper SystemInfoProcessHelper =
             new ProcessHelper(p_StdOutputDataReceived, null!, p_Process_Exited!);
 
         private static long _perSendBytes = 0;
         private static long _perRecvBytes = 0;
-       
+
         public static NetWorkStat NetWorkStat = new NetWorkStat();
 
         private static void p_Process_Exited(object sender, EventArgs e)

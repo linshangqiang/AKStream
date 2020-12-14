@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace  LibMediaServer.Structs.WebResponse
+namespace LibMediaServer.Structs.WebResponse
 {
     [Serializable]
     public class ResZLMediaKitCloseStreams : ResZLMediaKitResponseBase

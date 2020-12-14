@@ -1,10 +1,10 @@
 ﻿using System;
- using System.IO;
- using System.Text;
- using System.Xml;
- using System.Xml.Serialization;
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
- namespace LibCommon.Structs.GB28181.XML
+namespace LibCommon.Structs.GB28181.XML
 {
     /// <summary>
     /// XML操作访问类

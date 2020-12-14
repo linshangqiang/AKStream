@@ -827,14 +827,14 @@ namespace SIPSorcery.SIP
                 m_transportThreadStarted = false;
             }
         }
-        
+
         /// <summary>
         /// byte数组转string
         /// </summary>
         /// <param name="bt"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        private static String ByteToStr(Byte[] bt,Encoding encoding)
+        private static String ByteToStr(Byte[] bt, Encoding encoding)
         {
             return encoding.GetString(bt);
         }
@@ -879,14 +879,14 @@ namespace SIPSorcery.SIP
                         {
                             // TODO: Future improvement (4.5.2 doesn't support) is to use a ReadOnlySpan to check for the existence 
                             // of 'S', 'I', 'P' before the first EOL.
-                           // rawSIPMessage = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                            // rawSIPMessage = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                             rawSIPMessage = ByteToStr(buffer, Encoding.UTF8);
                             if (rawSIPMessage.ToUpper().Contains("ENCODING=\"GBK\"")
                                 || rawSIPMessage.ToUpper().Contains("ENCODING=\"GB2312\""))
                             {
-                                rawSIPMessage = ByteToStr(buffer, Encoding.GetEncoding("GBK"));//兼容gbk,gb2312编码中文字符串
+                                rawSIPMessage = ByteToStr(buffer, Encoding.GetEncoding("GBK")); //兼容gbk,gb2312编码中文字符串
                             }
-                  
+
                             if (rawSIPMessage.IsNullOrBlank() || SIPMessageBuffer.IsPing(buffer))
                             {
                                 // An empty transmission has been received. More than likely this is a NAT keep alive and can be disregarded.
@@ -922,7 +922,8 @@ namespace SIPSorcery.SIP
                                         }
                                         else
                                         {
-                                            SIPTransportResponseReceived?.Invoke(sipChannel, localEndPoint, remoteEndPoint,
+                                            SIPTransportResponseReceived?.Invoke(sipChannel, localEndPoint,
+                                                remoteEndPoint,
                                                 sipResponse);
                                         }
                                     }
@@ -1088,7 +1089,8 @@ namespace SIPSorcery.SIP
                                             sipRequest.Header.Vias.UpateTopViaHeader(remoteEndPoint.GetIPEndPoint());
 
                                             // Stateful cores should create a transaction once they receive this event, stateless cores should not.
-                                            SIPTransportRequestReceived(sipChannel,localEndPoint, remoteEndPoint, sipRequest);
+                                            SIPTransportRequestReceived(sipChannel, localEndPoint, remoteEndPoint,
+                                                sipRequest);
                                         }
                                     }
                                     catch (SIPValidationException sipRequestExcp)

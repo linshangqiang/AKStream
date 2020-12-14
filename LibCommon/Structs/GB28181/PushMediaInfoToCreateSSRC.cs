@@ -9,7 +9,6 @@ namespace LibCommon.Structs.GB28181
     [Serializable]
     public class PushMediaInfoToCreateSSRC
     {
-
         private string _mediaServerId;
         private string _mediaServerIp;
         private string _app;
@@ -19,7 +18,7 @@ namespace LibCommon.Structs.GB28181
         private PushStreamSocketType _pushStreamSocketType;
         private string? _startTime;
         private string? _endtime;
-        
+
 
         /// <summary>
         /// 流媒体服务器ID
@@ -39,7 +38,7 @@ namespace LibCommon.Structs.GB28181
             set => _mediaServerIp = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-     
+
         /// <summary>
         /// 流媒体APP
         /// </summary>
@@ -85,7 +84,7 @@ namespace LibCommon.Structs.GB28181
             get => _pushStreamSocketType;
             set => _pushStreamSocketType = value;
         }
-        
+
         /// <summary>
         /// 如果是回放流，加上starttime(long)
         /// </summary>
@@ -105,6 +104,5 @@ namespace LibCommon.Structs.GB28181
             get => _endtime;
             set => _endtime = value;
         }
-
     }
 }

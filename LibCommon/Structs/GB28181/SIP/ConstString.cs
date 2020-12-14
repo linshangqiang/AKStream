@@ -9,6 +9,5 @@
         public const string Application_MANSCDP = "Application/MANSCDP+xml";
         public const string Application_MANSRTSP = "Application/MANSRTSP";
         public const string SIP_USERAGENT_STRING = "AKStreamSipGate/1.0";
-    
     }
 }

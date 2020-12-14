@@ -11,8 +11,8 @@ namespace LibCommon.Structs.GB28181
     {
         private PTZCommandType _ptzCommandType;
         private int _speed;
-        private SipDevice _sipDevice=null;
-        private SipChannel? _sipChannel=null;
+        private SipDevice _sipDevice = null;
+        private SipChannel? _sipChannel = null;
 
         /// <summary>
         /// 控制命令类型
@@ -34,7 +34,8 @@ namespace LibCommon.Structs.GB28181
                 if (value > 255)
                 {
                     _speed = 255;
-                }else if (value < 0)
+                }
+                else if (value < 0)
                 {
                     _speed = 0;
                 }

@@ -12,7 +12,7 @@ namespace LibCommon
         private string _message = null!;
         private string? _exceptMessage = null!;
         private string? _exceptStackTrace = null!;
-       
+
 
         /// <summary>
         /// 返回结构体构造
@@ -23,14 +23,11 @@ namespace LibCommon
         {
             Code = code;
             Message = message;
-          
         }
 
-     
 
         public ResponseStruct()
         {
-        
         }
 
         /// <summary>
@@ -68,7 +65,5 @@ namespace LibCommon
             get => _exceptStackTrace;
             set => _exceptStackTrace = value;
         }
-
-      
     }
 }

@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LibCommon
 {
-     class IpAddressConverter : JsonConverter
+    class IpAddressConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -17,11 +17,12 @@ namespace LibCommon
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            IPAddress ip = (IPAddress)value!;
+            IPAddress ip = (IPAddress) value!;
             writer.WriteValue(ip.ToString());
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue,
+            JsonSerializer serializer)
         {
             JToken token = JToken.Load(reader);
             return IPAddress.Parse(token.Value<string>());
@@ -37,7 +38,7 @@ namespace LibCommon
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            IPEndPoint ep = (IPEndPoint)value!;
+            IPEndPoint ep = (IPEndPoint) value!;
             writer.WriteStartObject();
             writer.WritePropertyName("Address");
             serializer.Serialize(writer, ep.Address);
@@ -46,7 +47,8 @@ namespace LibCommon
             writer.WriteEndObject();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue,
+            JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
             IPAddress address = jo["Address"]!.ToObject<IPAddress>(serializer)!;
@@ -55,7 +57,7 @@ namespace LibCommon
         }
     }
 
-    
+
     /// <summary>
     /// json工具类
     /// </summary>
@@ -75,7 +77,6 @@ namespace LibCommon
             _jsonSettings.Converters.Add(datetimeConverter);
             _jsonSettings.Converters.Add(new IpAddressConverter());
             _jsonSettings.Converters.Add(new IpEndPointConverter());
-            
         }
 
 
@@ -112,14 +113,15 @@ namespace LibCommon
         /// <param name="formatting"></param>
         /// <param name="p"></param>
         /// <returns></returns>
-        public static string ToJson(this object obj,Formatting formatting=Formatting.None,MissingMemberHandling p = MissingMemberHandling.Error )
+        public static string ToJson(this object obj, Formatting formatting = Formatting.None,
+            MissingMemberHandling p = MissingMemberHandling.Error)
         {
             _jsonSettings.MissingMemberHandling = p;
             try
             {
                 return JsonConvert.SerializeObject(obj, formatting, _jsonSettings);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error($"[{_loggerHead}]->Json序列化异常->{ex.Message}\r\n{ex.StackTrace}");
                 return null!;
@@ -141,7 +143,7 @@ namespace LibCommon
             {
                 return JsonConvert.DeserializeObject<T>(json, _jsonSettings)!;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error($"[{_loggerHead}]->Json返序列化异常->{ex.Message}\r\n{ex.StackTrace}");
                 return default(T)!;

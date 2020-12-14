@@ -89,7 +89,6 @@ namespace SIPSorcery.SIP
 
         public void SendResponse(SIPResponse finalResponse)
         {
-       
             base.SendFinalResponse(finalResponse);
         }
     }

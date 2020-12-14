@@ -1,6 +1,6 @@
 using System;
 
-namespace  LibMediaServer.Structs.WebResponse
+namespace LibMediaServer.Structs.WebResponse
 {
     [Serializable]
     public class ResZLMediaKitCloseRtpPort : ResZLMediaKitResponseBase

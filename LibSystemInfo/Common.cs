@@ -184,7 +184,7 @@ namespace LibSystemInfo
         private long _currentRecvBytes;
         private DateTime _updateTime;
 
-        
+
         public string Mac
         {
             get => _mac;

@@ -97,9 +97,10 @@ namespace LibCommon.Enums
         /// 删除预置位
         /// </summary>
         RemovePreset = 17,
+
         /// <summary>
         /// 未知
         /// </summary>
-        UnKnow=18,
+        UnKnow = 18,
     }
 }

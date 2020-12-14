@@ -1,7 +1,7 @@
 ﻿using System.Xml;
- using SIPSorcery.Sys;
+using SIPSorcery.Sys;
 
- namespace LibCommon.Structs.GB28181.Sys.Auth
+namespace LibCommon.Structs.GB28181.Sys.Auth
 {
     public class SIPSorcerySecurityHeader
     {

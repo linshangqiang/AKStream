@@ -14,21 +14,24 @@ namespace LibCommon
         Sys_GetIpAddressExcept = -1001, //获取IP地址异常
         Sys_JsonWriteExcept = -1002, //Json写入异常
         Sys_JsonReadExcept = -1003, //Json读取异常
-        Sys_ConfigDirNotExists = -1004,//配置文件目录不存在
-        Sys_ConfigFileNotExists = -1005,//配置文件不存在
+        Sys_ConfigDirNotExists = -1004, //配置文件目录不存在
+        Sys_ConfigFileNotExists = -1005, //配置文件不存在
         Sys_ParamsNotEnough = -1006, //参数不足
-        Sys_ParamsIsNotRight=-1007,//参数不正确
+        Sys_ParamsIsNotRight = -1007, //参数不正确
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
         Sip_Except_RegisterSipDevice = -2003, //Sip网关内部异常(注册Sip设备时)
-        Sip_Channel_NotExists =-2004, //Sip音视频通道不存在
-        Sip_Device_NotExists =-2005,//Sip设备不存在
-        Sip_OperationNotAllowed=-2006,//该设备类型下不允许这个操作
-        Sip_DeInviteExcept=-2007,//结束推流时异常
-        Sip_InviteExcept=-2008,//推流时异常
-     
-        
+        Sip_Channel_NotExists = -2004, //Sip音视频通道不存在
+        Sip_Device_NotExists = -2005, //Sip设备不存在
+        Sip_OperationNotAllowed = -2006, //该设备类型下不允许这个操作
+        Sip_DeInviteExcept = -2007, //结束推流时异常
+        Sip_InviteExcept = -2008, //推流时异常
+        Sip_SendMessageExcept = -2009, //发送sip消息时异常
+        Sip_ChannelAlredayPushStream=-2010,//sip通道已经在推流状态
+        Sip_ChannelNotOnPushStream=-2011,//Sip通道没有在推流状态
+
+
         Other = -6000 //其他异常
     }
 
@@ -61,7 +64,14 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_OperationNotAllowed] = "该类型的设备不允许做这个操作";
             ErrorDic[ErrorNumber.Sip_DeInviteExcept] = "结束推流时发生异常";
             ErrorDic[ErrorNumber.Sip_InviteExcept] = "推流时发生异常";
+            ErrorDic[ErrorNumber.Sip_SendMessageExcept] = "发送Sip消息时异常";
+            ErrorDic[ErrorNumber.Sip_ChannelAlredayPushStream] = "Sip通道已经在推流状态";
+              ErrorDic[ErrorNumber.Sip_ChannelNotOnPushStream] = "Sip通道没有在推流状态";
+            
           
+
+
+
             ErrorDic[ErrorNumber.Other] = "未知错误";
         }
     }

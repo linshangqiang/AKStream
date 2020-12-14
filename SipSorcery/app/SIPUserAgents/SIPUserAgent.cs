@@ -1219,7 +1219,8 @@ namespace SIPSorcery.SIP.App
         /// <param name="localSIPEndPoint">The local end point the request was received on.</param>
         /// <param name="remoteEndPoint">The remote end point the request came from.</param>
         /// <param name="sipRequest">The SIP request.</param>
-        private async Task SIPTransportRequestReceived(SIPChannel localSipChannel,SIPEndPoint localSIPEndPoint, SIPEndPoint remoteEndPoint,
+        private async Task SIPTransportRequestReceived(SIPChannel localSipChannel, SIPEndPoint localSIPEndPoint,
+            SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
             if (m_sipDialogue != null)

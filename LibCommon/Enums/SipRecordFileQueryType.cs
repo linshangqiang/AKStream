@@ -8,10 +8,9 @@ namespace LibCommon.Enums
     [Serializable]
     public enum SipRecordFileQueryType
     {
-        time, 
+        time,
         alarm,
-        manual, 
-        all,//一般用这个就可以了
-        
+        manual,
+        all, //一般用这个就可以了
     }
 }

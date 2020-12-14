@@ -20,8 +20,8 @@ namespace LibCommon.Structs.GB28181
         private string _msgProtocol = null!;
         private int _keepAliveInterval;
         private int _keepAliveLostNumber;
-        private bool _ipV6Enable=false;
-        
+        private bool _ipV6Enable = false;
+
 
         /// <summary>
         /// sip服务器ip地址
@@ -41,7 +41,6 @@ namespace LibCommon.Structs.GB28181
             set => _sipIpV6Address = value;
         }
 
-      
 
         /// <summary>
         /// sip服务器id

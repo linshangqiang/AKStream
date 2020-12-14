@@ -11,7 +11,6 @@ namespace LibCommon.Structs.GB28181
     [Serializable]
     public class SipDevice : IDisposable
     {
-     
         private IPAddress? _ipAddress;
         private int _port;
         private string _deviceId = null!;
@@ -31,7 +30,7 @@ namespace LibCommon.Structs.GB28181
         private SIPChannel? _sipChannelLayout;
         private SipServerConfig _sipServerConfig;
         private DeviceStatus _deviceStatus = null;
-        private bool _isReday=false;
+        private bool _isReday = false;
 
         public event GCommon.DoKickSipDevice KickMe = null!;
 
@@ -55,7 +54,6 @@ namespace LibCommon.Structs.GB28181
             Dispose(); //释放非托管资源
         }
 
-     
 
         /// <summary>
         /// 设备ip地址
@@ -65,7 +63,7 @@ namespace LibCommon.Structs.GB28181
             get => _ipAddress;
             set => _ipAddress = value;
         }
-        
+
         /// <summary>
         /// 设备ID
         /// </summary>
@@ -172,20 +170,18 @@ namespace LibCommon.Structs.GB28181
 
         private void startTimer()
         {
-         
-                if (_keepAliveCheckTimer == null)
-                {
-                    _keepAliveCheckTimer = new Timer(_sipServerConfig.KeepAliveInterval * 1000);
-                    _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
-                    _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
-                    _keepAliveCheckTimer.AutoReset = true; //需要自动reset
-                    _keepAliveCheckTimer.Start(); //启动计时器
-                }
-           
+            if (_keepAliveCheckTimer == null)
+            {
+                _keepAliveCheckTimer = new Timer(_sipServerConfig.KeepAliveInterval * 1000);
+                _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
+                _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
+                _keepAliveCheckTimer.AutoReset = true; //需要自动reset
+                _keepAliveCheckTimer.Start(); //启动计时器
+            }
         }
+
         public SipDevice()
         {
-        
         }
 
         /// <summary>
@@ -230,11 +226,11 @@ namespace LibCommon.Structs.GB28181
             get => _sipChannelLayout;
             set => _sipChannelLayout = value;
         }
-        
+
         /// <summary>
         /// sip服务器的配置类
         /// </summary>
-       [JsonIgnore]
+        [JsonIgnore]
         public SipServerConfig SipServerConfig
         {
             get => _sipServerConfig;
@@ -261,7 +257,6 @@ namespace LibCommon.Structs.GB28181
 
         public SipDevice(SipServerConfig sipServerConfig)
         {
-          
             _sipServerConfig = sipServerConfig;
             startTimer();
         }

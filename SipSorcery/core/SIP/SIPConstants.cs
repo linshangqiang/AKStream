@@ -441,7 +441,7 @@ namespace SIPSorcery.SIP
 
         // Client-Error
         BadRequest = 400,
-        Unauthorized=401,
+        Unauthorized = 401,
         Unauthorised = 401,
         PaymentRequired = 402,
         Forbidden = 403,

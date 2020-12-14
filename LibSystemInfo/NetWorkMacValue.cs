@@ -77,7 +77,6 @@ namespace LibSystemInfo
         private static ProcessHelper SystemInfoProcessHelper =
             new ProcessHelper(p_StdOutputDataReceived, null!, p_Process_Exited!);
 
-      
 
         public static NetWorkStat NetWorkStat = new NetWorkStat();
 

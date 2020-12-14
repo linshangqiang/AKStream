@@ -299,7 +299,8 @@ namespace SIPSorcery.SIP
         /// <param name="from">The From header for the request.</param>
         /// <param name="localIpEndPoint">本地端点设置</param>
         /// <returns>A SIP request object.</returns>
-        public static SIPRequest GetRequest(SIPMethodsEnum method, SIPURI uri, SIPToHeader to, SIPFromHeader from,SIPEndPoint localSipEndPoint=null)
+        public static SIPRequest GetRequest(SIPMethodsEnum method, SIPURI uri, SIPToHeader to, SIPFromHeader from,
+            SIPEndPoint localSipEndPoint = null)
         {
             SIPRequest request = new SIPRequest(method, uri);
 

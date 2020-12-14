@@ -13,7 +13,7 @@ namespace LibSystemInfo
         private static GlobalSystemInfo _globalSystemInfo = new GlobalSystemInfo();
         private static object _lockObj = new object();
         private static bool _abort = false;
-       
+
 
         public SystemInfo()
         {

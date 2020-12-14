@@ -70,66 +70,87 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         private async Task SendRequestViaSipChannel(SipDevice sipDevice, SipChannel sipChannel, SIPMethodsEnum method,
             string contentType,
-            string xmlBody,string subject, CommandType commandType, bool needResponse, AutoResetEvent evnt, int timeout)
+            string xmlBody, string subject, CommandType commandType, bool needResponse, AutoResetEvent evnt,
+            AutoResetEvent evnt2,
+            int timeout)
         {
-            IPAddress sipDeviceIpAddr = IPAddress.Parse(sipDevice.LastSipRequest.Header.Vias.Via[0].Host);
-            int sipDevicePort = sipDevice.LastSipRequest.Header.Vias.Via[0].Port;
-            var toSipUri = new SIPURI(SIPSchemesEnum.sip,
-                new SIPEndPoint(SIPProtocolsEnum.udp, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
-            toSipUri.User = sipChannel.DeviceId;
-            SIPToHeader to = new SIPToHeader(null, toSipUri, null);
-            IPAddress sipServerIpAddress = IPAddress.Parse(Common.SipServerConfig.SipIpAddress);
-            var fromSipUri = new SIPURI(SIPSchemesEnum.sip, sipServerIpAddress, Common.SipServerConfig.SipPort);
-            fromSipUri.User = Common.SipServerConfig.ServerSipDeviceId;
+            try
+            {
+                IPAddress sipDeviceIpAddr = IPAddress.Parse(sipDevice.LastSipRequest.Header.Vias.Via[0].Host);
+                int sipDevicePort = sipDevice.LastSipRequest.Header.Vias.Via[0].Port;
+                var toSipUri = new SIPURI(SIPSchemesEnum.sip,
+                    new SIPEndPoint(SIPProtocolsEnum.udp, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
+                toSipUri.User = sipChannel.DeviceId;
+                SIPToHeader to = new SIPToHeader(null, toSipUri, null);
+                IPAddress sipServerIpAddress = IPAddress.Parse(Common.SipServerConfig.SipIpAddress);
+                var fromSipUri = new SIPURI(SIPSchemesEnum.sip, sipServerIpAddress, Common.SipServerConfig.SipPort);
+                fromSipUri.User = Common.SipServerConfig.ServerSipDeviceId;
 
-            SIPFromHeader from = new SIPFromHeader(null, fromSipUri, "AKStream");
+                SIPFromHeader from = new SIPFromHeader(null, fromSipUri, "AKStream");
 
-            bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily == AddressFamily.InterNetworkV6)
-                ? true
-                : false;
-            SIPRequest req = SIPRequest.GetRequest(method, toSipUri, to,
-                from,
-                new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
-                    new IPEndPoint(
-                        isIpV6
-                            ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
-                            : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
+                bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily ==
+                               AddressFamily.InterNetworkV6)
+                    ? true
+                    : false;
+                SIPRequest req = SIPRequest.GetRequest(method, toSipUri, to,
+                    from,
+                    new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
+                        new IPEndPoint(
+                            isIpV6
+                                ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
+                                : IPAddress.Parse(Common.SipServerConfig.SipIpAddress),
+                            sipDevice.SipChannelLayout.Port)));
 
-            req.Header.Allow = null;
-           
+                req.Header.Allow = null;
+
                 req.Header.Contact = new List<SIPContactHeader>()
                 {
                     new SIPContactHeader(null, fromSipUri)
                 };
 
 
-            req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
-            req.Header.ContentType = contentType;
-           
-                req.Header.Subject = string.IsNullOrEmpty(subject)?null:subject;
-           
+                req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+                req.Header.ContentType = contentType;
 
-            req.Header.CallId = CallProperties.CreateNewCallId();
-            req.Header.CSeq = UtilsHelper.CreateNewCSeq();
-            req.Body = xmlBody;
+                req.Header.Subject = string.IsNullOrEmpty(subject) ? null : subject;
 
-            Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
-            if (needResponse)
-            {
-                var nrt = new NeedReturnTask(Common.NeedResponseRequests)
+
+                req.Header.CallId = CallProperties.CreateNewCallId();
+                req.Header.CSeq = UtilsHelper.CreateNewCSeq();
+                req.Body = xmlBody;
+
+                Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
+                if (needResponse)
                 {
-                    AutoResetEvent = evnt,
-                    CallId = req.Header.CallId,
-                    SipRequest = req,
-                    Timeout = timeout,
-                    SipDevice = sipDevice,
-                    SipChannel = sipChannel,
-                };
-                Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
-            }
+                    var nrt = new NeedReturnTask(Common.NeedResponseRequests)
+                    {
+                        AutoResetEvent = evnt,
+                        CallId = req.Header.CallId,
+                        SipRequest = req,
+                        Timeout = timeout,
+                        SipDevice = sipDevice,
+                        SipChannel = sipChannel,
+                        AutoResetEvent2 = evnt2 == null ? null : evnt2,
+                        CommandType =commandType,
+                    };
 
-            sipChannel.InviteSipRequest = req;
-            await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
+                    Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
+                }
+
+                sipChannel.InviteSipRequest = req;
+                await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
+            }
+            catch (Exception ex)
+            {
+                ResponseStruct rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_SendMessageExcept,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_SendMessageExcept],
+                    ExceptMessage = ex.Message,
+                    ExceptStackTrace = ex.StackTrace,
+                };
+                throw new AkStreamException(rs);
+            }
         }
 
 
@@ -147,76 +168,94 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         private async Task SendRequestViaSipDevice(SipDevice sipDevice, SIPMethodsEnum method, string contentType,
             string subject,
-            string xmlBody, CommandType commandType, bool needResponse, AutoResetEvent evnt, int timeout)
+            string xmlBody, CommandType commandType, bool needResponse, AutoResetEvent evnt, AutoResetEvent evnt2,
+            int timeout)
         {
-            IPAddress sipDeviceIpAddr = IPAddress.Parse(sipDevice.LastSipRequest.Header.Vias.Via[0].Host);
-            int sipDevicePort = sipDevice.LastSipRequest.Header.Vias.Via[0].Port;
-            var toSipUri = new SIPURI(SIPSchemesEnum.sip,
-                new SIPEndPoint(SIPProtocolsEnum.udp, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
-            toSipUri.User = sipDevice.DeviceId;
-            SIPToHeader to = new SIPToHeader(null, toSipUri, null);
-            IPAddress sipServerIpAddress = IPAddress.Parse(Common.SipServerConfig.SipIpAddress);
-            var fromSipUri = new SIPURI(SIPSchemesEnum.sip, sipServerIpAddress, Common.SipServerConfig.SipPort);
-            fromSipUri.User = Common.SipServerConfig.ServerSipDeviceId;
-
-            SIPFromHeader from = new SIPFromHeader(null, fromSipUri, "AKStream");
-            
-            /*
-            var to = sipDevice.LastSipRequest!.Header.To;
-            var from = sipDevice.LastSipRequest.Header.From;
-            var fromUri = sipDevice.LastSipRequest.URI;
-            */
-
-            bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily == AddressFamily.InterNetworkV6)
-                ? true
-                : false;
-            /*
-            SIPRequest req = SIPRequest.GetRequest(method, sipDevice.ContactUri,
-                new SIPToHeader(to.ToName, to.ToURI, ""), new SIPFromHeader(fromUri.User, fromUri, "AKStream"),
-                new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
-                    new IPEndPoint(
-                        isIpV6
-                            ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
-                            : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
-            */
-            SIPRequest req = SIPRequest.GetRequest(method, toSipUri, to,
-                from,
-                new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
-                    new IPEndPoint(
-                        isIpV6
-                            ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
-                            : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
-
-
-            req.Header.Allow = null;
-            req.Header.Contact = new List<SIPContactHeader>()
+            try
             {
-              /*new SIPContactHeader(fromUri.User, fromUri)*/
-              new SIPContactHeader(null, fromSipUri)
-            };
-            req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
-            req.Header.ContentType = contentType;
-            req.Header.Subject = subject;
-            req.Body = xmlBody;
-            req.Header.CallId = CallProperties.CreateNewCallId();
-            req.Header.CSeq = UtilsHelper.CreateNewCSeq();
-            Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
+                IPAddress sipDeviceIpAddr = IPAddress.Parse(sipDevice.LastSipRequest.Header.Vias.Via[0].Host);
+                int sipDevicePort = sipDevice.LastSipRequest.Header.Vias.Via[0].Port;
+                var toSipUri = new SIPURI(SIPSchemesEnum.sip,
+                    new SIPEndPoint(SIPProtocolsEnum.udp, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
+                toSipUri.User = sipDevice.DeviceId;
+                SIPToHeader to = new SIPToHeader(null, toSipUri, null);
+                IPAddress sipServerIpAddress = IPAddress.Parse(Common.SipServerConfig.SipIpAddress);
+                var fromSipUri = new SIPURI(SIPSchemesEnum.sip, sipServerIpAddress, Common.SipServerConfig.SipPort);
+                fromSipUri.User = Common.SipServerConfig.ServerSipDeviceId;
 
-            if (needResponse)
-            {
-                var nrt = new NeedReturnTask(Common.NeedResponseRequests)
+                SIPFromHeader from = new SIPFromHeader(null, fromSipUri, "AKStream");
+
+                /*
+                var to = sipDevice.LastSipRequest!.Header.To;
+                var from = sipDevice.LastSipRequest.Header.From;
+                var fromUri = sipDevice.LastSipRequest.URI;
+                */
+
+                bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily ==
+                               AddressFamily.InterNetworkV6)
+                    ? true
+                    : false;
+                /*
+                SIPRequest req = SIPRequest.GetRequest(method, sipDevice.ContactUri,
+                    new SIPToHeader(to.ToName, to.ToURI, ""), new SIPFromHeader(fromUri.User, fromUri, "AKStream"),
+                    new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
+                        new IPEndPoint(
+                            isIpV6
+                                ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
+                                : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
+                */
+                SIPRequest req = SIPRequest.GetRequest(method, toSipUri, to,
+                    from,
+                    new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
+                        new IPEndPoint(
+                            isIpV6
+                                ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
+                                : IPAddress.Parse(Common.SipServerConfig.SipIpAddress),
+                            sipDevice.SipChannelLayout.Port)));
+
+
+                req.Header.Allow = null;
+                req.Header.Contact = new List<SIPContactHeader>()
                 {
-                    AutoResetEvent = evnt,
-                    CallId = req.Header.CallId,
-                    SipRequest = req,
-                    Timeout = timeout,
-                    SipDevice = sipDevice,
-                    CommandType = commandType,
+                    /*new SIPContactHeader(fromUri.User, fromUri)*/
+                    new SIPContactHeader(null, fromSipUri)
                 };
-                Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
-            }
+                req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
+                req.Header.ContentType = contentType;
+                req.Header.Subject = subject;
+                req.Body = xmlBody;
+                req.Header.CallId = CallProperties.CreateNewCallId();
+                req.Header.CSeq = UtilsHelper.CreateNewCSeq();
+                Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
 
-            await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
+                if (needResponse)
+                {
+                    var nrt = new NeedReturnTask(Common.NeedResponseRequests)
+                    {
+                        AutoResetEvent = evnt,
+                        CallId = req.Header.CallId,
+                        SipRequest = req,
+                        Timeout = timeout,
+                        SipDevice = sipDevice,
+                        CommandType = commandType,
+                        AutoResetEvent2 = evnt2 == null ? null : evnt2,
+                    };
+                    Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
+                }
+
+                await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
+            }
+            catch (Exception ex)
+            {
+                ResponseStruct rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_SendMessageExcept,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_SendMessageExcept],
+                    ExceptMessage = ex.Message,
+                    ExceptStackTrace = ex.StackTrace,
+                };
+                throw new AkStreamException(rs);
+            }
         }
 
 
@@ -317,6 +356,7 @@ namespace LibGB28181SipServer
                     media.AddExtra("a=setup:passive"); //active：主动模式，由摄像头告知服务器监听哪个端口，passive：被动模式，服务器告知摄像头连接端口
                     media.AddExtra("a=connection:new");
                 }
+
                 var ssrc = pushMediaInfo.Ssrc.ToString().PadLeft(10, '0');
                 media.AddExtra("y=" + ssrc); //设置ssrc
                 media.AddFormatParameterAttribute(psFormat.FormatID, psFormat.Name);
@@ -493,19 +533,19 @@ namespace LibGB28181SipServer
                 }
             }
 
-            if (Common.SipDevices.FindLast(x => x.DeviceId.Equals(ptzCtrl.SipDevice.DeviceId)) == null)//设备是否在列表中存在
+            if (Common.SipDevices.FindLast(x => x.DeviceId.Equals(ptzCtrl.SipDevice.DeviceId)) == null) //设备是否在列表中存在
             {
                 rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.Sip_Device_NotExists,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
                 };
-                return;  
+                return;
             }
-            
+
 
             SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
-          
+
             string ptzCmdStr = GetPtzCmd(ptzCtrl.PtzCommandType, ptzCtrl.Speed);
             PTZControl ptz = null;
             if (ptzCtrl.SipChannel != null)
@@ -514,7 +554,7 @@ namespace LibGB28181SipServer
                 {
                     CommandType = CommandType.DeviceControl,
                     DeviceID = ptzCtrl.SipChannel.DeviceId,
-                    SN =11,
+                    SN = 11,
                     PTZCmd = ptzCmdStr
                 };
             }
@@ -523,35 +563,48 @@ namespace LibGB28181SipServer
                 ptz = new PTZControl()
                 {
                     CommandType = CommandType.DeviceControl,
-                    DeviceID = ptzCtrl.SipDevice.DeviceId, 
-                    SN =11,
+                    DeviceID = ptzCtrl.SipDevice.DeviceId,
+                    SN = 11,
                     PTZCmd = ptzCmdStr
                 };
             }
 
-            string xmlBody = PTZControl.Instance.Save<PTZControl>(ptz);
-            if (ptzCtrl.SipChannel == null)
+            try
             {
-                string subject =
-                    $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{ptzCtrl.SipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
+                string xmlBody = PTZControl.Instance.Save<PTZControl>(ptz);
+                if (ptzCtrl.SipChannel == null)
+                {
+                    string subject =
+                        $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{ptzCtrl.SipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
 
-                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
-                    request =
-                        SendRequestViaSipDevice;
-                request(ptzCtrl.SipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, ptz.CommandType, true,
-                    evnt, timeout);
+                    Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent,
+                            AutoResetEvent, int, Task
+                        >
+                        request =
+                            SendRequestViaSipDevice;
+                    request(ptzCtrl.SipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,
+                        ptz.CommandType,
+                        true,
+                        evnt, null, timeout);
+                }
+                else
+                {
+                    Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string, CommandType, bool,
+                            AutoResetEvent, AutoResetEvent,
+                            int, Task>
+                        request =
+                            SendRequestViaSipChannel;
+                    var subject = "";
+
+                    request(ptzCtrl.SipDevice, ptzCtrl.SipChannel, method, ConstString.Application_MANSCDP, xmlBody,
+                        subject, ptz.CommandType, true, evnt, null,
+                        timeout);
+                }
             }
-            else
+            catch (AkStreamException ex)
             {
-                Func<SipDevice, SipChannel, SIPMethodsEnum, string, string,string, CommandType, bool, AutoResetEvent, int, Task>
-                    request =
-                        SendRequestViaSipChannel;
-                var subject = "";
-                   
-                request(ptzCtrl.SipDevice, ptzCtrl.SipChannel, method, ConstString.Application_MANSCDP, xmlBody, subject,ptz.CommandType, true, evnt,
-                    timeout);   
+                rs = ex.ResponseStruct;
             }
-
         }
 
         /// <summary>
@@ -573,7 +626,7 @@ namespace LibGB28181SipServer
             if (tmpSipDevice != null)
             {
                 SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
-                                                string subject =
+                string subject =
                     $"{Common.SipServerConfig.ServerSipDeviceId}:{0},{tmpSipDevice.DeviceId}:{new Random().Next(100, ushort.MaxValue)}";
                 var body = new CatalogQuery()
                 {
@@ -582,11 +635,21 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
-                    request =
-                        SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType, true,
-                    evnt, timeout);
+                try
+                {
+                    Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent,
+                            AutoResetEvent, int, Task
+                        >
+                        request =
+                            SendRequestViaSipDevice;
+                    request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType,
+                        true,
+                        evnt, null, timeout);
+                }
+                catch (AkStreamException ex)
+                {
+                    rs = ex.ResponseStruct;
+                }
             }
         }
 
@@ -598,9 +661,8 @@ namespace LibGB28181SipServer
         /// <param name="evnt"></param>
         /// <param name="rs"></param>
         /// <param name="timeout"></param>
-
         public void GetRecordFileList(SipChannel sipChannel, SipQueryRecordFile sipQueryRecordFile, AutoResetEvent evnt,
-            out ResponseStruct rs, int timeout = 5000)
+            AutoResetEvent evnt2, out ResponseStruct rs, int timeout = 5000)
         {
             rs = new ResponseStruct()
             {
@@ -612,6 +674,7 @@ namespace LibGB28181SipServer
             {
                 return;
             }
+
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(sipChannel.ParentId));
             SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
             var body = new RecordQuery()
@@ -627,11 +690,23 @@ namespace LibGB28181SipServer
             var subject =
                 $"{sipChannel.DeviceId}:{0},{Common.SipServerConfig.ServerSipDeviceId}:{new Random().Next(100, ushort.MaxValue)}";
             var xmlBody = CatalogQuery.Instance.Save<RecordQuery>(body);
-            Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string,CommandType, bool, AutoResetEvent, int, Task>
-                request =
-                    SendRequestViaSipChannel;
-            request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, xmlBody,subject, body.CmdType, true, evnt,
-                timeout);
+            try
+            {
+                Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent,
+                        AutoResetEvent,
+                        int,
+                        Task>
+                    request =
+                        SendRequestViaSipChannel;
+                request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, xmlBody, subject, body.CmdType,
+                    true,
+                    evnt, evnt2,
+                    timeout);
+            }
+            catch (AkStreamException ex)
+            {
+                rs = ex.ResponseStruct;
+            }
         }
 
         /// <summary>
@@ -662,11 +737,21 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 var xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(body);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
-                    request =
-                        SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType, true,
-                    evnt, timeout);
+                try
+                {
+                    Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent,
+                            AutoResetEvent, int, Task
+                        >
+                        request =
+                            SendRequestViaSipDevice;
+                    request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody, body.CommandType,
+                        true,
+                        evnt, null, timeout);
+                }
+                catch (AkStreamException ex)
+                {
+                    rs = ex.ResponseStruct;
+                }
             }
             else
             {
@@ -698,19 +783,36 @@ namespace LibGB28181SipServer
                     return;
                 }
 
+                if (sipChannel.PushStatus != DevicePushStatus.IDLE)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.Sip_ChannelAlredayPushStream,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelAlredayPushStream],
+                    };
+                    return;
+                }
                 string mediaSdp = MediaSdpCreate(sipChannel, pushMediaInfo);
                 var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(sipChannel.ParentId));
                 if (!string.IsNullOrEmpty(mediaSdp))
                 {
                     SIPMethodsEnum method = SIPMethodsEnum.INVITE;
-                    Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string, CommandType, bool,
-                        AutoResetEvent, int, Task
-                    > request = SendRequestViaSipChannel;
                     var subject =
                         $"{sipChannel.DeviceId}:{0},{Common.SipServerConfig.ServerSipDeviceId}:{new Random().Next(100, ushort.MaxValue)}";
-                    request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, mediaSdp, subject,
-                        CommandType.Unknown,
-                        true, evnt, timeout);
+                    try
+                    {
+                        Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string, CommandType, bool,
+                            AutoResetEvent, AutoResetEvent, int, Task
+                        > request = SendRequestViaSipChannel;
+
+                        request(tmpSipDevice, sipChannel, method, ConstString.Application_SDP, mediaSdp, subject,
+                            CommandType.Unknown,
+                            true, evnt, null, timeout);
+                    }
+                    catch (AkStreamException ex)
+                    {
+                        rs = ex.ResponseStruct;
+                    }
                 }
             }
             catch (Exception ex)
@@ -720,8 +822,8 @@ namespace LibGB28181SipServer
                     Code = ErrorNumber.Sip_InviteExcept,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_InviteExcept],
                     ExceptMessage = ex.Message,
-                    ExceptStackTrace =ex.StackTrace,
-                };   
+                    ExceptStackTrace = ex.StackTrace,
+                };
             }
         }
 
@@ -738,6 +840,16 @@ namespace LibGB28181SipServer
                 CheckInviteParam(sipChannel, out rs);
                 if (!rs.Code.Equals(ErrorNumber.None))
                 {
+                    return;
+                }
+                
+                if (sipChannel.PushStatus != DevicePushStatus.PUSHON)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.Sip_ChannelNotOnPushStream,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelNotOnPushStream],
+                    };
                     return;
                 }
 
@@ -797,14 +909,14 @@ namespace LibGB28181SipServer
                 Logger.Debug($"[{Common.LoggerHead}]->发送终止时实流请求->{req}");
                 _sipTransport.SendRequestAsync(tmpSipDevice.RemoteEndPoint, req);
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
                 rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.Sip_DeInviteExcept,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeInviteExcept],
                     ExceptMessage = ex.Message,
-                    ExceptStackTrace =ex.StackTrace,
+                    ExceptStackTrace = ex.StackTrace,
                 };
             }
         }
@@ -813,13 +925,15 @@ namespace LibGB28181SipServer
         /// 设备目录查询请求
         /// </summary>
         /// <param name="sipDeviceId"></param>
-        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt, out ResponseStruct rs,int timeout = 5000)
-        {   rs = new ResponseStruct()
+        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt, out ResponseStruct rs,
+            int timeout = 5000)
+        {
+            rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            
+
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceInfo!.DeviceID.Equals(sipDevice.DeviceId));
             if (tmpSipDevice != null)
             {
@@ -833,11 +947,20 @@ namespace LibGB28181SipServer
                     SN = new Random().Next(1, ushort.MaxValue),
                 };
                 string xmlBody = CatalogQuery.Instance.Save<CatalogQuery>(catalogQuery);
-                Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent, int, Task>
-                    request =
-                        SendRequestViaSipDevice;
-                request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,
-                    catalogQuery.CommandType, true, evnt, timeout);
+                try
+                {
+                    Func<SipDevice, SIPMethodsEnum, string, string, string, CommandType, bool, AutoResetEvent,
+                            AutoResetEvent, int, Task
+                        >
+                        request =
+                            SendRequestViaSipDevice;
+                    request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,
+                        catalogQuery.CommandType, true, evnt, null, timeout);
+                }
+                catch (AkStreamException ex)
+                {
+                    rs = ex.ResponseStruct;
+                }
             }
         }
 

@@ -1,8 +1,8 @@
 ﻿using System;
- using System.Collections.Generic;
- using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
- namespace LibCommon.Structs.GB28181.Net.SDP
+namespace LibCommon.Structs.GB28181.Net.SDP
 {
     public class SDPMediaAnnouncement
     {

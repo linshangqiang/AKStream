@@ -20,27 +20,28 @@ namespace LibCommon
     /// </summary>
     public static class UtilsHelper
     {
-     /// <summary>
-     /// 获取ssrc值
-     /// </summary>
-     /// <param name="pushMediaInfoToCreateSsrc"></param>
-     /// <returns></returns>
+        /// <summary>
+        /// 获取ssrc值
+        /// </summary>
+        /// <param name="pushMediaInfoToCreateSsrc"></param>
+        /// <returns></returns>
         public static KeyValuePair<string, uint> GetSSRCValue(PushMediaInfoToCreateSSRC pushMediaInfoToCreateSsrc)
         {
             var tmpSSRC = pushMediaInfoToCreateSsrc.MediaServerId + pushMediaInfoToCreateSsrc.MediaServerIp +
                           pushMediaInfoToCreateSsrc.Vhost + pushMediaInfoToCreateSsrc.App +
                           pushMediaInfoToCreateSsrc.SipDeviceId +
                           pushMediaInfoToCreateSsrc.SipChannelId + pushMediaInfoToCreateSsrc.PushStreamSocketType;
-            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.StartTime))//用于回放流
+            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.StartTime)) //用于回放流
             {
                 tmpSSRC += pushMediaInfoToCreateSsrc.StartTime + "-";
-            } 
-            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.Endtime))//用于回放流
+            }
+
+            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.Endtime)) //用于回放流
             {
                 tmpSSRC += pushMediaInfoToCreateSsrc.Endtime;
             }
 
-          
+
             var uintSSRC = CRC32Helper.GetCRC32(tmpSSRC);
             var stringSSRC = string.Format("{0:X8}", uintSSRC);
             KeyValuePair<string, uint> tmpKeyValuePair = new KeyValuePair<string, uint>(stringSSRC, uintSSRC);

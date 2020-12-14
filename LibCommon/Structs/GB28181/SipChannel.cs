@@ -9,11 +9,9 @@ using SIPSorcery.SIP;
 
 namespace LibCommon.Structs.GB28181
 {
-   
     [Serializable]
-    public class SipChannel: IDisposable
+    public class SipChannel : IDisposable
     {
-        
         private string _parentId = null!;
         private string _deviceId = null!;
         private SIPEndPoint _remoteEndPoint = null!;
@@ -23,13 +21,15 @@ namespace LibCommon.Structs.GB28181
         private SipChannelType _sipChannelType;
         private DevStatus _sipChanneStatus;
         private Catalog.Item _sipChannelDesc = null!;
-        private List<MediaServerStreamInfo> _channelMediaServerStreamInfos=new List<MediaServerStreamInfo>();
+        private MediaServerStreamInfo _channelMediaServerStreamInfo = new MediaServerStreamInfo();
         private SIPRequest _inviteSipRequest; //要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
-        private SIPResponse _inviteSipResponse;//要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
+        private SIPResponse _inviteSipResponse; //要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
         private SIPRequest _lastSipRequest; //保存最后一次sipRequest
-        private List<KeyValuePair<int,RecordInfo.Item>> _lastRecordInfos=new List<KeyValuePair<int,RecordInfo.Item>>();//最后一次获取到的录像文件列表
 
-      
+        private List<KeyValuePair<int, RecordInfo.Item>> _lastRecordInfos =
+            new List<KeyValuePair<int, RecordInfo.Item>>(); //最后一次获取到的录像文件列表
+
+
         [JsonIgnore]
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace LibCommon.Structs.GB28181
             set => _localSipEndPoint = value;
         }
 
-      
+
         /// <summary>
         /// 父节点的SipDeviceId
         /// </summary>
@@ -80,7 +80,6 @@ namespace LibCommon.Structs.GB28181
             set => _pushStatus = value;
         }
 
-       
 
         /// <summary>
         /// 最后更新时间
@@ -90,7 +89,7 @@ namespace LibCommon.Structs.GB28181
             get => _lastUpdateTime;
             set => _lastUpdateTime = value;
         }
-        
+
         /// <summary>
         /// 通道类型
         /// </summary>
@@ -120,7 +119,6 @@ namespace LibCommon.Structs.GB28181
             set => _sipChannelDesc = value;
         }
 
-        
 
         public void Dispose()
         {
@@ -130,12 +128,11 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// Sip通道的流媒体相关信息
         /// </summary>
-        public List<MediaServerStreamInfo> ChannelMediaServerStreamInfos
+        public MediaServerStreamInfo ChannelMediaServerStreamInfo
         {
-            get => _channelMediaServerStreamInfos;
-            set => _channelMediaServerStreamInfos = value;
+            get => _channelMediaServerStreamInfo;
+            set => _channelMediaServerStreamInfo = value ?? throw new ArgumentNullException(nameof(value));
         }
-
         /// <summary>
         /// 保存请求实时流时的request,因为在终止实时流的时候要用到
         /// </summary>
@@ -146,6 +143,8 @@ namespace LibCommon.Structs.GB28181
             set => _inviteSipRequest = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+       
+
         /// <summary>
         /// 保存请求实时流时的response,因为在终止实时流的时候要用到
         /// </summary>
@@ -155,6 +154,7 @@ namespace LibCommon.Structs.GB28181
             get => _inviteSipResponse;
             set => _inviteSipResponse = value ?? throw new ArgumentNullException(nameof(value));
         }
+
         /// <summary>
         /// 保存最后一次SipRequest
         /// </summary>
@@ -168,7 +168,7 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 最后一次获取到的录像文件列表
         /// </summary>
-        public List<KeyValuePair<int,RecordInfo.Item>> LastRecordInfos
+        public List<KeyValuePair<int, RecordInfo.Item>> LastRecordInfos
         {
             get => _lastRecordInfos;
             set => _lastRecordInfos = value ?? throw new ArgumentNullException(nameof(value));

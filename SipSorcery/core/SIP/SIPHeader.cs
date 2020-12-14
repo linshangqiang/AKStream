@@ -54,7 +54,7 @@ namespace SIPSorcery.SIP
         /// Special SIP Via header that is recognised by the SIP transport classes Send methods. At send time this header will be replaced by 
         /// one with IP end point details that reflect the socket the request or response was sent from.
         /// </summary>
-        public static SIPViaHeader GetDefaultSIPViaHeader(SIPEndPoint sipEndPoint=null)//支持ipv6,ipv4
+        public static SIPViaHeader GetDefaultSIPViaHeader(SIPEndPoint sipEndPoint = null) //支持ipv6,ipv4
         {
             if (sipEndPoint == null)
             {
@@ -62,7 +62,8 @@ namespace SIPSorcery.SIP
                     SIPProtocolsEnum.udp);
             }
 
-            return new SIPViaHeader( new IPEndPoint(sipEndPoint.Address,sipEndPoint.Port), CallProperties.CreateBranchId(),
+            return new SIPViaHeader(new IPEndPoint(sipEndPoint.Address, sipEndPoint.Port),
+                CallProperties.CreateBranchId(),
                 SIPProtocolsEnum.udp);
         }
 
