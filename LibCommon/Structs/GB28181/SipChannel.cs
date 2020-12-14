@@ -13,8 +13,7 @@ namespace LibCommon.Structs.GB28181
     [Serializable]
     public class SipChannel: IDisposable
     {
-        private string _guid = null!;
-        private string _parentGuid = null!;
+        
         private string _parentId = null!;
         private string _deviceId = null!;
         private SIPEndPoint _remoteEndPoint = null!;
@@ -30,14 +29,7 @@ namespace LibCommon.Structs.GB28181
         private SIPRequest _lastSipRequest; //保存最后一次sipRequest
         private List<KeyValuePair<int,RecordInfo.Item>> _lastRecordInfos=new List<KeyValuePair<int,RecordInfo.Item>>();//最后一次获取到的录像文件列表
 
-        /// <summary>
-        /// 通道在系统中唯一id
-        /// </summary>
-        public string Guid
-        {
-            get => _guid;
-            set => _guid = value;
-        }
+      
         [JsonIgnore]
 
         /// <summary>
@@ -59,15 +51,7 @@ namespace LibCommon.Structs.GB28181
             set => _localSipEndPoint = value;
         }
 
-        /// <summary>
-        /// 父节点的guid
-        /// </summary>
-        public string ParentGuid
-        {
-            get => _parentGuid;
-            set => _parentGuid = value;
-        }
-
+      
         /// <summary>
         /// 父节点的SipDeviceId
         /// </summary>

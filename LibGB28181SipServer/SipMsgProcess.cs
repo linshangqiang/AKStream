@@ -185,10 +185,8 @@ namespace LibGB28181SipServer
                                 {
                                     var newSipChannnel = new SipChannel()
                                     {
-                                        Guid = UtilsHelper.CreateGUID()!,
                                         LastUpdateTime = DateTime.Now,
                                         LocalSipEndPoint = tmpSipDevice.LocalSipEndPoint!,
-                                        ParentGuid = tmpSipDevice.Guid!,
                                         PushStatus = DevicePushStatus.IDLE,
                                         RemoteEndPoint = tmpSipDevice.RemoteEndPoint!,
                                         SipChannelDesc = tmpChannelDev,
@@ -205,7 +203,7 @@ namespace LibGB28181SipServer
                                     tmpSipDevice.SipChannels.Add(newSipChannnel);
                                     Task.Run(() => { OnCatalogReceived?.Invoke(newSipChannnel); }); //抛线程出去处理
                                     Logger.Info(
-                                        $"[{Common.LoggerHead}]->Sip设备通道信息->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->增加Sip通道成功->({newSipChannnel.SipChannelType.ToString()})->{newSipChannnel.Guid}:{newSipChannnel.SipChannelDesc.DeviceID}->此设备当前通道数量:{tmpSipDevice.SipChannels.Count}条");
+                                        $"[{Common.LoggerHead}]->Sip设备通道信息->{tmpSipDevice.DeviceId}->增加Sip通道成功->({newSipChannnel.SipChannelType.ToString()})->{newSipChannnel.SipChannelDesc.DeviceID}->此设备当前通道数量:{tmpSipDevice.SipChannels.Count}条");
                                 }
                                 else
                                 {
@@ -292,7 +290,7 @@ namespace LibGB28181SipServer
                                 OnKeepaliveReceived?.Invoke(sipDeviceId, time, tmpSipDevice.KeepAliveLostTime);
                             }); //抛线程出去处理
 
-                            tmpSipDevice.LastSipRequest = sipRequest;
+                          
                             tmpSipDevice.KeepAliveTime = time;
                             /*Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}");*/
@@ -477,7 +475,7 @@ namespace LibGB28181SipServer
                             }); //抛线程出去处理
 
                             Logger.Info(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->已经注销，当前Sip设备数量:{Common.SipDevices}个");
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.DeviceId}->已经注销，当前Sip设备数量:{Common.SipDevices}个");
 
                             lock (Common.SipDevicesLock)
                             {
@@ -558,7 +556,6 @@ namespace LibGB28181SipServer
                     {
                         tmpSipDevice = new SipDevice(Common.SipServerConfig);
                         tmpSipDevice.KickMe += DoKickSipDevice;
-                        tmpSipDevice.Guid = UtilsHelper.CreateGUID();
                         tmpSipDevice.Username = "";
                         tmpSipDevice.Password = "";
                         tmpSipDevice.RegisterTime = DateTime.Now;
@@ -572,8 +569,8 @@ namespace LibGB28181SipServer
                         tmpSipDevice.SipChannelLayout = localSipChannel;
                         tmpSipDevice.IpAddress = remoteEndPoint.Address;
                         tmpSipDevice.Port = remoteEndPoint.Port;
-                        tmpSipDevice.LastSipRequest = sipRequest;
                         tmpSipDevice.ContactUri = sipRequest.Header.Contact[0].ContactURI;
+                        tmpSipDevice.LastSipRequest = sipRequest;
                         try
                         {
                             lock (Common.SipDevicesLock)
@@ -588,12 +585,12 @@ namespace LibGB28181SipServer
                                     }); //抛线程出去处理
 
                                     Logger.Info(
-                                        $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->注册完成，当前Sip设备数量:{Common.SipDevices.Count}个");
+                                        $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.DeviceId}->注册完成，当前Sip设备数量:{Common.SipDevices.Count}个");
                                 }
                                 else
                                 {
                                     Logger.Debug(
-                                        $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->注册请求重复已经忽略，当前Sip设备数量:{Common.SipDevices.Count}个");
+                                        $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.DeviceId}->注册请求重复已经忽略，当前Sip设备数量:{Common.SipDevices.Count}个");
                                 }
                             }
                         }
@@ -619,7 +616,7 @@ namespace LibGB28181SipServer
 
 
                             Logger.Info(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.Guid}:{tmpSipDevice.DeviceId}->已经更新注册时间，当前Sip设备数量:{Common.SipDevices.Count}个");
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册请求->{tmpSipDevice.DeviceId}->已经更新注册时间，当前Sip设备数量:{Common.SipDevices.Count}个");
                         }
                         else
                         {
@@ -727,7 +724,7 @@ namespace LibGB28181SipServer
             SIPResponse sipResponse)
         {
             var status = sipResponse.Status;
-            Console.WriteLine("===>Status:" + status);
+            Console.WriteLine("===>Status:" + status+"\r\n"+sipResponse);
             if (status != SIPResponseStatusCodesEnum.Ok)
             {
                 Console.WriteLine("-------------->" + sipResponse);
@@ -755,16 +752,33 @@ namespace LibGB28181SipServer
                         switch (method)
                         {
                             case SIPMethodsEnum.INVITE: //请求实时流成功回复
+                                
                                 await InviteOk(sipResponse, _task.SipChannel);
                                 break;
                             case SIPMethodsEnum.BYE: //停止实时流成功回复
+                                
                                 await InviteEnd(sipResponse, _task.SipChannel);
                                 break;
                         }
 
-                        Logger.Debug(
-                            $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
-                        _task.AutoResetEvent.Set(); //通知调用者任务完成,凋用者后续要做dispose操作
+                        try
+                        {
+                            var tmpSipDevice =
+                                Common.SipDevices.FindLast(x => x.DeviceId.Equals(_task.SipDevice.DeviceId));
+                            if (tmpSipDevice != null)
+                            {
+                                tmpSipDevice.LastSipResponse = sipResponse;
+                            }
+                           
+                            Logger.Debug(
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
+                            _task.AutoResetEvent.Set(); //通知调用者任务完成,凋用者后续要做dispose操作
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex.Message+"\r\n"+ex.StackTrace);
+                        }
+                            
                     }
                     else
                     {

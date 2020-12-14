@@ -25,6 +25,8 @@ namespace LibCommon
         Sip_Channel_NotExists =-2004, //Sip音视频通道不存在
         Sip_Device_NotExists =-2005,//Sip设备不存在
         Sip_OperationNotAllowed=-2006,//该设备类型下不允许这个操作
+        Sip_DeInviteExcept=-2007,//结束推流时异常
+        Sip_InviteExcept=-2008,//推流时异常
      
         
         Other = -6000 //其他异常
@@ -57,7 +59,9 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_Channel_NotExists] = "Sip音视频通道不存在";
             ErrorDic[ErrorNumber.Sip_Device_NotExists] = "Sip设备不存在";
             ErrorDic[ErrorNumber.Sip_OperationNotAllowed] = "该类型的设备不允许做这个操作";
-            
+            ErrorDic[ErrorNumber.Sip_DeInviteExcept] = "结束推流时发生异常";
+            ErrorDic[ErrorNumber.Sip_InviteExcept] = "推流时发生异常";
+          
             ErrorDic[ErrorNumber.Other] = "未知错误";
         }
     }

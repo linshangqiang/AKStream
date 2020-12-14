@@ -11,7 +11,7 @@ namespace LibCommon.Structs.GB28181
     [Serializable]
     public class SipDevice : IDisposable
     {
-        private string? _guid;
+     
         private IPAddress? _ipAddress;
         private int _port;
         private string _deviceId = null!;
@@ -26,6 +26,7 @@ namespace LibCommon.Structs.GB28181
         private int _keepAliveLostTime;
         private Timer _keepAliveCheckTimer;
         private SIPRequest? _lastSipRequest;
+        private SIPResponse? _lastSipResponse;
         private SIPURI? _contactUri;
         private SIPChannel? _sipChannelLayout;
         private SipServerConfig _sipServerConfig;
@@ -54,16 +55,7 @@ namespace LibCommon.Structs.GB28181
             Dispose(); //释放非托管资源
         }
 
-        /// <summary>
-        /// 设备在系统中唯一id
-        /// </summary>
-        public string? Guid
-        {
-            get => _guid;
-            set => _guid = value;
-        }
-
-      
+     
 
         /// <summary>
         /// 设备ip地址
@@ -177,13 +169,23 @@ namespace LibCommon.Structs.GB28181
             set => _keepAliveLostTime = value;
         }
 
+
+        private void startTimer()
+        {
+         
+                if (_keepAliveCheckTimer == null)
+                {
+                    _keepAliveCheckTimer = new Timer(_sipServerConfig.KeepAliveInterval * 1000);
+                    _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
+                    _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
+                    _keepAliveCheckTimer.AutoReset = true; //需要自动reset
+                    _keepAliveCheckTimer.Start(); //启动计时器
+                }
+           
+        }
         public SipDevice()
         {
-            _keepAliveCheckTimer = new Timer(_sipServerConfig.KeepAliveInterval * 1000);
-            _keepAliveCheckTimer.Enabled = true; //启动Elapsed事件触发
-            _keepAliveCheckTimer.Elapsed += OnTimedEvent; //添加触发事件的函数
-            _keepAliveCheckTimer.AutoReset = true; //需要自动reset
-            _keepAliveCheckTimer.Start(); //启动计时器
+        
         }
 
         /// <summary>
@@ -195,6 +197,16 @@ namespace LibCommon.Structs.GB28181
         {
             get => _lastSipRequest;
             set => _lastSipRequest = value;
+        }
+
+        /// <summary>
+        /// 最后一次sipresponse
+        /// </summary>
+        [JsonIgnore]
+        public SIPResponse? LastSipResponse
+        {
+            get => _lastSipResponse;
+            set => _lastSipResponse = value;
         }
 
 
@@ -249,7 +261,9 @@ namespace LibCommon.Structs.GB28181
 
         public SipDevice(SipServerConfig sipServerConfig)
         {
+          
             _sipServerConfig = sipServerConfig;
+            startTimer();
         }
 
 

@@ -117,6 +117,32 @@ namespace LibGB28181SipServer
             }  
         }
         
+        /// <summary>
+        /// ptz控制
+        /// </summary>
+        /// <param name="ptzCtrl"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        public bool PtzMove(PtzCtrl ptzCtrl,out ResponseStruct rs)
+        {
+            try
+            {
+               
+                Common.SipServer.PtzMove(ptzCtrl , _autoResetEvent,out rs, _timeout);
+                _commandType = CommandType.DeviceControl;
+                var isTimeout = _autoResetEvent.WaitOne(_timeout);
+                if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
+                {
+                    return false;
+                }
+                return true;
+            }
+            finally
+            {
+                Dispose(); 
+            }  
+        }
+        
         
         /// <summary>
         /// 请求终止时实流
