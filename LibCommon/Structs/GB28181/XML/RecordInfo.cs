@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
+using SIPSorcery.SIP;
 
 namespace LibCommon.Structs.GB28181.XML
 {
@@ -156,6 +159,106 @@ namespace LibCommon.Structs.GB28181.XML
 
         public class Item
         {
+            private SIPRequest? _inviteSipRequest = null;
+            private SIPResponse? _inviteSipResponse = null;
+            private SipDevice? _sipDevice = null;
+            private SipChannel? _sipChannel = null;
+            private MediaServerStreamInfo _mediaServerStreamInfo;
+            private PushStatus _pushStatus;
+            private string _ssrcId;
+            private string _stream;
+            
+            [XmlIgnore]
+            /// <summary>
+            /// 额外真加SSRCId
+            /// 总共9位，1-5位为channel.deivce的2-6位，6-9位为此设备的序列号
+            /// 不足9位要前补0
+            /// 真正的ssrc是10位，第一位为1时是回放流，第一位是0时的实时流
+            /// 流形式位0/1+后9位就是这个流的ssrc
+            /// </summary>
+            public string SsrcId
+            {
+                get => _ssrcId;
+                set => _ssrcId = value ?? throw new ArgumentNullException(nameof(value));
+            }
+            [XmlIgnore]
+            /// <summary>
+            /// 额外真加Stream
+            /// 它是SSRCID的16进制表示方法
+            /// </summary>
+            public string Stream
+            {
+                get => _stream;
+                set => _stream = value ?? throw new ArgumentNullException(nameof(value)); 
+            }
+            
+            /// <summary>
+            /// 推流时的request
+            /// 要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
+            /// </summary>
+
+            [JsonIgnore]
+            [XmlIgnore]
+            public SIPRequest? InviteSipRequest
+            {
+                get => _inviteSipRequest;
+                set => _inviteSipRequest = value;
+            }
+            [JsonIgnore]
+            [XmlIgnore]
+            /// <summary>
+            /// 推流时的response
+            /// 要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
+            /// </summary>
+            public SIPResponse? InviteSipResponse
+            {
+                get => _inviteSipResponse;
+                set => _inviteSipResponse = value;
+            }
+            [JsonIgnore]
+            [XmlIgnore]
+            /// <summary>
+            /// 录像文件所在Sip设备
+            /// </summary>
+            public SipDevice? SipDevice
+            {
+                get => _sipDevice;
+                set => _sipDevice = value;
+            }
+            [JsonIgnore]
+            [XmlIgnore]
+            /// <summary>
+            /// 录像文件所在Sip通道
+            /// </summary>
+            
+            public SipChannel? SipChannel
+            {
+                get => _sipChannel;
+                set => _sipChannel = value;
+            }
+            
+            
+            /// <summary>
+            /// 推流状态
+            /// </summary>
+            [XmlIgnore]
+            public MediaServerStreamInfo? MediaServerStreamInfo
+            {
+                get => _mediaServerStreamInfo;
+                set => _mediaServerStreamInfo = value ?? throw new ArgumentNullException(nameof(value));
+            }
+            
+
+            /// <summary>
+            /// 推流状态
+            /// </summary>
+            [XmlIgnore]
+            public PushStatus PushStatus
+            {
+                get => _pushStatus;
+                set => _pushStatus = value;
+            }
+
             /// <summary>
             /// 设备编码
             /// </summary>

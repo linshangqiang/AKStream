@@ -86,6 +86,7 @@ namespace LibCommon.Structs
     {
         private string _mediaServerId = null!;
         private string _mediaServerIp = null!;
+        private ushort _streamPort = 0;
         private DateTime _startTime;
         private long _streamBytes;
         private string _vhost = null!;
@@ -113,6 +114,14 @@ namespace LibCommon.Structs
         {
             get => _mediaServerIp;
             set => _mediaServerIp = value ?? throw new ArgumentNullException(nameof(value));
+        }
+        /// <summary>
+        /// 推流的端口
+        /// </summary>
+        public ushort StreamPort
+        {
+            get => _streamPort;
+            set => _streamPort = value;
         }
 
         /// <summary>

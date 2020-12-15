@@ -21,33 +21,30 @@ namespace LibCommon
     public static class UtilsHelper
     {
         /// <summary>
-        /// 获取ssrc值
+        /// DateTime转时间戳
         /// </summary>
-        /// <param name="pushMediaInfoToCreateSsrc"></param>
+        /// <param name="time">DateTime时间</param>
+        /// <param name="type">0为毫秒,1为秒</param>
         /// <returns></returns>
-        public static KeyValuePair<string, uint> GetSSRCValue(PushMediaInfoToCreateSSRC pushMediaInfoToCreateSsrc)
+        public static string ConvertTimestamp(DateTime time,int type=0)
         {
-            var tmpSSRC = pushMediaInfoToCreateSsrc.MediaServerId + pushMediaInfoToCreateSsrc.MediaServerIp +
-                          pushMediaInfoToCreateSsrc.Vhost + pushMediaInfoToCreateSsrc.App +
-                          pushMediaInfoToCreateSsrc.SipDeviceId +
-                          pushMediaInfoToCreateSsrc.SipChannelId + pushMediaInfoToCreateSsrc.PushStreamSocketType;
-            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.StartTime)) //用于回放流
+            double intResult = 0;
+            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+            if (type==0)
             {
-                tmpSSRC += pushMediaInfoToCreateSsrc.StartTime + "-";
+                intResult = (time - startTime).TotalMilliseconds;
             }
-
-            if (!string.IsNullOrEmpty(pushMediaInfoToCreateSsrc.Endtime)) //用于回放流
+            else if (type == 1)
             {
-                tmpSSRC += pushMediaInfoToCreateSsrc.Endtime;
+                intResult = (time - startTime).TotalSeconds;
             }
-
-
-            var uintSSRC = CRC32Helper.GetCRC32(tmpSSRC);
-            var stringSSRC = string.Format("{0:X8}", uintSSRC);
-            KeyValuePair<string, uint> tmpKeyValuePair = new KeyValuePair<string, uint>(stringSSRC, uintSSRC);
-            return tmpKeyValuePair;
+            else
+            {
+                Console.WriteLine("参数错误!");
+            }
+            return Math.Round(intResult, 0).ToString();
         }
-
+     
         /// <summary>
         /// 判断是否为奇数
         /// </summary>
@@ -97,6 +94,7 @@ namespace LibCommon
         public static T XMLToObject<T>(XElement xmlBody)
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
+    
             return (T) xmlSerializer.Deserialize(xmlBody.CreateReader());
         }
 

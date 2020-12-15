@@ -17,7 +17,7 @@ namespace LibCommon
     /// 设备推流状态
     /// </summary>
     [Serializable]
-    public enum DevicePushStatus
+    public enum PushStatus
     {
         /// <summary>
         /// 空闲的

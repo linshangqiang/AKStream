@@ -185,25 +185,12 @@ namespace LibGB28181SipServer
 
                 SIPFromHeader from = new SIPFromHeader(null, fromSipUri, "AKStream");
 
-                /*
-                var to = sipDevice.LastSipRequest!.Header.To;
-                var from = sipDevice.LastSipRequest.Header.From;
-                var fromUri = sipDevice.LastSipRequest.URI;
-                */
-
+              
                 bool isIpV6 = (sipDevice.SipChannelLayout!.ListeningIPAddress.AddressFamily ==
                                AddressFamily.InterNetworkV6)
                     ? true
                     : false;
-                /*
-                SIPRequest req = SIPRequest.GetRequest(method, sipDevice.ContactUri,
-                    new SIPToHeader(to.ToName, to.ToURI, ""), new SIPFromHeader(fromUri.User, fromUri, "AKStream"),
-                    new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
-                        new IPEndPoint(
-                            isIpV6
-                                ? IPAddress.Parse(Common.SipServerConfig.SipIpV6Address!)
-                                : IPAddress.Parse(Common.SipServerConfig.SipIpAddress), sipDevice.SipChannelLayout.Port)));
-                */
+               
                 SIPRequest req = SIPRequest.GetRequest(method, toSipUri, to,
                     from,
                     new SIPEndPoint(sipDevice.SipChannelLayout.SIPProtocol,
@@ -217,7 +204,7 @@ namespace LibGB28181SipServer
                 req.Header.Allow = null;
                 req.Header.Contact = new List<SIPContactHeader>()
                 {
-                    /*new SIPContactHeader(fromUri.User, fromUri)*/
+                
                     new SIPContactHeader(null, fromSipUri)
                 };
                 req.Header.UserAgent = ConstString.SIP_USERAGENT_STRING;
@@ -309,6 +296,15 @@ namespace LibGB28181SipServer
                 return;
             }
 
+            if (sipChannel.PushStatus != PushStatus.IDLE)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_AlredayPushStream,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_AlredayPushStream],
+                };
+                return;
+            }
             rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
@@ -317,6 +313,70 @@ namespace LibGB28181SipServer
         }
 
 
+        /// <summary>
+        /// 生成回放流的sdp
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="pushMediaInfo"></param>
+        /// <returns></returns>
+         private string MediaSdpCreate(RecordInfo.Item record, PushMediaInfo pushMediaInfo)
+        {
+            var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(record.SipDevice.DeviceId));
+            if (tmpSipDevice != null)
+            {
+                var sdpConn = new SDPConnectionInformation(pushMediaInfo.MediaServerIpAddress);
+                var sdp = new SDP()
+                {
+                    Version = 0,
+                    SessionId = "0",
+                    Username = Common.SipServerConfig.ServerSipDeviceId,
+                    SessionName = CommandType.Playback.ToString(),
+                    Connection = sdpConn,
+                    Timing = UtilsHelper.ConvertTimestamp(DateTime.Parse(record.StartTime),1)+" "+UtilsHelper.ConvertTimestamp(DateTime.Parse(record.EndTime),1),
+                    Address = pushMediaInfo.MediaServerIpAddress,
+                    URI =record.SipChannel.DeviceId+":0",
+                };
+
+                var psFormat = new SDPMediaFormat(SDPMediaFormatsEnum.PS)
+                {
+                    IsStandardAttribute = false,
+                };
+                var h264Format = new SDPMediaFormat(SDPMediaFormatsEnum.H264)
+                {
+                    IsStandardAttribute = false,
+                };
+                var media = new SDPMediaAnnouncement()
+                {
+                    Media = SDPMediaTypesEnum.video,
+                    Port = pushMediaInfo.StreamPort,
+                };
+                media.MediaFormats.Add(psFormat);
+                media.MediaFormats.Add(h264Format);
+                media.AddExtra("a=recvonly");
+                if (pushMediaInfo.PushStreamSocketType == PushStreamSocketType.TCP)
+                {
+                    media.Transport = "TCP/RTP/AVP";
+                    media.AddExtra("a=setup:passive"); //active：主动模式，由摄像头告知服务器监听哪个端口，passive：被动模式，服务器告知摄像头连接端口
+                    media.AddExtra("a=connection:new");
+                }
+                
+                media.AddExtra("y=" +record.SsrcId); //设置ssrc
+                media.AddFormatParameterAttribute(psFormat.FormatID, psFormat.Name);
+                media.AddFormatParameterAttribute(h264Format.FormatID, h264Format.Name);
+                media.Port = pushMediaInfo.StreamPort;
+                sdp.Media.Add(media);
+                return sdp.ToString();
+            }
+
+            return "";
+        }
+         
+         /// <summary>
+         /// 生成实时流的sdp
+         /// </summary>
+         /// <param name="sipChannel"></param>
+         /// <param name="pushMediaInfo"></param>
+         /// <returns></returns>
         private string MediaSdpCreate(SipChannel sipChannel, PushMediaInfo pushMediaInfo)
         {
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(sipChannel.ParentId));
@@ -356,9 +416,8 @@ namespace LibGB28181SipServer
                     media.AddExtra("a=setup:passive"); //active：主动模式，由摄像头告知服务器监听哪个端口，passive：被动模式，服务器告知摄像头连接端口
                     media.AddExtra("a=connection:new");
                 }
-
-                var ssrc = pushMediaInfo.Ssrc.ToString().PadLeft(10, '0');
-                media.AddExtra("y=" + ssrc); //设置ssrc
+                
+                media.AddExtra("y=" + sipChannel.SsrcId); //设置ssrc
                 media.AddFormatParameterAttribute(psFormat.FormatID, psFormat.Name);
                 media.AddFormatParameterAttribute(h264Format.FormatID, h264Format.Name);
                 media.Port = pushMediaInfo.StreamPort;
@@ -683,8 +742,8 @@ namespace LibGB28181SipServer
                 SN = new Random().Next(1, 3000),
                 CmdType = CommandType.RecordInfo,
                 Secrecy = 0,
-                StartTime = sipQueryRecordFile.StartTime,
-                EndTime = sipQueryRecordFile.EndTime,
+                StartTime = sipQueryRecordFile.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                EndTime = sipQueryRecordFile.EndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
                 Type = sipQueryRecordFile.SipRecordFileQueryType.ToString(),
             };
             var subject =
@@ -764,6 +823,100 @@ namespace LibGB28181SipServer
         }
 
         /// <summary>
+        /// 检测回放参数是否正确
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private void CheckInviteParam(RecordInfo.Item record, out ResponseStruct rs)
+        {
+            if (record.SipDevice == null )
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Device_NotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                       
+                };
+                return ;
+            }
+            if (record.SipChannel == null )
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Channel_NotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_NotExists],
+                       
+                }; 
+                return ;
+            }
+
+            if (record.PushStatus==PushStatus.PUSHON)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_AlredayPushStream,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_AlredayPushStream],
+                       
+                }; 
+                return ;
+            }
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                       
+            };
+            
+        }
+        public void InviteRecord(RecordInfo.Item record, PushMediaInfo pushMediaInfo, AutoResetEvent evnt,
+            out ResponseStruct rs, int timeout = 5000)
+        {
+            try
+            {
+                CheckInviteParam(record, out rs);
+                if ( !rs.Code.Equals(ErrorNumber.None))
+                {
+                    return;
+                }
+
+                string recordSdp = MediaSdpCreate(record, pushMediaInfo);
+                if (!string.IsNullOrEmpty(recordSdp))
+                {
+                    SIPMethodsEnum method = SIPMethodsEnum.INVITE;  
+                    var subject =
+                        $"{record.SipChannel.DeviceId}:{0},{Common.SipServerConfig.ServerSipDeviceId}:{new Random().Next(100, ushort.MaxValue)}";
+                    try
+                    {
+                        Func<SipDevice, SipChannel, SIPMethodsEnum, string, string, string, CommandType, bool,
+                            AutoResetEvent, AutoResetEvent, int, Task
+                        > request = SendRequestViaSipChannel;
+
+                        request(record.SipDevice, record.SipChannel, method, ConstString.Application_SDP, recordSdp, subject,
+                            CommandType.Unknown,
+                            true, evnt, null, timeout);
+                    }
+                    catch (AkStreamException ex)
+                    {
+                        rs = ex.ResponseStruct;
+                    }
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_InviteExcept,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_InviteExcept],
+                    ExceptMessage = ex.Message,
+                    ExceptStackTrace = ex.StackTrace,
+                }; 
+            }
+            
+        }
+        /// <summary>
         /// 请求实时视频流
         /// </summary>
         /// <param name="sipChannel"></param>
@@ -783,15 +936,7 @@ namespace LibGB28181SipServer
                     return;
                 }
 
-                if (sipChannel.PushStatus != DevicePushStatus.IDLE)
-                {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.Sip_ChannelAlredayPushStream,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelAlredayPushStream],
-                    };
-                    return;
-                }
+               
                 string mediaSdp = MediaSdpCreate(sipChannel, pushMediaInfo);
                 var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(sipChannel.ParentId));
                 if (!string.IsNullOrEmpty(mediaSdp))
@@ -843,12 +988,12 @@ namespace LibGB28181SipServer
                     return;
                 }
                 
-                if (sipChannel.PushStatus != DevicePushStatus.PUSHON)
+                if (sipChannel.PushStatus != PushStatus.PUSHON)
                 {
                     rs = new ResponseStruct()
                     {
-                        Code = ErrorNumber.Sip_ChannelNotOnPushStream,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelNotOnPushStream],
+                        Code = ErrorNumber.Sip_NotOnPushStream,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_NotOnPushStream],
                     };
                     return;
                 }
@@ -925,7 +1070,7 @@ namespace LibGB28181SipServer
         /// 设备目录查询请求
         /// </summary>
         /// <param name="sipDeviceId"></param>
-        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt, out ResponseStruct rs,
+        public void DeviceCatalogQuery(SipDevice sipDevice, AutoResetEvent evnt,AutoResetEvent evnt2, out ResponseStruct rs,
             int timeout = 5000)
         {
             rs = new ResponseStruct()
@@ -955,7 +1100,7 @@ namespace LibGB28181SipServer
                         request =
                             SendRequestViaSipDevice;
                     request(tmpSipDevice, method, ConstString.Application_MANSCDP, subject, xmlBody,
-                        catalogQuery.CommandType, true, evnt, null, timeout);
+                        catalogQuery.CommandType, true, evnt, evnt2, timeout);
                 }
                 catch (AkStreamException ex)
                 {

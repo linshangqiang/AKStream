@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using LibCommon;
+using LibCommon.Enums;
+using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.Net.SIP;
 using LibCommon.Structs.GB28181.XML;
@@ -54,7 +56,6 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 平台之间心跳接收
         /// </summary>
-        
         public static event GCommon.KeepaliveReceived OnKeepaliveReceived = null!;
 
 
@@ -66,16 +67,14 @@ namespace LibGB28181SipServer
         /// <summary>
         /// 设备状态查询接收
         /// </summary>
-
         public static event GCommon.DeviceStatusReceived OnDeviceStatusReceived = null;
-
 
 
         /// <summary>
         /// 设备信息查询接收
         /// </summary>
         public static event GCommon.DeviceInfoReceived OnDeviceInfoReceived = null;
-   
+
 
         /// <summary>
         /// 设备配置查询接收
@@ -156,15 +155,14 @@ namespace LibGB28181SipServer
                         }
                     }
 
-                    Thread.Sleep(20);
+                    Thread.Sleep(10);
                 }
 
                 Thread.Sleep(1000);
             }
         }
 
-        
-     
+
         /// <summary>
         /// 处理设备目录添加
         /// </summary>
@@ -174,6 +172,7 @@ namespace LibGB28181SipServer
         {
             if (catalog != null)
             {
+                var tatolNum = catalog.SumNum;
                 var tmpSipDeviceList = Common.SipDevices.FindAll(x => x.DeviceId.Equals(catalog.DeviceID));
 
                 if (tmpSipDeviceList.Count > 0)
@@ -188,11 +187,11 @@ namespace LibGB28181SipServer
                                     x.SipChannelDesc.DeviceID.Equals(tmpChannelDev.DeviceID));
                                 if (sipChannelInList == null)
                                 {
-                                    var newSipChannnel = new SipChannel()
+                                    var newSipChannel = new SipChannel()
                                     {
                                         LastUpdateTime = DateTime.Now,
                                         LocalSipEndPoint = tmpSipDevice.LocalSipEndPoint!,
-                                        PushStatus = DevicePushStatus.IDLE,
+                                        PushStatus = PushStatus.IDLE,
                                         RemoteEndPoint = tmpSipDevice.RemoteEndPoint!,
                                         SipChannelDesc = tmpChannelDev,
                                         ParentId = tmpSipDevice.DeviceId,
@@ -200,25 +199,66 @@ namespace LibGB28181SipServer
                                     };
                                     if (tmpChannelDev.InfList != null)
                                     {
-                                        newSipChannnel.SipChannelDesc.InfList = tmpChannelDev.InfList;
+                                        newSipChannel.SipChannelDesc.InfList = tmpChannelDev.InfList;
                                     }
 
-                                    newSipChannnel.SipChanneStatus = tmpChannelDev.Status;
-                                    newSipChannnel.SipChannelType = Common.GetSipChannelType(tmpChannelDev.DeviceID);
-                                    tmpSipDevice.SipChannels.Add(newSipChannnel);
-                                    Task.Run(() => { OnCatalogReceived?.Invoke(newSipChannnel); }); //抛线程出去处理
+                                    newSipChannel.SipChannelStatus = tmpChannelDev.Status;
+                                    newSipChannel.SipChannelType = Common.GetSipChannelType(tmpChannelDev.DeviceID);
+                                    if (newSipChannel.SipChannelType == SipChannelType.AudioChannel ||
+                                        newSipChannel.SipChannelType == SipChannelType.VideoChannel)
+                                    {
+                                        var canPushChannelCount = tmpSipDevice.SipChannels.Count(x =>
+                                            x.SipChannelType == SipChannelType.VideoChannel ||
+                                            x.SipChannelType == SipChannelType.AudioChannel);//可推流设备被记录序号
+                                        var tag = "0" + newSipChannel.DeviceId.Substring(3, 5) +
+                                                  canPushChannelCount.ToString().PadLeft(4, '0') +
+                                                  tmpSipDevice.DeviceId + newSipChannel.DeviceId;
+                                        var crc32 = CRC32Helper.GetCRC32(tag);
+                                        var crc32Str = crc32.ToString().PadLeft(10, '0');
+                                        char[] tmpChars = crc32Str.ToCharArray();
+                                        tmpChars[0] = '0'; //实时流ssrc第一位是0
+                                        string ssrcid = new string(tmpChars);
+                                        newSipChannel.SsrcId = ssrcid;
+                                        newSipChannel.Stream =
+                                            string.Format("{0:X8}", uint.Parse(ssrcid)); //ssrc的16进制表示
+                                    }
+
+                                    tmpSipDevice.SipChannels.Add(newSipChannel);
+                                   
+
+                                    Task.Run(() => { OnCatalogReceived?.Invoke(newSipChannel); }); //抛线程出去处理
                                     Logger.Info(
-                                        $"[{Common.LoggerHead}]->Sip设备通道信息->{tmpSipDevice.DeviceId}->增加Sip通道成功->({newSipChannnel.SipChannelType.ToString()})->{newSipChannnel.SipChannelDesc.DeviceID}->此设备当前通道数量:{tmpSipDevice.SipChannels.Count}条");
+                                        $"[{Common.LoggerHead}]->Sip设备通道信息->{tmpSipDevice.DeviceId}->增加Sip通道成功->({newSipChannel.SipChannelType.ToString()})->{newSipChannel.SipChannelDesc.DeviceID}->此设备当前通道数量:{tmpSipDevice.SipChannels.Count}条");
                                 }
                                 else
                                 {
                                     sipChannelInList.LastUpdateTime = DateTime.Now; //如果sip通道已经存在，则更新相关字段
+                                    sipChannelInList.SipChannelStatus = tmpChannelDev.Status;
+                                    sipChannelInList.SipChannelDesc = tmpChannelDev;
+                                    if (tmpChannelDev.InfList != null)
+                                    {
+                                        sipChannelInList.SipChannelDesc.InfList = tmpChannelDev.InfList;
+                                    }
+                                    
                                 }
                             }
+                            if (tmpSipDevice.SipChannels.Count >= tatolNum || tatolNum > 256
+                            ) //当设备数量与设备总数相等或者设备数量很大，需要很长时间时通知外部获取成功
+                            {
+                                var _taskTag = $"CATALOG:{tmpSipDevice.DeviceId}";
+                                var ret = Common.NeedResponseRequests.TryRemove(_taskTag,
+                                    out NeedReturnTask _task);
+                                if (ret && _task != null && _task.AutoResetEvent2 != null)
+                                {
+                                    _task.AutoResetEvent2.Set();
+                                }
+                            } 
                         }
 
                         tmpSipDevice.DeviceInfo!.Channel = tmpSipDevice.SipChannels!.Count;
+                       
                     }
+                   
                 }
                 else
                 {
@@ -302,7 +342,7 @@ namespace LibGB28181SipServer
                         }
                         else
                         {
-                            Logger.Warn(
+                            Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的心跳->{sipRequest}->但是Sip设备不存在，发送BadRequest消息,使设备重新注册");
                             await SendKeepAliveExcept(sipRequest);
                         }
@@ -310,6 +350,7 @@ namespace LibGB28181SipServer
                         break;
                     case "CATALOG": //处理设备目录
                         await SendOkMessage(sipRequest);
+                        Logger.Debug("------------------>" + sipRequest.Body);
                         Common.TmpCatalogs.Enqueue(UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         Logger.Debug(
                             $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备目录信息->{sipRequest}");
@@ -380,6 +421,21 @@ namespace LibGB28181SipServer
                                             x.Value.FilePath.Equals(item.FilePath));
                                         if (tmp.Value == null)
                                         {
+                                            var tag = item.Address + item.Name + item.Secrecy + item.Type +
+                                                      item.EndTime +
+                                                      item.FilePath + item.StartTime + item.DeviceID + item.RecorderID +
+                                                      sn;
+                                            var crc32 = CRC32Helper.GetCRC32(tag);
+                                            var crc32Str = crc32.ToString().PadLeft(10, '0');
+                                            char[] tmpChars = crc32Str.ToCharArray();
+                                            tmpChars[0] = '1'; //回放流的ssrc第一位是1
+                                            string itemId = new string(tmpChars);
+                                            item.SsrcId = itemId;//ssrc的值
+                                            item.Stream = string.Format("{0:X8}", uint.Parse(itemId));//ssrc的16进制表示
+                                            item.SipDevice = tmpSipDevice1;
+                                            item.SipChannel = sipChannel1;
+                                            item.PushStatus = PushStatus.IDLE;
+                                            item.MediaServerStreamInfo = new MediaServerStreamInfo();
                                             sipChannel1.LastRecordInfos.Add(
                                                 new KeyValuePair<int, RecordInfo.Item>(sn, item));
                                         }
@@ -396,6 +452,21 @@ namespace LibGB28181SipServer
                                             x.Value.FilePath.Equals(item.FilePath));
                                         if (tmp.Value == null)
                                         {
+                                            var tag = item.Address + item.Name + item.Secrecy + item.Type +
+                                                      item.EndTime +
+                                                      item.FilePath + item.StartTime + item.DeviceID + item.RecorderID +
+                                                      sn;
+                                            var crc32 = CRC32Helper.GetCRC32(tag);
+                                            var crc32Str = crc32.ToString().PadLeft(10, '0');
+                                            char[] tmpChars = crc32Str.ToCharArray();
+                                            tmpChars[0] = '1'; //回放流的ssrc第一位是1
+                                            string itemId = new string(tmpChars);
+                                            item.SsrcId = itemId;//ssrc的值
+                                            item.Stream = string.Format("{0:X8}", uint.Parse(itemId));//ssrc的16进制表示
+                                            item.SipDevice = tmpSipDevice1;
+                                            item.SipChannel = sipChannel1;
+                                            item.PushStatus = PushStatus.IDLE;
+                                            item.MediaServerStreamInfo = new MediaServerStreamInfo();
                                             sipChannel1.LastRecordInfos.Add(
                                                 new KeyValuePair<int, RecordInfo.Item>(sn, item));
                                         }
@@ -410,6 +481,22 @@ namespace LibGB28181SipServer
                                             x.Value.FilePath.Equals(item.FilePath));
                                         if (tmp.Value == null)
                                         {
+                                            var tag = item.Address + item.Name + item.Secrecy + item.Type +
+                                                      item.EndTime +
+                                                      item.FilePath + item.StartTime + item.DeviceID + item.RecorderID +
+                                                      sn;
+                                            var crc32 = CRC32Helper.GetCRC32(tag);
+                                            var crc32Str = crc32.ToString().PadLeft(10, '0');
+                                            char[] tmpChars = crc32Str.ToCharArray();
+                                            tmpChars[0] = '1'; //回放流的ssrc第一位是1
+                                            string itemId = new string(tmpChars);
+                                            item.SsrcId = itemId;//ssrc的值
+                                            item.Stream = string.Format("{0:X8}", uint.Parse(itemId));//ssrc的16进制表示
+                                            item.SipDevice = tmpSipDevice1;
+                                            item.SipChannel = sipChannel1;
+                                            item.PushStatus = PushStatus.IDLE;
+                                            item.MediaServerStreamInfo = new MediaServerStreamInfo();
+                                            
                                             sipChannel1.LastRecordInfos.Add(
                                                 new KeyValuePair<int, RecordInfo.Item>(sn, item));
                                         }
@@ -418,12 +505,11 @@ namespace LibGB28181SipServer
 
                                 Logger.Debug(
                                     $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的录像查询结果->{tmpSipDevice1.DeviceId}->{sipChannel1.DeviceId}->录像结果总数为:{tatolNum}->当前已获取数量:{sipChannel1.LastRecordInfos.Count}");
-                                if (sipChannel1.LastRecordInfos.Count >= tatolNum)
+                                if (sipChannel1.LastRecordInfos.Count >= tatolNum || tatolNum > 256) //数量相等或才总数特别大时，返回成功
                                 {
-                                    string _taskTag = "RECORDINFO" + ":" + tmpSipDevice1.DeviceId + ":" +
-                                                 sipChannel1.DeviceId;
-                                    var ret = Common.NeedResponseRequests.TryRemove(_taskTag,out  NeedReturnTask _task);
-                                    if (ret && _task!=null && _task.AutoResetEvent2!=null)
+                                    string _taskTag = $"RECORDINFO:{tmpSipDevice1.DeviceId}:{sipChannel1.DeviceId}";
+                                    var ret = Common.NeedResponseRequests.TryRemove(_taskTag, out NeedReturnTask _task);
+                                    if (ret && _task != null && _task.AutoResetEvent2 != null)
                                     {
                                         _task.AutoResetEvent2.Set();
                                     }
@@ -499,7 +585,7 @@ namespace LibGB28181SipServer
                             }); //抛线程出去处理
 
                             Logger.Info(
-                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.DeviceId}->已经注销，当前Sip设备数量:{Common.SipDevices}个");
+                                $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注销请求->{tmpSipDevice.DeviceId}->已经注销，当前Sip设备数量:{Common.SipDevices.Count}个");
 
                             lock (Common.SipDevicesLock)
                             {
@@ -706,7 +792,7 @@ namespace LibGB28181SipServer
             req.Header.Allow = null;
             req.Header.Vias = sipResponse.Header.Vias;
             req.Header.CallId = callId;
-            sipChannel.PushStatus = DevicePushStatus.IDLE; //设置为空闲
+            sipChannel.PushStatus = PushStatus.IDLE; //设置为空闲
 
             Logger.Debug(
                 $"[{Common.LoggerHead}]->回复终止实时流请求状态Bye{sipResponse.RemoteSIPEndPoint}->{req}");
@@ -735,7 +821,7 @@ namespace LibGB28181SipServer
             req.Header.Allow = null;
             req.Header.Vias = sipResponse.Header.Vias;
             req.Header.CallId = callId;
-            sipChannel.PushStatus = DevicePushStatus.PUSHON; //设置为正在推流
+            sipChannel.PushStatus = PushStatus.PUSHON; //设置为正在推流
             Logger.Debug(
                 $"[{Common.LoggerHead}]->回复实时流请求状态ACK{sipResponse.RemoteSIPEndPoint}->{req}");
             await Common.SipServer.SipTransport.SendRequestAsync(sipResponse.RemoteSIPEndPoint, req);
@@ -786,14 +872,25 @@ namespace LibGB28181SipServer
                                 tmpSipDevice.LastSipResponse = sipResponse;
                             }
 
+                            switch (_task.CommandType) //更次入列
+                            {
+                                case CommandType.RecordInfo:
+                                    Common.NeedResponseRequests.TryAdd(
+                                        _task.CommandType.ToString().ToUpper() + ":" + _task.SipDevice.DeviceId + ":" +
+                                        _task.SipChannel.DeviceId, _task); //再次加入等待列表
+
+                                    break;
+                                case CommandType.Catalog:
+                                    Common.NeedResponseRequests.TryAdd(
+                                        _task.CommandType.ToString().ToUpper() + ":" + _task.SipDevice.DeviceId,
+                                        _task); //再次加入等待列表
+
+                                    break;
+                            }
+
                             Logger.Debug(
                                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的SipResponse->{sipResponse}这个消息是回复消息，callid:{sipResponse.Header.CallId}");
-                            if (_task.AutoResetEvent2 != null)
-                            {
-                                Common.NeedResponseRequests.TryAdd(_task.CommandType.ToString().ToUpper()+":"+_task.SipDevice.DeviceId+":"+_task.SipChannel.DeviceId, _task);//再次加入等待列表
-                            }
                             _task.AutoResetEvent.Set(); //通知调用者任务完成,凋用者后续要做dispose操作
-                           
                         }
                         catch (Exception ex)
                         {

@@ -28,8 +28,8 @@ namespace LibCommon
         Sip_DeInviteExcept = -2007, //结束推流时异常
         Sip_InviteExcept = -2008, //推流时异常
         Sip_SendMessageExcept = -2009, //发送sip消息时异常
-        Sip_ChannelAlredayPushStream=-2010,//sip通道已经在推流状态
-        Sip_ChannelNotOnPushStream=-2011,//Sip通道没有在推流状态
+        Sip_AlredayPushStream=-2010,//sip通道已经在推流状态
+        Sip_NotOnPushStream=-2011,//Sip通道没有在推流状态
 
 
         Other = -6000 //其他异常
@@ -65,8 +65,8 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_DeInviteExcept] = "结束推流时发生异常";
             ErrorDic[ErrorNumber.Sip_InviteExcept] = "推流时发生异常";
             ErrorDic[ErrorNumber.Sip_SendMessageExcept] = "发送Sip消息时异常";
-            ErrorDic[ErrorNumber.Sip_ChannelAlredayPushStream] = "Sip通道已经在推流状态";
-              ErrorDic[ErrorNumber.Sip_ChannelNotOnPushStream] = "Sip通道没有在推流状态";
+            ErrorDic[ErrorNumber.Sip_AlredayPushStream] = "Sip通道(回放录像)已经在推流状态";
+            ErrorDic[ErrorNumber.Sip_NotOnPushStream] = "Sip通道(回放录像)没有在推流状态";
             
           
 
