@@ -136,7 +136,7 @@ namespace LibGB28181SipServer
                     sipServerConfig.SipUsername = "admin";
                     sipServerConfig.SipPassword = "123456";
                     sipServerConfig.GbVersion = "GB-2016";
-                    sipServerConfig.MsgProtocol = "UDP";
+                    sipServerConfig.MsgProtocol = "UDP";//使用TCP可以完美支持tcp信令
                     sipServerConfig.SipPort = 5060;
                     sipServerConfig.IpV6Enable = !string.IsNullOrEmpty(ipInfo.IpV6);
                     if (sipServerConfig.IpV6Enable)
