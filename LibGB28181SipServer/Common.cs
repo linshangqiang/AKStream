@@ -132,11 +132,11 @@ namespace LibGB28181SipServer
                 if (!string.IsNullOrEmpty(ipInfo.IpV4))
                 {
                     sipServerConfig = new SipServerConfig();
-                    sipServerConfig.Authentication = false;
+                    sipServerConfig.Authentication = true;
                     sipServerConfig.SipUsername = "admin";
-                    sipServerConfig.SipPassword = "123456";
+                    sipServerConfig.SipPassword = "123#@!qwe";
                     sipServerConfig.GbVersion = "GB-2016";
-                    sipServerConfig.MsgProtocol = "UDP";//使用TCP可以完美支持tcp信令
+                    sipServerConfig.MsgProtocol = "TCP";//使用TCP可以完美支持tcp信令
                     sipServerConfig.SipPort = 5060;
                     sipServerConfig.IpV6Enable = !string.IsNullOrEmpty(ipInfo.IpV6);
                     if (sipServerConfig.IpV6Enable)
@@ -158,6 +158,17 @@ namespace LibGB28181SipServer
                     *15-20 设备序号 000001 1号设备 
                     */
                     sipServerConfig.ServerSipDeviceId = "33020000021180000001";
+                    if (sipServerConfig.NoAuthenticationRequireds == null)
+                    {
+                        sipServerConfig.NoAuthenticationRequireds = new List<NoAuthenticationRequired>();
+                    }
+                    sipServerConfig.NoAuthenticationRequireds.Add(new NoAuthenticationRequired()
+                    {
+                        DeviceId = sipServerConfig.ServerSipDeviceId,
+                        IpV4Address = sipServerConfig.SipIpAddress,
+                        IpV6Address = sipServerConfig.SipIpV6Address,
+                    });
+                    sipServerConfig.Realm = sipServerConfig.ServerSipDeviceId.Substring(0, 10);
                     rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.None,

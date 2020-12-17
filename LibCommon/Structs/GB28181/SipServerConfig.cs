@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace LibCommon.Structs.GB28181
 {
@@ -12,7 +13,7 @@ namespace LibCommon.Structs.GB28181
         private string? _sipIpV6Address;
         private string _serverSipDeviceId = null!;
         private ushort _sipPort;
-        private string? _realm;
+        private string _realm;
         private string _gbVersion = null!;
         private bool _authentication;
         private string? _sipUsername;
@@ -21,6 +22,7 @@ namespace LibCommon.Structs.GB28181
         private int _keepAliveInterval;
         private int _keepAliveLostNumber;
         private bool _ipV6Enable = false;
+        private List<NoAuthenticationRequired>? _noAuthenticationRequireds=new List<NoAuthenticationRequired>();
 
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 服务器域
         /// </summary>
-        public string? Realm
+        public string Realm
         {
             get => _realm;
             set => _realm = value;
@@ -139,6 +141,15 @@ namespace LibCommon.Structs.GB28181
         {
             get => _ipV6Enable;
             set => _ipV6Enable = value;
+        }
+
+        /// <summary>
+        /// 无需鉴权的设备(可空)
+        /// </summary>
+        public List<NoAuthenticationRequired>? NoAuthenticationRequireds
+        {
+            get => _noAuthenticationRequireds;
+            set => _noAuthenticationRequireds = value;
         }
     }
 }

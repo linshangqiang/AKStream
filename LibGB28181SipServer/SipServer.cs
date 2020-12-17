@@ -1332,6 +1332,7 @@ namespace LibGB28181SipServer
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务是否启用鉴权->{Common.SipServerConfig.Authentication}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务鉴权用户名->{Common.SipServerConfig.SipUsername}");
             Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务鉴权密码->{Common.SipServerConfig.SipPassword}");
+            Logger.Info($"[{Common.LoggerHead}]->配置情况->Sip服务域ID->{Common.SipServerConfig.Realm}");
             Logger.Info(
                 $"[{Common.LoggerHead}]->配置情况->Sip服务心跳周期（秒）->{Common.SipServerConfig.KeepAliveInterval}");
             Logger.Info(

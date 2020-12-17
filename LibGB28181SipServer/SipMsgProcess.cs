@@ -571,6 +571,49 @@ namespace LibGB28181SipServer
                 $"[{Common.LoggerHead}]->当前Sip设备列表数量:->{Common.SipDevices.Count}");
         }
 
+
+        /// <summary>
+        /// 检查设备是否在鉴权要求以外
+        /// </summary>
+        /// <param name="sipDeviceId"></param>
+        /// <param name="ipv4"></param>
+        /// <param name="ipv6"></param>
+        /// <returns></returns>
+        private static bool CheckDeviceAuthenticationNeed(string sipDeviceId, string ipv4, string ipv6)
+        {
+         var found=   Common.SipServerConfig.NoAuthenticationRequireds.FindAll(x => x.DeviceId.Equals(sipDeviceId.Trim()));
+         if (found != null && found.Count > 0)
+         {
+             foreach (var obj in found)
+             {
+                 if (obj != null)
+                 {
+                     string tmpIpv4 = obj.IpV4Address;
+                     string tmpIpv6 = obj.IpV6Address;
+                     if (string.IsNullOrEmpty(tmpIpv4) && string.IsNullOrEmpty(tmpIpv6))
+                     {
+                         return false;//如果没有指定ip,则sipdeivceid一致，不需要鉴权
+                     }
+                     
+                     if (!string.IsNullOrEmpty(tmpIpv4) && !string.IsNullOrEmpty(ipv4))
+                     {
+                         if (tmpIpv4.Trim().Equals(ipv4.Trim()))
+                         {
+                             return false;//ipv4一致，不需要鉴权
+                         }
+                     }
+                     if (!string.IsNullOrEmpty(tmpIpv6) && !string.IsNullOrEmpty(ipv6))
+                     {
+                         if (tmpIpv6.Trim().Equals(ipv6.Trim()))
+                         {
+                             return false;//ipv6一致，不需要鉴权
+                         }
+                     }
+                 }
+             }   
+         }
+         return true;//需要鉴权
+        }
         /// <summary>
         /// 处理sip设备注册事件
         /// </summary>
@@ -588,6 +631,8 @@ namespace LibGB28181SipServer
                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册信息->{sipRequest}");
 
             string sipDeviceId = sipRequest.Header.From.FromURI.User;
+            string sipDeviceIpV4Address = sipRequest.RemoteSIPEndPoint.Address.MapToIPv4().ToString();
+            string sipDeviceIpV6Address = sipRequest.RemoteSIPEndPoint.Address.MapToIPv6().ToString();
 
             SIPResponse tryingResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.Trying, null);
             await Common.SipServer.SipTransport.SendResponseAsync(tryingResponse);
@@ -634,7 +679,7 @@ namespace LibGB28181SipServer
                 }
                 else
                 {
-                    if (Common.SipServerConfig.Authentication)
+                    if (Common.SipServerConfig.Authentication && CheckDeviceAuthenticationNeed(sipDeviceId,sipDeviceIpV4Address,sipDeviceIpV6Address))
                     {
                         if (sipRequest.Header.AuthenticationHeader == null)
                         {
