@@ -10,6 +10,7 @@ using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.Net.SDP;
 using LibCommon.Structs.GB28181.Net.SIP;
+using LibCommon.Structs.GB28181.Sys;
 using LibCommon.Structs.GB28181.XML;
 using LibLogger;
 using SIPSorcery.SIP;
@@ -282,6 +283,16 @@ namespace LibGB28181SipServer
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_NotExists],
                 };
                 return;
+            }
+
+            if (!sipChannel.SipChannelStatus.Equals(DevStatus.OK) || !sipChannel.SipChannelStatus.Equals(DevStatus.ON))
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Channel_StatusExcept,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_StatusExcept],
+                };
+                return;  
             }
 
             if (!sipChannel.SipChannelType.Equals(SipChannelType.VideoChannel) &&
@@ -599,14 +610,7 @@ namespace LibGB28181SipServer
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (ptzCtrl.SipChannel != null)
-            {
-                CheckInviteParam(ptzCtrl.SipChannel, PushStatus.IGNORE, out rs); //检测各参数是否正常
-                if (!rs.Code.Equals(ErrorNumber.None))
-                {
-                    return;
-                }
-            }
+           
 
             if (Common.SipDevices.FindLast(x => x.DeviceId.Equals(ptzCtrl.SipDevice.DeviceId)) == null) //设备是否在列表中存在
             {
@@ -615,6 +619,7 @@ namespace LibGB28181SipServer
                     Code = ErrorNumber.Sip_Device_NotExists,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
                 };
+                evnt.Set();
                 return;
             }
             SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
@@ -676,6 +681,8 @@ namespace LibGB28181SipServer
             catch (AkStreamException ex)
             {
                 rs = ex.ResponseStruct;
+                evnt.Set();
+                
             }
         }
 
@@ -721,7 +728,17 @@ namespace LibGB28181SipServer
                 catch (AkStreamException ex)
                 {
                     rs = ex.ResponseStruct;
+                    evnt.Set();
                 }
+            }
+            else
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Device_NotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                };
+                evnt.Set();
             }
         }
 
@@ -744,6 +761,8 @@ namespace LibGB28181SipServer
             CheckInviteParam(sipChannel, PushStatus.IGNORE, out rs); //检测各参数是否正常
             if (!rs.Code.Equals(ErrorNumber.None))
             {
+                evnt.Set();
+                evnt2.Set();
                 return;
             }
 
@@ -778,6 +797,8 @@ namespace LibGB28181SipServer
             catch (AkStreamException ex)
             {
                 rs = ex.ResponseStruct;
+                evnt.Set();
+                evnt2.Set();
             }
         }
 
@@ -823,6 +844,7 @@ namespace LibGB28181SipServer
                 catch (AkStreamException ex)
                 {
                     rs = ex.ResponseStruct;
+                    evnt.Set();
                 }
             }
             else
@@ -832,6 +854,7 @@ namespace LibGB28181SipServer
                     Code = ErrorNumber.Sip_Device_NotExists,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
                 };
+                evnt.Set();
             }
         }
 
@@ -863,6 +886,16 @@ namespace LibGB28181SipServer
                 return;
             }
 
+            if (!record.SipChannel.SipChannelStatus.Equals(DevStatus.OK) || !record.SipChannel.SipChannelStatus.Equals(DevStatus.ON))
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Channel_StatusExcept,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_StatusExcept],
+                };
+                return;  
+            }
+            
             if (pushStatus != PushStatus.IGNORE)
             {
                 if (record.PushStatus == pushStatus)
@@ -903,6 +936,7 @@ namespace LibGB28181SipServer
                 CheckInviteParam(record, PushStatus.PUSHON, out rs);
                 if (!rs.Code.Equals(ErrorNumber.None))
                 {
+                    evnt.Set();
                     return;
                 }
 
@@ -926,6 +960,7 @@ namespace LibGB28181SipServer
                     catch (AkStreamException ex)
                     {
                         rs = ex.ResponseStruct;
+                        evnt.Set();
                     }
                 }
             }
@@ -938,6 +973,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
+                evnt.Set();
             }
         }
 
@@ -958,6 +994,7 @@ namespace LibGB28181SipServer
                 CheckInviteParam(sipChannel, PushStatus.PUSHON, out rs); //检测各参数是否正常
                 if (!rs.Code.Equals(ErrorNumber.None))
                 {
+                    evnt.Set();
                     return;
                 }
 
@@ -982,6 +1019,7 @@ namespace LibGB28181SipServer
                     catch (AkStreamException ex)
                     {
                         rs = ex.ResponseStruct;
+                        evnt.Set();
                     }
                 }
             }
@@ -994,6 +1032,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
+                evnt.Set();
             }
         }
 
@@ -1007,6 +1046,7 @@ namespace LibGB28181SipServer
                 CheckInviteParam(record, PushStatus.IDLE, out rs);
                 if (!rs.Code.Equals(ErrorNumber.None))
                 {
+                    evnt.Set();
                     return;
                 }
 
@@ -1077,6 +1117,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
+                evnt.Set();
             }
         }
 
@@ -1094,6 +1135,7 @@ namespace LibGB28181SipServer
                 CheckInviteParam(sipChannel, PushStatus.IDLE, out rs);
                 if (!rs.Code.Equals(ErrorNumber.None))
                 {
+                    evnt.Set();
                     return;
                 }
 
@@ -1170,6 +1212,7 @@ namespace LibGB28181SipServer
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
+                evnt.Set();
             }
         }
 
@@ -1213,7 +1256,19 @@ namespace LibGB28181SipServer
                 catch (AkStreamException ex)
                 {
                     rs = ex.ResponseStruct;
+                    evnt.Set();
+                    evnt2.Set();
                 }
+            }
+            else
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.Sip_Device_NotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                };
+                evnt.Set();
+                evnt2.Set();
             }
         }
 

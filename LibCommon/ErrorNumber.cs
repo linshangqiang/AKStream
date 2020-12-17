@@ -30,6 +30,7 @@ namespace LibCommon
         Sip_SendMessageExcept = -2009, //发送sip消息时异常
         Sip_AlredayPushStream=-2010,//sip通道已经在推流状态
         Sip_NotOnPushStream=-2011,//Sip通道没有在推流状态
+        Sip_Channel_StatusExcept=-2012,//Sip通道设备状态异常
 
 
         Other = -6000 //其他异常
@@ -67,8 +68,9 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_SendMessageExcept] = "发送Sip消息时异常";
             ErrorDic[ErrorNumber.Sip_AlredayPushStream] = "Sip通道(回放录像)已经在推流状态";
             ErrorDic[ErrorNumber.Sip_NotOnPushStream] = "Sip通道(回放录像)没有在推流状态";
+            ErrorDic[ErrorNumber.Sip_Channel_StatusExcept] = "Sip通道状态异常";
             
-          
+            
 
 
 
