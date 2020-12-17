@@ -163,7 +163,7 @@ namespace LibCommon.Structs.GB28181.XML
             private SIPResponse? _inviteSipResponse = null;
             private SipDevice? _sipDevice = null;
             private SipChannel? _sipChannel = null;
-            private MediaServerStreamInfo _mediaServerStreamInfo;
+            private MediaServerStreamInfo? _mediaServerStreamInfo;
             private PushStatus _pushStatus;
             private string _ssrcId;
             private string _stream;
@@ -245,7 +245,7 @@ namespace LibCommon.Structs.GB28181.XML
             public MediaServerStreamInfo? MediaServerStreamInfo
             {
                 get => _mediaServerStreamInfo;
-                set => _mediaServerStreamInfo = value ?? throw new ArgumentNullException(nameof(value));
+                set => _mediaServerStreamInfo = value;
             }
             
 

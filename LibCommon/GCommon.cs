@@ -41,6 +41,11 @@ namespace LibCommon
         public delegate void UnRegisterDelegate(string sipDeviceJson);
 
         /// <summary>
+        /// 音视频点播完成（结束）
+        /// </summary>
+        /// <param name="record"></param>
+        public delegate void InviteHistroyVideoFinished(RecordInfo.Item record);
+        /// <summary>
         /// 当收到心跳数据时
         /// </summary>
         /// <param name="deviceId"></param>

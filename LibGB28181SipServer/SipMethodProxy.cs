@@ -160,6 +160,35 @@ namespace LibGB28181SipServer
             }
         }
 
+        
+        /// <summary>
+        /// 请求终止回放流
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        public bool DeInvite(RecordInfo.Item record, out ResponseStruct rs)
+        {
+            try
+            {
+                Common.SipServer.DeInvite(record, _autoResetEvent, out rs, _timeout);
+                _commandType = CommandType.Unknown;
+                var isTimeout = _autoResetEvent.WaitOne(_timeout);
+                if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
+                {
+                    return false;
+                }
+
+                record.PushStatus = PushStatus.IDLE;
+                record.MediaServerStreamInfo = null;
+                return true;
+            }
+            finally
+            {
+                Dispose();
+            }
+        }
+        
 
         /// <summary>
         /// 请求终止时实流
@@ -198,7 +227,7 @@ namespace LibGB28181SipServer
         {
             try
             {
-                _commandType = CommandType.Unknown;
+                _commandType = CommandType.Play;
                 Common.SipServer.Invite(sipChannel, pushMediaInfo, _autoResetEvent, out rs, _timeout);
                 var isTimeout = _autoResetEvent.WaitOne(_timeout);
                 if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
@@ -225,7 +254,7 @@ namespace LibGB28181SipServer
         {
             try
             {
-                _commandType = CommandType.Unknown;
+                _commandType = CommandType.Playback;
                 Common.SipServer.InviteRecord(record, pushMediaInfo, _autoResetEvent, out rs, _timeout);
                 var isTimeout = _autoResetEvent.WaitOne(_timeout);
                 if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))

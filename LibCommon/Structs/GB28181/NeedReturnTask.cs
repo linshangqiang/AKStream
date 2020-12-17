@@ -24,6 +24,7 @@ namespace LibCommon.Structs.GB28181
         private SipDevice _sipDevice;
         private CommandType _commandType;
         private AutoResetEvent? _autoResetEvent2;//锁二，用于特殊的数据同步，如获取sip录像列表
+        private object? _obj;//额外的通用类
 
 
         /// <summary>
@@ -90,6 +91,14 @@ namespace LibCommon.Structs.GB28181
             set => _sipDevice = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// 额外的通用类型
+        /// </summary>
+        public object? Obj
+        {
+            get => _obj;
+            set => _obj = value;
+        }
 
         public NeedReturnTask(ConcurrentDictionary<string, NeedReturnTask> c)
         {
