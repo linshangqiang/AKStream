@@ -15,7 +15,6 @@ namespace LibCommon.Structs.GB28181.Sys
         /// <returns></returns>
         public static uint DateToTimeStamp(DateTime date)
         {
-            //return (uint)TimeZoneInfo.Local.GetUtcOffset(date).Seconds;
             return (uint) ((date.ToUniversalTime().Ticks - 621355968000000000) / 10000000);
         }
     }

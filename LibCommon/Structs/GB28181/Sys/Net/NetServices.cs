@@ -28,7 +28,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             MAXIMUM_RTP_PORT_BIND_ATTEMPTS =
                 5; // The maximum number of re-attempts that will be made when trying to bind the RTP port.
 
-        //private static ILog logger = AppState.logger;
 
         public static PlatformEnum Platform = PlatformEnum.Windows;
 
@@ -36,7 +35,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
 
         public static UdpClient CreateRandomUDPListener(IPAddress localAddress, out IPEndPoint localEndPoint)
         {
-            //return SIPSorcery.Sys.NetServices.CreateRandomUDPListener(localAddress, UDP_PORT_START, UDP_PORT_END, null, out localEndPoint);
             return CreateRandomUDPListener(localAddress, UDP_PORT_START, UDP_PORT_END, null, out localEndPoint);
         }
 
@@ -61,17 +59,15 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                             randomClient = new UdpClient(localEndPoint);
                             break;
                         }
-                        catch (Exception excp)
+                        catch
                         {
-                            //logger.Warn("Warning couldn't create UDP end point for " + localAddress + ":" + port + "." + excp.Message);
+                            // ignored
                         }
 
                         attempts++;
                     }
                 }
-
-                //logger.Debug("Attempts to create UDP end point for " + localAddress  + " by randam port was " + attempts);
-
+                
                 return randomClient;
             }
             catch
@@ -89,11 +85,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
 
             lock (_allocatePortsMutex)
             {
-                //if (_nextMediaPort >= MEDIA_PORT_END)
-                //{
-                //    // The media port range has been used go back to the start. Some connections have most likely been closed.
-                //    _nextMediaPort = MEDIA_PORT_START;
-                //}
 
                 var inUseUDPPorts =
                     (from p in IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners()
@@ -162,11 +153,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                                     ProtocolType.Udp);
                                 controlSocket.Bind(new IPEndPoint(localAddress, controlPort));
 
-                                //logger.Debug("Successfully bound RTP socket " + localAddress + ":" + rtpPort + " and control socket " + localAddress + ":" + controlPort + ".");
-                            }
-                            else
-                            {
-                                //logger.Debug("Successfully bound RTP socket " + localAddress + ":" + rtpPort + ".");
                             }
 
                             bindSuccess = true;
@@ -175,15 +161,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                         }
                         catch (SocketException)
                         {
-                            if (controlPort != 0)
-                            {
-                                //logger.Warn("Failed to bind on address " + localAddress + " to RTP port " + rtpPort + " and/or control port of " + controlPort + ", attempt " + bindAttempts + ".");
-                            }
-                            else
-                            {
-                                //logger.Warn("Failed to bind on address " + localAddress + " to RTP port " + rtpPort + ", attempt " + bindAttempts + ".");
-                            }
-
                             // Increment the port range in case there is an OS/network issue closing/cleaning up already used ports.
                             rtpPort += 2;
                             controlPort += (controlPort != 0) ? 2 : 0;
@@ -246,7 +223,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             }
             catch
             {
-                //logger.Error("Exception GetDefaultGateway. " + excp.Message);
                 return null;
             }
         }
@@ -293,7 +269,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             }
             catch
             {
-                //logger.Error("Exception GetDefaultIPAddress. " + excp.Message);
                 return null;
             }
         }
@@ -318,7 +293,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             }
             catch (Exception excp)
             {
-                //logger.Error("Exception call to 'route print': " + excp.Message);
                 throw new ApplicationException("An attempt to call 'route print' failed. " + excp.Message);
             }
         }
@@ -331,14 +305,10 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             Process osProcess = new Process();
             osProcess.StartInfo.CreateNoWindow = true;
             osProcess.StartInfo.UseShellExecute = false;
-            //osProcess.StartInfo.UseShellExecute = true;
             osProcess.StartInfo.RedirectStandardOutput = true;
-
             osProcess.StartInfo.FileName = command;
             osProcess.StartInfo.Arguments = commandLine;
-
             osProcess.Start();
-
             osProcess.WaitForExit();
             return osProcess.StandardOutput.ReadToEnd();
         }

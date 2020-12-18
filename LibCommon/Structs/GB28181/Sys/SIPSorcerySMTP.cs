@@ -10,7 +10,6 @@ namespace LibCommon.Structs.GB28181.Sys
 {
     public class SIPSorcerySMTP
     {
-        //private static readonly ILog logger = AppState.logger;
         // 以下，如果用到须要对应的配置
         private static readonly string m_smtpServer = AppState.GetConfigSetting("SMTPServer");
         private static readonly string m_smtpServerPort = AppState.GetConfigSetting("SMTPServerPort");
@@ -82,9 +81,9 @@ namespace LibCommon.Structs.GB28181.Sys
                         //logger.Debug("Email sent to " + toAddress);
                     }
                 }
-                catch (Exception excp)
+                catch
                 {
-                    //logger.Error("Exception SendEmailAsync (To=" + toAddress + "). " + excp.Message);
+                    // ignored
                 }
             }
         }
@@ -94,9 +93,6 @@ namespace LibCommon.Structs.GB28181.Sys
             try
             {
                 int smtpPort = (m_smtpServerPort.IsNullOrBlank()) ? 25 : Convert.ToInt32(m_smtpServerPort);
-
-                //logger.Debug("RelayMail attempting to send " + email.Subject + " via " + m_smtpServer + ":" + smtpPort + " to " + email.To);
-
                 using SmtpClient smtpClient = new SmtpClient(m_smtpServer, smtpPort);
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -110,13 +106,10 @@ namespace LibCommon.Structs.GB28181.Sys
                 {
                     smtpClient.Credentials = new NetworkCredential(m_smtpSendUsername, m_smtpSendPassword, "");
                 }
-
                 smtpClient.Send(email);
-                //logger.Debug("RelayMail " + email.Subject + " relayed via " + m_smtpServer + " to " + email.To);
             }
             catch (Exception ex)
             {
-                //logger.Error("Exception RelayMail. " + ex.Message);
                 throw;
             }
         }

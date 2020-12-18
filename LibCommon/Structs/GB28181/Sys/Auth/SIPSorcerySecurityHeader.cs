@@ -11,7 +11,6 @@ namespace LibCommon.Structs.GB28181.Sys.Auth
         private const string AUTHID_ELEMENT_NAME = "AuthID";
         private const string APIKEY_ELEMENT_NAME = "apikey";
 
-        //private static ILog logger = AppState.logger;
 
         public string AuthID;
         public string APIKey;
@@ -61,38 +60,6 @@ namespace LibCommon.Structs.GB28181.Sys.Auth
 
         public static SIPSorcerySecurityHeader ParseHeader( /*OperationContext context*/)
         {
-            //try
-            //{
-            //    int headerIndex = context.IncomingMessageHeaders.FindHeader(SECURITY_HEADER_NAME, SECURITY_NAMESPACE);
-            //    if (headerIndex != -1)
-            //    {
-            //        XmlDictionaryReader reader = context.IncomingMessageHeaders.GetReaderAtHeader(headerIndex);
-
-            //        if (reader.IsStartElement(SECURITY_HEADER_NAME, SECURITY_NAMESPACE))
-            //        {
-            //            reader.ReadStartElement();
-            //            reader.MoveToContent();
-
-            //            if (reader.IsStartElement(AUTHID_ELEMENT_NAME, SECURITY_NAMESPACE))
-            //            {
-            //                string authID = reader.ReadElementContentAsString();
-            //                return new SIPSorcerySecurityHeader(authID, null);
-            //            }
-
-            //            if (reader.IsStartElement(APIKEY_ELEMENT_NAME, SECURITY_NAMESPACE))
-            //            {
-            //                string apiKey = reader.ReadElementContentAsString();
-            //                return new SIPSorcerySecurityHeader(null, apiKey);
-            //            }
-            //        }
-            //    }
-            //     return null;
-            //}
-            //catch (Exception excp)
-            //{
-            //    logger.Error("Exception SIPSorcerySecurityHeader ParseHeader. " + excp.Message);
-            //    throw;
-            //}
             return null;
         }
     }

@@ -13,9 +13,7 @@ namespace LibCommon.Structs.GB28181.Net.SDP
         public const string ICE_UFRAG_ATTRIBUTE_PREFIX = "ice-ufrag";
         public const string ICE_PWD_ATTRIBUTE_PREFIX = "ice-pwd";
         public const string ICE_CANDIDATE_ATTRIBUTE_PREFIX = "candidate";
-
-        //private static ILog logger = AppState.logger;
-
+        
         public decimal Version = SDP_PROTOCOL_VERSION;
 
         // Owner fields.
@@ -70,11 +68,6 @@ namespace LibCommon.Structs.GB28181.Net.SDP
             Address = address;
         }
 
-        //public static SDP ParseSDPDescription(string sdpDescription)
-        //{
-
-        //}
-
         public void AddExtra(string attribute)
         {
             if (!string.IsNullOrWhiteSpace(attribute))
@@ -83,21 +76,6 @@ namespace LibCommon.Structs.GB28181.Net.SDP
 
         public override string ToString()
         {
-            //SDP˳sample
-            /*
-             * v=0
-             * o=34020000002000000001 0 0 IN IP4 192.168.10.60
-             * s=Playback
-             * u=34020000001320000020:3
-             * c=IN IP4 192.168.10.60
-             * t=1481852021 1481855621
-             * m=video 10004 RTP/AVP 96 98
-             * a=recvonly
-             * a=rtpmap:96 PS/90000
-             * a=rtpmap:98 H264/90000
-             */
-
-
             string sdp =
                 "v=" + SDP_PROTOCOL_VERSION + CRLF +
                 "o=" + Owner + CRLF +

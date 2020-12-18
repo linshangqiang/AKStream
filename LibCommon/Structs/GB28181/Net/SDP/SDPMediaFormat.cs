@@ -22,7 +22,6 @@ namespace LibCommon.Structs.GB28181.Net.SDP
     {
         private const int DEFAULT_CLOCK_RATE = 90000;
 
-        //private static Dictionary<int, string> m_defaultFormatNames = new Dictionary<int, string>();
 
         public int FormatID;
         public string FormatAttribute { get; private set; }
@@ -39,10 +38,7 @@ namespace LibCommon.Structs.GB28181.Net.SDP
 
         static SDPMediaFormat()
         {
-            //m_defaultFormatNames.Add((int)SDPMediaFormatsEnum.PCMU, "PCMU/8000");
-            //m_defaultFormatNames.Add((int)SDPMediaFormatsEnum.GSM, "GSM/8000");
-            //m_defaultFormatNames.Add((int)SDPMediaFormatsEnum.PCMA, "PCMA/8000");
-            //m_defaultFormatNames.Add((int)SDPMediaFormatsEnum.G723, "G723/8000");
+         
         }
 
         public SDPMediaFormat(int formatID)
@@ -100,16 +96,6 @@ namespace LibCommon.Structs.GB28181.Net.SDP
             FormatParameterAttribute = attribute;
         }
 
-        //public static string GetDefaultFormatAttribute(int mediaFormat)
-        //{
-        //    if (m_defaultFormats.ContainsKey(mediaFormat))
-        //    {
-        //        return m_defaultFormats[mediaFormat];
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
+      
     }
 }

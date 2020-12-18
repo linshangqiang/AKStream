@@ -22,7 +22,6 @@ namespace LibCommon.Structs.GB28181.Sys
 
     public class StorageTypesConverter
     {
-        //private static ILog logger = AppState.logger;
 
         public static StorageTypes GetStorageType(string storageType)
         {
@@ -32,7 +31,6 @@ namespace LibCommon.Structs.GB28181.Sys
             }
             catch
             {
-                //logger.Error("StorageTypesConverter " + storageType + " unknown.");
                 return StorageTypes.Unknown;
             }
         }

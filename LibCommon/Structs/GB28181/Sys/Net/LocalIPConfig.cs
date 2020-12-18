@@ -16,7 +16,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
         public const string
             LINK_LOCAL_BLOCK_PREFIX = "169.254"; // Used by hosts attempting to acquire a DHCP address. See RFC 3330.
 
-        //private static ILog logger = AppState.logger;
 
         public static List<IPAddress> GetLocalIPv4Addresses()
         {
@@ -95,7 +94,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             foreach (XmlNode socketNode in socketNodes.ChildNodes)
             {
                 string socketString = socketNode.InnerText;
-                //logger.Debug("Parsing end point from socket string " + socketString + ".");
 
                 int port = IPSocket.ParsePortFromSocket(socketString);
                 if (socketString.StartsWith(ALL_LOCAL_IPADDRESSES_KEY))

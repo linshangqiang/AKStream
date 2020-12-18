@@ -35,23 +35,7 @@ namespace LibCommon.Structs.GB28181.XML
         /// </summary>
         private void Serialize(T t)
         {
-            //XmlSerializer xs = new XmlSerializer(typeof(T));
-            //MemoryStream stream = new MemoryStream();
-            //XmlWriterSettings settings = new XmlWriterSettings();
-            //settings.Indent = true;
-            //settings.Encoding = Encoding.GetEncoding("GB2312");
-            //settings.Encoding = new UTF8Encoding(false);
-            //settings.NewLineOnAttributes = true;
-            //settings.OmitXmlDeclaration = false;
-            //using (XmlWriter writer = XmlWriter.Create("c:\\catalog.xml", settings))
-            //{
-            //    var xns = new XmlSerializerNamespaces();
-
-            //    xns.Add(string.Empty, string.Empty);
-            //    去除默认命名空间
-            //    xs.Serialize(writer, t, xns);
-            //}
-
+           
 
             XmlWriterSettings settings = new XmlWriterSettings
             {
@@ -67,15 +51,7 @@ namespace LibCommon.Structs.GB28181.XML
             s.Serialize(w, t, xns);
             w.Flush();
             w.Close();
-            //TextReader r = new StreamReader("c:\\catalog.xml");
-            //string xmlBody = r.ReadToEnd();
-
-
-            //XmlSerializer s = new XmlSerializer(t.GetType());
-            //TextWriter w = new StreamWriter("c:\\catalog.xml");
-            //s.Serialize(w, t);
-            //w.Flush();
-            //w.Close();
+           
         }
 
         public virtual string Serialize<T1>(T1 obj)
@@ -89,102 +65,21 @@ namespace LibCommon.Structs.GB28181.XML
                 //序列化对象
                 xml.Serialize(stream, obj, xns);
             }
-            catch (Exception ex)
+            catch
             {
-                //logger.Error("序列化对象为xml字符串出错" + ex);
+                // ignored
             }
-            //XmlSerializer xs = new XmlSerializer(typeof(T));
-            //MemoryStream stream = new MemoryStream();
-            //XmlWriterSettings settings = new XmlWriterSettings();
-            //settings.Indent = true;
-            //settings.Encoding =  Encoding.GetEncoding("GB2312");
-            ////settings.Encoding = new UTF8Encoding(false);
-            //settings.NewLineOnAttributes = true;
-            //settings.OmitXmlDeclaration = false;
-            //using (XmlWriter writer = XmlWriter.Create(stream, settings))
-            //{
-            //    var xns = new XmlSerializerNamespaces();
 
-            //    xns.Add(string.Empty, string.Empty);
-            //    //去除默认命名空间
-            //    xs.Serialize(writer, obj, xns);
-            //}
             return Encoding.UTF8.GetString(stream.ToArray()); //.Replace("\r", "");
         }
 
-        ///// <summary>  
-        ///// 对象序列化成 XML String  
-        ///// </summary>  
-        //public string Serialize<T>(T obj)
-        //{
-        //    string xmlString = string.Empty;
-        //    XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
-
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        xmlSerializer.Serialize(ms, obj);
-        //        xmlString = Encoding.UTF8.GetString(ms.ToArray());
-        //    }
-        //    return xmlString;
-        //}  
-
-        //public string Serialize<T>(T entity)
-        //{
-        //    StringBuilder buffer = new StringBuilder();
-
-        //    XmlSerializer serializer = new XmlSerializer(typeof(T));
-        //    using (TextWriter writer = new StringWriter(buffer))
-        //    {
-        //        serializer.Serialize(writer, entity);
-        //    }
-
-        //    return buffer.ToString();
-
-        //}  
-
-        ///// <summary>
-        ///// 序列化
-        ///// </summary>
-        ///// <typeparam name="T">类型</typeparam>
-        ///// <param name="entity">实体类型</param>
-        ///// <returns>XML格式字符串</returns>
-        //public string Serialize<T>(T entity)
-        //{
-        //    //StringBuilder 
-        //    MemoryStream stream = new MemoryStream();
-        //    XmlSerializer serializer = new XmlSerializer(typeof(T));
-        //    XmlWriterSettings settings = new XmlWriterSettings();
-        //    settings.Indent = true;
-        //    settings.Encoding = new UTF8Encoding(false);
-        //    settings.NewLineOnAttributes = true;
-        //    settings.OmitXmlDeclaration = false;
-        //    try
-        //    {
-        //        using (XmlWriter write = XmlWriter.Create(stream, settings))
-        //        {
-        //            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-        //            //去除默认命名空间
-        //            ns.Add("", "");
-        //            serializer.Serialize(stream, entity, ns);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.Error("对象序列化到XML格式字符串错误" + ex.Message+ex.StackTrace.ToString());
-        //    }
-        //    stream.Close();
-        //    return Encoding.UTF8.GetString(stream.ToArray()).Replace("\r", "");
-        //} 
-
+       
         /// <summary>
         /// 反序列
         /// </summary>
         /// <returns></returns>
         private T Deserialize()
         {
-            //MemoryStream stream = new MemoryStream(Encoding.GetEncoding("utf-8").GetBytes(m_xml_path));
-            //StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("utf-8"));
-
             if (File.Exists(m_xml_path))
             {
                 TextReader r = new StreamReader(m_xml_path);
@@ -235,9 +130,8 @@ namespace LibCommon.Structs.GB28181.XML
             {
                 obj = (T) s.Deserialize(sr);
             }
-            catch (Exception ex)
+            catch
             {
-                //logger.Error("反序列化错误" + ex.Message + ex.StackTrace.ToString());
                 sr.Close();
                 return null;
             }

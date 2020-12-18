@@ -298,6 +298,7 @@ namespace LibGB28181SipServer
             }
             finally
             {
+                _autoResetEvent2.Dispose();
                 Dispose();
             }
         }

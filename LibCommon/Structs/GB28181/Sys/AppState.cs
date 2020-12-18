@@ -23,9 +23,7 @@ namespace LibCommon.Structs.GB28181.Sys
         // From http://fightingforalostcause.net/misc/2006/compare-email-regex.php.
         public const string EMAIL_VALIDATION_REGEX =
             @"^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-zA-Z0-9]{1}[a-zA-Z0-9\-]{0,62}[a-zA-Z0-9]{1})|[a-zA-Z])\.)+[a-zA-Z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$";
-
-        //public static ILog logger;                        // Used to provide logging functionality for the application.
-
+        
         private static StringDictionary m_appConfigSettings; // Contains application configuration key, value pairs.
         private static X509Certificate2 m_encryptedSettingsCertificate;
         public static readonly string NewLine = Environment.NewLine;
@@ -39,52 +37,17 @@ namespace LibCommon.Structs.GB28181.Sys
                 {
                     // Initialise logging functionality from an XML node in the app.config file.
                     Console.WriteLine("Starting logging initialisation.");
-                    // GB28181.Logger4Net.Config.XmlConfigurator.Configure();
                 }
                 catch
                 {
                     // Unable to load the GB28181.Logger4Net configuration node (probably invalid XML in the config file).
                     Console.WriteLine(
                         "Unable to load logging configuration check that the app.config file exists and is well formed.");
-
-                    try
-                    {
-                        //EventLog.WriteEntry(APP_LOGGING_ID, "Unable to load logging configuration check that the app.config file exists and is well formed.", EventLogEntryType.Error, 0);
-                    }
-                    catch (Exception evtLogExcp)
-                    {
-                        Console.WriteLine("Exception writing logging configuration error to event log. " +
-                                          evtLogExcp.Message);
-                    }
-
                     // Configure a basic console appender so if there is anyone watching they can still see log messages and to
                     // ensure that any classes using the logger won't get null references.
                     ConfigureConsoleLogger();
                 }
-                finally
-                {
-                    try
-                    {
-                        //logger = LogManager.GetLogger(APP_LOGGING_ID);
-                        //logger.Debug("Target framework: .Net Core 3.1");
-                        //logger.Debug("EnvironmentVariables.MICRO_REGISTRY_ADDRESS: " + EnvironmentVariables.MicroRegistryAddress);
-                        //logger.Debug("EnvironmentVariables.GB_NATS_CHANNEL_ADDRESS: " + EnvironmentVariables.GBNatsChannelAddress);
-                        //logger.Debug("EnvironmentVariables.DEVICE_MANAGEMENT_SERVICE_ADDRESS: " + EnvironmentVariables.DeviceManagementServiceAddress);
-                        //logger.Debug("EnvironmentVariables.SYSTEM_CONFIGURATION_SERVICE_ADDRESS: " + EnvironmentVariables.SystemConfigurationServiceAddress);
-                        //logger.Debug("EnvironmentVariables.GB_SERVICE_LOCAL_IP: " + EnvironmentVariables.GbServiceLocalIp);
-                        ////logger.Debug("EnvironmentVariables.GbServiceLocalPort: " + EnvironmentVariables.GbServiceLocalPort);
-                        //logger.Debug("EnvironmentVariables.GB_SERVICE_LOCAL_ID: " + EnvironmentVariables.GbServiceLocalId);
-                        //logger.Debug("EnvironmentVariables.GBServerGrpcPort: " + EnvironmentVariables.GBServerGrpcPort);
-                        //logger.Debug("Notes: if EnvironmentVariables have no value, it gets from xml config.");
-                    }
-                    catch (Exception excp)
-                    {
-                        var errorLog = new StreamWriter(DEFAULT_ERRRORLOG_FILE, true);
-                        errorLog.WriteLine(DateTime.Now.ToString("dd MMM yyyy HH:mm:ss") +
-                                           " Exception Initialising AppState Logging. " + excp.Message);
-                        errorLog.Close();
-                    }
-                }
+               
 
                 // Initialise the string dictionary to hold the application settings.
                 m_appConfigSettings = new StringDictionary();
@@ -101,11 +64,7 @@ namespace LibCommon.Structs.GB28181.Sys
             }
         }
 
-        //public static ILog GetLogger(string logName)
-        //{
-        //    return LogManager.GetLogger(logName);
-        //}
-
+     
         /// <summary>
         /// Configures the logging object to use a console logger. This would normally be used
         /// as a fallback when either the application does not have any logging configuration
@@ -113,11 +72,7 @@ namespace LibCommon.Structs.GB28181.Sys
         /// </summary>
         public static void ConfigureConsoleLogger()
         {
-            //var appender = new Appender.ConsoleAppender();
-            //var fallbackLayout = new Layout.PatternLayout("%m%n");
-            //appender.Layout = fallbackLayout;
-
-            // GB28181.Logger4Net.Config.BasicConfigurator.Configure(appender);
+           
         }
 
         /// <summary>
@@ -142,23 +97,18 @@ namespace LibCommon.Structs.GB28181.Sys
                     {
                         if (setting.StartsWith(ENCRYPTED_SETTING_PREFIX))
                         {
-                            //logger.Debug("Decrypting appSetting " + key + ".");
 
                             X509Certificate2 encryptedSettingsCertificate = GetEncryptedSettingsCertificate();
                             if (encryptedSettingsCertificate != null)
                             {
                                 if (encryptedSettingsCertificate.HasPrivateKey)
                                 {
-                                    //logger.Debug("Private key on encrypted settings certificate is available.");
-
                                     setting = setting.Substring(2);
                                     byte[] encryptedBytes = Convert.FromBase64String(setting);
                                     RSACryptoServiceProvider rsa =
                                         (RSACryptoServiceProvider) encryptedSettingsCertificate.PrivateKey;
                                     byte[] plainTextBytes = rsa.Decrypt(encryptedBytes, false);
                                     setting = Encoding.ASCII.GetString(plainTextBytes);
-
-                                    //logger.Debug("Successfully decrypted appSetting " + key + ".");
                                 }
                                 else
                                 {
@@ -185,7 +135,6 @@ namespace LibCommon.Structs.GB28181.Sys
             }
             catch (Exception excp)
             {
-                //logger.Error("Exception AppState.GetSetting. " + excp.Message);
                 throw;
             }
         }
@@ -227,7 +176,6 @@ namespace LibCommon.Structs.GB28181.Sys
             bool checkValidity)
         {
             X509Store store = new X509Store(storeLocation);
-            //logger.Debug("Certificate store " + store.Location + " opened");
             store.Open(OpenFlags.OpenExistingOnly);
             X509Certificate2Collection collection =
                 store.Certificates.Find(X509FindType.FindBySubjectName, certificateSubject, checkValidity);
@@ -235,12 +183,10 @@ namespace LibCommon.Structs.GB28181.Sys
             {
                 X509Certificate2 serverCertificate = collection[0];
                 bool verifyCert = serverCertificate.Verify();
-                //logger.Debug("X509 certificate loaded from current user store, subject=" + serverCertificate.Subject + ", valid=" + verifyCert + ".");
                 return serverCertificate;
             }
             else
             {
-                //logger.Warn("X509 certificate with subject name=" + certificateSubject + ", not found in " + store.Location + " store.");
                 return null;
             }
         }
@@ -259,25 +205,15 @@ namespace LibCommon.Structs.GB28181.Sys
                             encryptedSettingsCertName, false);
                         if (encryptedSettingsCertificate != null)
                         {
-                            //logger.Debug("Encrypted settings certificate successfully loaded for " + encryptedSettingsCertName + ".");
                             m_encryptedSettingsCertificate = encryptedSettingsCertificate;
                         }
-                        else
-                        {
-                            //logger.Error("Could not load the encrypted settings certificate for " + encryptedSettingsCertName + ".");
-                        }
-                    }
-                    else
-                    {
-                        //logger.Error("Could not load the encrypted settings certificate, no " + ENCRYPTED_SETTINGS_CERTIFICATE_NAME + " setting found.");
                     }
                 }
 
                 return m_encryptedSettingsCertificate;
             }
-            catch (Exception excp)
+            catch
             {
-                //logger.Error("Exception AppState.GetEncryptedSettingsCertificate. " + excp.Message);
                 return null;
             }
         }

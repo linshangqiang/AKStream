@@ -10,9 +10,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
     public class UDPListener
     {
         private const string THREAD_NAME = "udplistener-";
-
-        //private static ILog logger = AppState.logger;
-
         private IPEndPoint m_localEndPoint;
         private Guid m_socketId = Guid.NewGuid();
         private UdpClient m_udpClient;
@@ -36,11 +33,9 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                 listenThread.Name = THREAD_NAME + Crypto.GetRandomString(4);
                 listenThread.Start();
 
-                //logger.Debug("UDPListener listener created " + m_localEndPoint + ".");
             }
             catch (Exception excp)
             {
-                //logger.Error("Exception UDPListener Initialise. " + excp.Message);
                 throw excp;
             }
         }
@@ -53,7 +48,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             }
             catch
             {
-                //logger.Error("Exception Disposing UDPListener. " + excp.Message);
             }
         }
 
@@ -62,9 +56,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             try
             {
                 byte[] buffer = null;
-
-                //logger.Debug("UDPListener socket on " + m_localEndPoint + " listening started.");
-
                 while (!m_closed)
                 {
                     IPEndPoint inEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -83,8 +74,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                     catch
                     {
                         // There is no point logging this as without processing the ICMP message it's not possible to know which socket the rejection came from.
-                        //logger.Error("Exception listening on UDPListener. " + listenExcp.Message);
-
                         inEndPoint = new IPEndPoint(IPAddress.Any, 0);
                         continue;
                     }
@@ -92,8 +81,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                     if (buffer == null || buffer.Length == 0)
                     {
                         // No need to care about zero byte packets.
-                        //string remoteEndPoint = (inEndPoint != null) ? inEndPoint.ToString() : "could not determine";
-                        //logger.Error("Zero bytes received on SIPUDPChannel " + m_localSIPEndPoint.ToString() + ".");
                     }
                     else
                     {
@@ -103,13 +90,10 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                         }
                     }
                 }
-
-                //logger.Debug("UDPListener socket on " + m_localEndPoint + " listening halted.");
             }
             catch
             {
-                //logger.Error("Exception UDPListener Listen. " + excp.Message);
-                //throw excp;
+                // ignored
             }
         }
 
@@ -142,7 +126,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
             }
             catch (Exception excp)
             {
-                //logger.Error("Exception (" + excp.GetType().ToString() + ") UDPListener Send (sendto=>" + IPSocket.GetSocketString(destinationEndPoint) + "). " + excp.Message);
                 throw excp;
             }
         }
@@ -151,14 +134,12 @@ namespace LibCommon.Structs.GB28181.Sys.Net
         {
             try
             {
-                //logger.Debug("Closing UDPListener " + m_localEndPoint + ".");
-
                 m_closed = true;
                 m_udpClient.Close();
             }
-            catch (Exception excp)
+            catch
             {
-                //logger.Warn("Exception UDPListener Close. " + excp.Message);
+                // ignored
             }
         }
     }

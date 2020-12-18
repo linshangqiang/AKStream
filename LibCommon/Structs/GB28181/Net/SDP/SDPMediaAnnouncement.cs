@@ -142,26 +142,12 @@ namespace LibCommon.Structs.GB28181.Net.SDP
 
             if (MediaFormats != null)
             {
-                //foreach (SDPMediaFormat mediaFormat in MediaFormats.Where(x => x.IsStandardAttribute == false))
                 foreach (SDPMediaFormat mediaFormat in MediaFormats)
                 {
-                    //if (mediaFormat.FormatAttribute != null)
-                    //{
-                    //    formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.FormatID + " " + mediaFormat.FormatAttribute + m_CRLF;
-                    //}
-                    //else
-                    //{
+                
                     formatAttributes += MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.FormatID + " " + mediaFormat.Name +
                                         "/" + mediaFormat.ClockRate + m_CRLF;
-                    //}
-                    //if (mediaFormat.FormatParameterAttribute != null)
-                    //{
-                    //    formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_PARAMETERS_ATTRIBUE_PREFIX + mediaFormat.FormatID + " " + mediaFormat.FormatParameterAttribute + m_CRLF;
-                    //}
-                    //else if(SDPMediaFormat.GetDefaultFormatAttribute(mediaFormat.FormatID) != null)
-                    //{
-                    //    formatAttributes += SDPMediaAnnouncement.MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.FormatID + " " + SDPMediaFormat.GetDefaultFormatAttribute(mediaFormat.FormatID) + m_CRLF;
-                    //}
+                   
                 }
             }
 

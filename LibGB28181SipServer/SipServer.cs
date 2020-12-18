@@ -268,8 +268,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 return;
             }
@@ -279,8 +279,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Channel_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_NotExists],
+                    Code = ErrorNumber.Sip_ChannelNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelNotExists],
                 };
                 return;
             }
@@ -616,8 +616,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 evnt.Set();
                 return;
@@ -735,8 +735,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 evnt.Set();
             }
@@ -851,8 +851,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 evnt.Set();
             }
@@ -870,8 +870,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 return;
             }
@@ -880,8 +880,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Channel_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_NotExists],
+                    Code = ErrorNumber.Sip_ChannelNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_ChannelNotExists],
                 };
                 return;
             }
@@ -1264,8 +1264,8 @@ namespace LibGB28181SipServer
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sip_Device_NotExists,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Device_NotExists],
+                    Code = ErrorNumber.Sip_DeviceNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_DeviceNotExists],
                 };
                 evnt.Set();
                 evnt2.Set();

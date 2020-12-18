@@ -22,8 +22,8 @@ namespace LibCommon
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
         Sip_Except_RegisterSipDevice = -2003, //Sip网关内部异常(注册Sip设备时)
-        Sip_Channel_NotExists = -2004, //Sip音视频通道不存在
-        Sip_Device_NotExists = -2005, //Sip设备不存在
+        Sip_ChannelNotExists = -2004, //Sip音视频通道不存在
+        Sip_DeviceNotExists = -2005, //Sip设备不存在
         Sip_OperationNotAllowed = -2006, //该设备类型下不允许这个操作
         Sip_DeInviteExcept = -2007, //结束推流时异常
         Sip_InviteExcept = -2008, //推流时异常
@@ -60,8 +60,8 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";
             ErrorDic[ErrorNumber.Sip_Except_RegisterSipDevice] = "Sip网关内部异常(注册Sip设备时)";
-            ErrorDic[ErrorNumber.Sip_Channel_NotExists] = "Sip音视频通道不存在";
-            ErrorDic[ErrorNumber.Sip_Device_NotExists] = "Sip设备不存在";
+            ErrorDic[ErrorNumber.Sip_ChannelNotExists] = "Sip音视频通道不存在";
+            ErrorDic[ErrorNumber.Sip_DeviceNotExists] = "Sip设备不存在";
             ErrorDic[ErrorNumber.Sip_OperationNotAllowed] = "该类型的设备不允许做这个操作";
             ErrorDic[ErrorNumber.Sip_DeInviteExcept] = "结束推流时发生异常";
             ErrorDic[ErrorNumber.Sip_InviteExcept] = "推流时发生异常";
