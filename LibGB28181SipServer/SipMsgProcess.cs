@@ -1018,6 +1018,11 @@ namespace LibGB28181SipServer
                                 {
                                     var record = (RecordInfo.Item) _task.Obj;
                                     await InviteOk(sipResponse, record);
+                                    if (_task.TimeoutCheckTimer != null && _task.TimeoutCheckTimer.Enabled == true)
+                                    {
+                                        _task.TimeoutCheckTimer.Enabled = false;//不再执行超时自动销毁，回放结束后会有事件通知
+                                        
+                                    }
                                     Common.NeedResponseRequests.TryAdd(
                                         "MEDIASTATUS" + sipResponse.Header.CallId,
                                         _task); //再次加入等待列表,播放完成时会回调,使用同一个callid
@@ -1062,7 +1067,7 @@ namespace LibGB28181SipServer
                                 tmpSipDevice.LastSipResponse = sipResponse;
                             }
 
-                            switch (_task.CommandType) //更次入列
+                            switch (_task.CommandType) //再次入列
                             {
                                 case CommandType.RecordInfo:
                                     Common.NeedResponseRequests.TryAdd(

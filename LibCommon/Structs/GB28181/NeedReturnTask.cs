@@ -129,6 +129,15 @@ namespace LibCommon.Structs.GB28181
             }
         }
 
+        /// <summary>
+        /// 记时器
+        /// </summary>
+        public Timer TimeoutCheckTimer
+        {
+            get => _timeoutCheckTimer;
+            set => _timeoutCheckTimer = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         ~NeedReturnTask()
         {
             Dispose(); //释放非托管资源
