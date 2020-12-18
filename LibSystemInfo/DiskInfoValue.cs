@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using LibCommon;
+using LibCommon.Structs;
 
 namespace LibSystemInfo
 {
@@ -9,13 +11,13 @@ namespace LibSystemInfo
         /// <summary>
         /// 获取当前驱动使用情况
         /// </summary>
-        public static List<DriveInfo> GetDrivesInfo()
+        public static List<DriveInfoDiy> GetDrivesInfo()
         {
             System.IO.DriveInfo[] driveInfoArr = System.IO.DriveInfo.GetDrives();
-            List<DriveInfo> result = new List<DriveInfo>();
+            List<DriveInfoDiy> result = new List<DriveInfoDiy>();
             foreach (var drv in driveInfoArr)
             {
-                DriveInfo driveInfo = new DriveInfo();
+                DriveInfoDiy driveInfo = new DriveInfoDiy();
                 if (drv.IsReady && drv.DriveType != DriveType.Removable && drv.TotalSize > 0)
                 {
                     driveInfo.Name = drv.Name;

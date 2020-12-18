@@ -26,7 +26,7 @@ namespace LibCommon.Structs
         private static ConcurrentDictionary<string, ushort> _rtpPortDictionary =
             new ConcurrentDictionary<string, ushort>();
 
-        private GlobalSystemInfo _globalSystemInfo;
+        private PerformanceInfo? _performanceInfo;
 
 
         public string IpAddress
@@ -101,10 +101,10 @@ namespace LibCommon.Structs
             set => _rtpPortDictionary = value;
         }
 
-        public GlobalSystemInfo GlobalSystemInfo
+        public PerformanceInfo? PerformanceInfo
         {
-            get => _globalSystemInfo;
-            set => _globalSystemInfo = value;
+            get => _performanceInfo;
+            set => _performanceInfo = value;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using LibCommon;
+using LibCommon.Structs;
 
 namespace LibSystemInfo
 {

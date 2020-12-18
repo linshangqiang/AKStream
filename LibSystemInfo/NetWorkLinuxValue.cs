@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using LibCommon;
+using LibCommon.Structs;
 
 namespace LibSystemInfo
 {

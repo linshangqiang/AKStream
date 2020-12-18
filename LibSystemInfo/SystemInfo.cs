@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using SystemInfoLibrary.Hardware;
 using SystemInfoLibrary.OperatingSystem;
+using LibCommon.Structs;
 
 namespace LibSystemInfo
 {
@@ -10,7 +11,7 @@ namespace LibSystemInfo
         private static OperatingSystemInfo _operatingSystemInfo = OperatingSystemInfo.GetOperatingSystemInfo();
         private static HardwareInfo _hardwareInfo = _operatingSystemInfo.Hardware;
         private static OperatingSystemType _operatingSystemType = _operatingSystemInfo.OperatingSystemType;
-        private static GlobalSystemInfo _globalSystemInfo = new GlobalSystemInfo();
+        private static PerformanceInfo _globalSystemInfo = new PerformanceInfo();
         private static object _lockObj = new object();
         private static bool _abort = false;
 
@@ -131,7 +132,7 @@ namespace LibSystemInfo
             }
         }
 
-        public GlobalSystemInfo GetSystemInfoObject()
+        public PerformanceInfo GetSystemInfoObject()
         {
             lock (_lockObj)
             {

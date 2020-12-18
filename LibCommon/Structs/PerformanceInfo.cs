@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace LibSystemInfo
+namespace LibCommon.Structs
 {
     [Serializable]
-    public class GlobalSystemInfo
+    public class PerformanceInfo
     {
         private string _systemType = null!;
         private string _architecture = null!;
@@ -14,7 +14,7 @@ namespace LibSystemInfo
         private MemoryInfo _memoryInfo = null!;
         private double _cpuLoad;
         private NetWorkStat _netWorkStat = null!;
-        private List<DriveInfo> _driveInfo = null!;
+        private List<DriveInfoDiy> _driveInfo = null!;
         private DateTime _updateTime;
 
 
@@ -66,7 +66,7 @@ namespace LibSystemInfo
             set => _netWorkStat = value;
         }
 
-        public List<DriveInfo> DriveInfo
+        public List<DriveInfoDiy> DriveInfo
         {
             get => _driveInfo;
             set => _driveInfo = value;
@@ -78,8 +78,7 @@ namespace LibSystemInfo
             set => _updateTime = value;
         }
     }
-
-    [Serializable]
+     [Serializable]
     public class MemoryInfo
     {
         private ulong _total;
@@ -120,7 +119,7 @@ namespace LibSystemInfo
     }
 
     [Serializable]
-    public class DriveInfo
+    public class DriveInfoDiy
     {
         private string? _name;
         private bool? _isReady;

@@ -31,6 +31,8 @@ namespace LibCommon
         Sip_AlredayPushStream=-2010,//sip通道已经在推流状态
         Sip_NotOnPushStream=-2011,//Sip通道没有在推流状态
         Sip_Channel_StatusExcept=-2012,//Sip通道设备状态异常
+        MediaServer_WebApiExcept=-3000,//访问流媒体服务器WebApi时异常
+        MediaServer_WebApiDataExcept=-3001,//访问流媒体服务器WebApi接口返回数据异常
 
 
         Other = -6000 //其他异常
@@ -69,9 +71,10 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_AlredayPushStream] = "Sip通道(回放录像)已经在推流状态";
             ErrorDic[ErrorNumber.Sip_NotOnPushStream] = "Sip通道(回放录像)没有在推流状态";
             ErrorDic[ErrorNumber.Sip_Channel_StatusExcept] = "Sip通道状态异常";
+            ErrorDic[ErrorNumber.MediaServer_WebApiExcept] = "访问流媒体服务器WebApi接口时异常";
+            ErrorDic[ErrorNumber.MediaServer_WebApiDataExcept] = "访问流媒体服务器WebApi接口返回数据异常";
             
-            
-
+         
 
 
             ErrorDic[ErrorNumber.Other] = "未知错误";
