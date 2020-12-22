@@ -10,14 +10,23 @@ namespace LibCommon.Structs
     {
         private string _ipV4Address;
         private string _ipV6Address;
-        private ushort _webApiPort;
+        private ushort _keeperWebApiPort;
         private string _secret;
         private string _mediaServerId;
         private int _mediaServerPid;
         private string _recordPath;
         private ushort _rtpPortMin;
         private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
-        private ushort _zlmWebApiHttpPort;
+        private ushort _zlmHttpPort;
+        private ushort _zlmHttpsPort;
+        private ushort _zlmRtspPort;
+        private ushort _zlmRtmpPort;
+        private ushort _zlmRtspsPort;
+        private ushort _zlmRtmpsPort;
+        private uint _zlmRecordFileSec;
+        private bool _useSsl;
+
+        
         private DateTime _serverDateTime;//流媒体服务器当前时间
         private PerformanceInfo? _performanceInfo;
         
@@ -43,10 +52,10 @@ namespace LibCommon.Structs
         /// <summary>
         /// keeper的WebApi端口
         /// </summary>
-        public ushort WebApiPort
+        public ushort KeeperWebApiPort
         {
-            get => _webApiPort;
-            set => _webApiPort = value;
+            get => _keeperWebApiPort;
+            set => _keeperWebApiPort = value;
         }
 
         /// <summary>
@@ -103,15 +112,7 @@ namespace LibCommon.Structs
             set => _rtpPortMax = value;
         }
 
-        /// <summary>
-        /// zlm的webapi端口
-        /// </summary>
-        public ushort ZlmWebApiHttpPort
-        {
-            get => _zlmWebApiHttpPort;
-            set => _zlmWebApiHttpPort = value;
-        }
-
+       
         /// <summary>
         /// 服务器当前时间
         /// </summary>
@@ -128,6 +129,54 @@ namespace LibCommon.Structs
         {
             get => _performanceInfo;
             set => _performanceInfo = value;
+        }
+
+        public ushort ZlmHttpPort
+        {
+            get => _zlmHttpPort;
+            set => _zlmHttpPort = value;
+        }
+
+        public ushort ZlmHttpsPort
+        {
+            get => _zlmHttpsPort;
+            set => _zlmHttpsPort = value;
+        }
+
+        public ushort ZlmRtspPort
+        {
+            get => _zlmRtspPort;
+            set => _zlmRtspPort = value;
+        }
+
+        public ushort ZlmRtmpPort
+        {
+            get => _zlmRtmpPort;
+            set => _zlmRtmpPort = value;
+        }
+
+        public ushort ZlmRtspsPort
+        {
+            get => _zlmRtspsPort;
+            set => _zlmRtspsPort = value;
+        }
+
+        public ushort ZlmRtmpsPort
+        {
+            get => _zlmRtmpsPort;
+            set => _zlmRtmpsPort = value;
+        }
+
+        public uint ZlmRecordFileSec
+        {
+            get => _zlmRecordFileSec;
+            set => _zlmRecordFileSec = value;
+        }
+
+        public bool UseSsl
+        {
+            get => _useSsl;
+            set => _useSsl = value;
         }
     }
 }

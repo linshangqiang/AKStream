@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using LibLogger;
+using Org.BouncyCastle.Crypto.Macs;
 
 namespace LibCommon
 {
@@ -595,6 +596,62 @@ namespace LibCommon
             }
         }
 
+        /// <summary>
+        /// 文件转base64
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private static string FileToBase64(string filePath)
+        {
+            FileStream fsForRead = new FileStream(filePath, FileMode.Open);
+         
+            try
+            {
+                fsForRead.Seek(0, SeekOrigin.Begin);
+                byte[] bs = new byte[fsForRead.Length];
+                int log=Convert.ToInt32(fsForRead.Length);
+                fsForRead.Read(bs, 0, log);
+                return Convert.ToBase64String(bs);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                fsForRead.Close();
+            }
+        }
+
+        /// <summary>
+        /// 下载文件并以base64输出
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="base64out"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static bool DownloadFileToBase64(string url, out string base64out)
+        {
+            base64out = "";
+            string tmpFilePath = GCommon.TmpPicsPath + "Snap_" + DateTime.Now.Ticks+".jpg";
+            var ret = Download(url, tmpFilePath);
+            if (ret)
+            {
+                try
+                {
+                     base64out = FileToBase64(tmpFilePath);
+                     return true;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            return false;
+        }
+        
+        
         /// <summary>
         /// Http方式下载文件
         /// </summary>

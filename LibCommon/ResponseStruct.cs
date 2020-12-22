@@ -1,4 +1,6 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LibCommon
 {
@@ -33,6 +35,7 @@ namespace LibCommon
         /// <summary>
         /// 状态代码
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public ErrorNumber Code
         {
             get => _code;

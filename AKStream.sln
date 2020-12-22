@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibGB28181SipServer", "LibG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_SipGate", "Test_SipGate\Test_SipGate.csproj", "{C8B54809-13CC-49E6-8854-4EE4F7D1B63F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMediaServer", "LibMediaServer\LibMediaServer.csproj", "{D1736AD7-7F80-4C61-A82A-FF528379345C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibZLMediaKitMediaServer", "LibZLMediaKitMediaServer\LibZLMediaKitMediaServer.csproj", "{D1736AD7-7F80-4C61-A82A-FF528379345C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AKStreamWeb", "AKStreamWeb\AKStreamWeb.csproj", "{F94D3A6F-02CA-42D7-9BCC-F205D303F99F}"
 EndProject

@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Timers;
 using LibCommon.Structs.GB28181.XML;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SIPSorcery.SIP;
 using Timer = System.Timers.Timer;
 
@@ -114,6 +116,7 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 命令类型 
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CommandType
         {
             get => _commandType;

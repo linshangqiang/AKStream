@@ -5,6 +5,8 @@ using LibCommon;
 using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.XML;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 
 namespace LibGB28181SipServer
@@ -36,7 +38,7 @@ namespace LibGB28181SipServer
                 _autoResetEvent.Dispose();
             }
         }
-
+        [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CommandType
         {
             get => _commandType;

@@ -101,8 +101,8 @@ namespace AKStreamKeeper
                     c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "AKStreamKeeper.xml"));
                 if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml")))
                     c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibMediaServer.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibMediaServer.xml"));
+                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml")))
+                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
                 if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml")))
                     c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml"));
             });

@@ -1,5 +1,7 @@
 using System;
 using LibCommon.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LibCommon.Structs.GB28181
 {
@@ -17,6 +19,7 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 控制命令类型
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public PTZCommandType PtzCommandType
         {
             get => _ptzCommandType;

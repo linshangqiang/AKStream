@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 using LibCommon.Structs.GB28181.Sys;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LibCommon.Structs.GB28181.XML
 {
@@ -29,6 +31,7 @@ namespace LibCommon.Structs.GB28181.XML
         /// 指令类型
         /// </summary>
         [XmlElement("CmdType")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CmdType { get; set; }
 
         /// <summary>
@@ -72,6 +75,7 @@ namespace LibCommon.Structs.GB28181.XML
         /// 指令类型
         /// </summary>
         [XmlElement("CmdType")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CmdType { get; set; }
 
         /// <summary>

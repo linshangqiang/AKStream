@@ -18,6 +18,9 @@ namespace LibCommon
         Sys_ConfigFileNotExists = -1005, //配置文件不存在
         Sys_ParamsNotEnough = -1006, //参数不足
         Sys_ParamsIsNotRight = -1007, //参数不正确
+        Sys_WebApi_Except=-1008,//WebApi异常
+        Sys_ConfigNotReady=-1009, //配置文件没有就绪
+        Sys_DataBaseNotReady=-1010,//数据库没有就绪
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
@@ -33,6 +36,8 @@ namespace LibCommon
         Sip_Channel_StatusExcept=-2012,//Sip通道设备状态异常
         MediaServer_WebApiExcept=-3000,//访问流媒体服务器WebApi时异常
         MediaServer_WebApiDataExcept=-3001,//访问流媒体服务器WebApi接口返回数据异常
+        MediaServer_TimeExcept=-3002,//服务器时间异常，建议同步
+       
 
 
         Other = -6000 //其他异常
@@ -58,6 +63,8 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sys_ConfigFileNotExists] = "配置文件不存在";
             ErrorDic[ErrorNumber.Sys_ParamsNotEnough] = "传入参数不足";
             ErrorDic[ErrorNumber.Sys_ParamsIsNotRight] = "传入参数不正确";
+            ErrorDic[ErrorNumber.Sys_ConfigNotReady] = "配置文件没有就绪";
+            ErrorDic[ErrorNumber.Sys_DataBaseNotReady] = "数据库没有就绪";
             ErrorDic[ErrorNumber.Sip_StartExcept] = "启动Sip服务异常";
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";
@@ -73,8 +80,10 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sip_Channel_StatusExcept] = "Sip通道状态异常";
             ErrorDic[ErrorNumber.MediaServer_WebApiExcept] = "访问流媒体服务器WebApi接口时异常";
             ErrorDic[ErrorNumber.MediaServer_WebApiDataExcept] = "访问流媒体服务器WebApi接口返回数据异常";
+            ErrorDic[ErrorNumber.MediaServer_TimeExcept] = "流媒体服务器时间异常，建议同步";
+            ErrorDic[ErrorNumber.Sys_WebApi_Except] = "WebApi异常";
             
-         
+            
 
 
             ErrorDic[ErrorNumber.Other] = "未知错误";

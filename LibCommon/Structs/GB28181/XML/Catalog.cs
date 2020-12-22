@@ -25,6 +25,7 @@ namespace LibCommon.Structs.GB28181.XML
         /// <summary>
         /// 命令类型
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         [XmlElement("CmdType")]
         public CommandType CmdType { get; set; }
 
@@ -604,6 +605,7 @@ namespace LibCommon.Structs.GB28181.XML
             /// <summary>
             /// 事件类型
             /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
             [XmlElement("Event")]
             public EventType Event { get; set; }
 
@@ -1031,6 +1033,7 @@ namespace LibCommon.Structs.GB28181.XML
         /// 命令类型
         /// </summary>
         [XmlElement("CmdType")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CommandType { get; set; }
 
         /// <summary>

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LibCommon.Structs
 {
@@ -194,6 +196,7 @@ namespace LibCommon.Structs
         /// <summary>
         /// 推流的socket类型 
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public PushStreamSocketType? PushSocketType
         {
             get => _pushSocketType;

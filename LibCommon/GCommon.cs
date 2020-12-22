@@ -19,6 +19,9 @@ namespace LibCommon
         public static string? WorkSpaceFullPath = Environment.GetCommandLineArgs()[0]; //程序运行的全路径
         public static string? CommandLine = Environment.CommandLine; //程序启动命令
         public static string ConfigPath = BaseStartPath + "/Config/";
+        public static string TmpPicsPath=BaseStartPath + "/.tmppics/";//用于截图缓存
+        
+     
 
         #region 各类事件委托
 
@@ -98,6 +101,10 @@ namespace LibCommon
             if (!Directory.Exists(ConfigPath)) //如果配置文件目录不存在，则创建目录
             {
                 Directory.CreateDirectory(ConfigPath);
+            }
+            if (!Directory.Exists(TmpPicsPath))
+            {
+                Directory.CreateDirectory(TmpPicsPath);
             }
 
             //初始化错误代码
