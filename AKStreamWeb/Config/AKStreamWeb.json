@@ -1,0 +1,6 @@
+{
+  "MediaServerFirstToRestart": true,
+  "DbType": "MySql",
+  "OrmConnStr": "Data Source=192.168.2.26;Port=3307;User ID=root;Password=cdtnb...; Initial Catalog=AKStream;Charset=utf8; SslMode=none;Min pool size=1",
+  "WebApiPort": 5800
+}

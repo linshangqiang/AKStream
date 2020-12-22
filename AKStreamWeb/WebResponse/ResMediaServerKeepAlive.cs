@@ -1,0 +1,40 @@
+using System;
+
+namespace AKStreamWeb.WebResponse
+{
+    
+    [Serializable]
+    public class ResMediaServerKeepAlive:AKStreamWebResponseBase
+    {
+        private bool _recommendTimeSynchronization = false;
+        private DateTime _serverDateTime;
+        private bool _needRestartMediaServer=false;
+
+        /// <summary>
+        /// 是否建议同步时间
+        /// </summary>
+        public bool RecommendTimeSynchronization
+        {
+            get => _recommendTimeSynchronization;
+            set => _recommendTimeSynchronization = value;
+        }
+
+        /// <summary>
+        /// 服务器时间
+        /// </summary>
+        public DateTime ServerDateTime
+        {
+            get => _serverDateTime;
+            set => _serverDateTime = value;
+        }
+
+        /// <summary>
+        /// 要求重启MediaServer
+        /// </summary>
+        public bool NeedRestartMediaServer
+        {
+            get => _needRestartMediaServer;
+            set => _needRestartMediaServer = value;
+        }
+    }
+}

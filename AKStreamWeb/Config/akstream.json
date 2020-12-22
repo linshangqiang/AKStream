@@ -1,0 +1,5 @@
+{
+  "MediaServerFirstToRestart": true,
+  "OrmConnStr": "请配置正确的数据库连接字符串",
+  "WebApiPort": 5800
+}
