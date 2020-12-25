@@ -28,6 +28,7 @@ namespace LibCommon.Structs
         private bool _useSsl;
         private DateTime _serverDateTime;//流媒体服务器当前时间
         private PerformanceInfo? _performanceInfo;
+        private bool _firstPost = false;
         
 
         /// <summary>
@@ -178,6 +179,15 @@ namespace LibCommon.Structs
         {
             get => _useSsl;
             set => _useSsl = value;
+        }
+
+        /// <summary>
+        /// 第一次上报，要将控制服务器上的实例删掉
+        /// </summary>
+        public bool FirstPost
+        {
+            get => _firstPost;
+            set => _firstPost = value;
         }
     }
 }

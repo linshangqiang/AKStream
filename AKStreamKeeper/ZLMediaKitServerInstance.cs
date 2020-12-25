@@ -23,7 +23,7 @@ namespace AKStreamKeeper
         private string _secret;
         private string _mediaServerId;
         private static int _pid;
-        private bool _isRunning;
+        private bool _isRunning=>CheckRunning();
         private ushort _zlmHttpPort;
         private ushort _zlmHttpsPort;
         private ushort _zlmRtspPort;
@@ -168,10 +168,8 @@ namespace AKStreamKeeper
         /// </summary>
         public bool IsRunning
         {
-            get
-            {
-                return CheckRunning();
-            }
+            get => _isRunning;
+
         }
 
         /// <summary>
@@ -328,7 +326,7 @@ namespace AKStreamKeeper
                     #region 检查MediaServerId
 
                     var _tmpStr = data["general"]["mediaServerId"];
-                    if (!string.IsNullOrEmpty(_tmpStr) || _tmpStr.ToUpper().Equals("your_server_id"))
+                    if (string.IsNullOrEmpty(_tmpStr) || _tmpStr.ToUpper().Equals("your_server_id"))
                     {
                         data["general"]["mediaServerId"] = UtilsHelper.generalGuid();
                         try
@@ -653,6 +651,7 @@ namespace AKStreamKeeper
         {
             if (_process != null && !_process.HasExited)
             {
+                _pid = _process.Id;
                 return true;
             }
 
@@ -680,11 +679,32 @@ namespace AKStreamKeeper
         }
 
         /// <summary>
+        /// 配置热加载
+        /// </summary>
+        /// <returns></returns>
+        public int Reload()
+        {
+            if (_isRunning)
+            {
+              var tmpPro=new ProcessHelper();
+              tmpPro.RunProcess("/bin/bash",
+                  $"-c 'killall -1 {Path.GetFileNameWithoutExtension(_process.StartInfo.FileName)}'",1000,out _,out _);
+              return _process.Id;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// 启动流媒体服务器
         /// </summary>
         /// <returns></returns>
         public int Startup()
         {
+            if (_isRunning)
+            {
+                return _pid;
+            }
             string binDir = Path.GetDirectoryName(_binPath);
             string configDir = Path.GetDirectoryName(_configPath);
             Process ret;

@@ -14,6 +14,7 @@ namespace AKStreamKeeper
         public static void Main(string[] args)
         {
             Common.Init();
+          
             CreateHostBuilder(args).Build().Run();
         }
 

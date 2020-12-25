@@ -56,17 +56,13 @@ namespace LibZLMediaKitMediaServer
         {
             if (_webApiHelper != null)
             {
-                if (_config == null || _countmod % 10 == 0)
+                _countmod++;
+                if (_config == null || _countmod % 300 == 0)
                 {
                     if (_countmod > 10000000)
                     {
                         _countmod = 0;
                     }
-                    else
-                    {
-                        _countmod++;
-                    }
-
                     
                     var ret = _webApiHelper.GetServerConfig(out  ResponseStruct rs);
                     if (ret != null && rs.Code == ErrorNumber.None)
