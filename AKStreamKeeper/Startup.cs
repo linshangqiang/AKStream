@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -142,6 +143,29 @@ namespace AKStreamKeeper
             app.UseRouting();
 
             app.UseAuthorization();
+
+
+
+            if (Common.AkStreamKeeperConfig.CustomRecordPathList != null &&
+                Common.AkStreamKeeperConfig.CustomRecordPathList.Count > 0)
+            {
+                foreach (var path in  Common.AkStreamKeeperConfig.CustomRecordPathList)
+                {
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    app.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider =
+                            new PhysicalFileProvider(path),
+                        OnPrepareResponse = (c) => { c.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); },
+                        RequestPath = new PathString("/"+path)
+                    });
+                }  
+            }
+           
+            
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

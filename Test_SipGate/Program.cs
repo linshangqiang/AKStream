@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using LibCommon;
 using LibCommon.Enums;
@@ -92,6 +93,8 @@ namespace Test_SipGate
                 Console.WriteLine("[Debug]\t程序运行路径:" + GCommon.WorkSpacePath);
                 Console.WriteLine("[Debug]\t程序运行全路径:" + GCommon.WorkSpaceFullPath);
                 Console.WriteLine("[Debug]\t程序启动命令:" + GCommon.CommandLine);
+         
+                
 
 #endif
 

@@ -21,6 +21,21 @@ namespace LibCommon
 
 
         /// <summary>
+        /// 杀掉进程
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static void KillProcess(string filePath)
+        {
+            Process[] processes =
+                Process.GetProcessesByName(Path.GetFileNameWithoutExtension(filePath));
+            foreach (var process in processes)
+            {
+               process.Kill(); 
+            }
+        }
+
+        /// <summary>
         /// 杀死进程
         /// </summary>
         /// <param name="process"></param>

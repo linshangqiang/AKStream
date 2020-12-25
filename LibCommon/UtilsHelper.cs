@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -20,6 +21,54 @@ namespace LibCommon
     /// </summary>
     public static class UtilsHelper
     {
+
+
+        /// <summary>
+        /// 是否是正常可用的端口
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static bool IsPortOK(string number)
+        {
+            try
+            {
+                var ret = ushort.TryParse(number, out ushort port);
+                if (ret)
+                {
+                    return !PortInUse(port);
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 检测端口是否被占用
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        private static bool PortInUse(int port)
+        {
+            bool inUse = false;
+
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    inUse = true;
+                    break;
+                }
+            }
+
+            return inUse;
+        }
+        
         /// <summary>
         /// DateTime转时间戳
         /// </summary>

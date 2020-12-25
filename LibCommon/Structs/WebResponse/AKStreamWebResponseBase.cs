@@ -1,7 +1,7 @@
 using System;
 using LibCommon;
 
-namespace AKStreamWeb.WebResponse
+namespace LibCommon.Structs.WebResponse
 {
     /// <summary>
     /// web回复结构基类

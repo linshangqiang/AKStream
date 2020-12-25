@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace LibCommon.Structs
 {
@@ -14,7 +15,7 @@ namespace LibCommon.Structs
         private string _secret;
         private string _mediaServerId;
         private int _mediaServerPid;
-        private string _recordPath;
+        private List<KeyValuePair<double,string>> _recordPathList;
         private ushort _rtpPortMin;
         private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
         private ushort _zlmHttpPort;
@@ -25,8 +26,6 @@ namespace LibCommon.Structs
         private ushort _zlmRtmpsPort;
         private uint _zlmRecordFileSec;
         private bool _useSsl;
-
-        
         private DateTime _serverDateTime;//流媒体服务器当前时间
         private PerformanceInfo? _performanceInfo;
         
@@ -88,12 +87,11 @@ namespace LibCommon.Structs
         /// <summary>
         /// 自定义视频存储路径
         /// </summary>
-        public string RecordPath
+        public List<KeyValuePair<double, string>> RecordPathList
         {
-            get => _recordPath;
-            set => _recordPath = value ?? throw new ArgumentNullException(nameof(value));
+            get => _recordPathList;
+            set => _recordPathList = value ?? throw new ArgumentNullException(nameof(value));
         }
-
         /// <summary>
         /// rtp开放范围(最小)
         /// </summary>
@@ -102,6 +100,9 @@ namespace LibCommon.Structs
             get => _rtpPortMin;
             set => _rtpPortMin = value;
         }
+
+     
+
 
         /// <summary>
         /// rtp开放范围（最大）

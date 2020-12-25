@@ -1,6 +1,6 @@
 using System;
 
-namespace AKStreamWeb.WebResponse
+namespace LibCommon.Structs.WebResponse
 {
     
     [Serializable]

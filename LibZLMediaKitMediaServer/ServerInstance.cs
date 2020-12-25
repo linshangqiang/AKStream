@@ -24,7 +24,7 @@ namespace LibZLMediaKitMediaServer
         private int _zlmediakitPid;
         private DateTime _keepAliveTime;
         private WebApiHelper _webApiHelper;
-        private string _recordPath;
+        private List<KeyValuePair<double,string>> _recordPathList;
         private ushort _rtpPortMin;
         private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
         private bool _isRunning;
@@ -166,10 +166,11 @@ namespace LibZLMediaKitMediaServer
             set => _webApiHelper = value;
         }
 
-        public string RecordPath
+
+        public List<KeyValuePair<double, string>> RecordPathList
         {
-            get => _recordPath;
-            set => _recordPath = value;
+            get => _recordPathList;
+            set => _recordPathList = value;
         }
 
         public ushort RtpPortMin

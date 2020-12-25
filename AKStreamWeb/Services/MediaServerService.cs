@@ -1,7 +1,7 @@
 using System;
-using AKStreamWeb.WebResponse;
 using LibCommon;
 using LibCommon.Structs;
+using LibCommon.Structs.WebResponse;
 using LibZLMediaKitMediaServer;
 
 namespace AKStreamWeb.Services
@@ -14,7 +14,7 @@ namespace AKStreamWeb.Services
         /// <param name="req"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static AKStreamWebResponseBase MediaServerKeepAlive(MediaServerKeepAlive req, out ResponseStruct rs)
+        public static ResMediaServerKeepAlive MediaServerKeepAlive(MediaServerKeepAlive req, out ResponseStruct rs)
         {
             ResMediaServerKeepAlive result;
             rs = new ResponseStruct()
@@ -69,7 +69,7 @@ namespace AKStreamWeb.Services
                     mediaServer.IpV6Address = req.IpV6Address;
                     mediaServer.IsRunning = true;
                     mediaServer.KeeperPort = req.KeeperWebApiPort;
-                    mediaServer.RecordPath = req.RecordPath;
+                    mediaServer.RecordPathList = req.RecordPathList;
                     mediaServer.ZlmediakitPid = req.MediaServerPid;
                     mediaServer.KeepAliveTime = DateTime.Now;
                     mediaServer.MediaServerId = req.MediaServerId;
@@ -104,7 +104,7 @@ namespace AKStreamWeb.Services
                     tmpMediaServer.IpV6Address = req.IpV6Address;
                     tmpMediaServer.IsRunning = true;
                     tmpMediaServer.KeeperPort = req.KeeperWebApiPort;
-                    tmpMediaServer.RecordPath = req.RecordPath;
+                    tmpMediaServer.RecordPathList = req.RecordPathList;
                     tmpMediaServer.ZlmediakitPid = req.MediaServerPid;
                     tmpMediaServer.KeepAliveTime = DateTime.Now;
                     tmpMediaServer.MediaServerId = req.MediaServerId;

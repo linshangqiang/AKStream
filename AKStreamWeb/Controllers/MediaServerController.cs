@@ -1,12 +1,11 @@
 using System;
 using AKStreamWeb.Attributes;
 using AKStreamWeb.Services;
-using AKStreamWeb.WebResponse;
 using LibCommon;
 using LibCommon.Structs;
+using LibCommon.Structs.WebResponse;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Ubiety.Dns.Core;
 
 namespace AKStreamWeb.Controllers.WebHook
 {
@@ -19,10 +18,10 @@ namespace AKStreamWeb.Controllers.WebHook
         /// 流媒体心跳
         /// </summary>
         /// <returns></returns>
-        [Route("MediaServerKeepAlive")]
+        [Route("WebHook/MediaServerKeepAlive")]
         [HttpPost]
         [Log]
-        public AKStreamWebResponseBase MediaServerKeepAlive(MediaServerKeepAlive req)
+        public ResMediaServerKeepAlive MediaServerKeepAlive(MediaServerKeepAlive req)
         {
             ResponseStruct rs;
             try
