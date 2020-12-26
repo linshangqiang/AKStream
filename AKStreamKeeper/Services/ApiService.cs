@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading;
 using LibCommon;
 using LibLogger;
@@ -9,6 +12,92 @@ namespace AKStreamKeeper.Services
 {
     public static class ApiService
     {
+        /// <summary>
+        /// 选择一个可用的rtp端口，仅使用偶数端口
+        /// </summary>
+        /// <param name="minPort"></param>
+        /// <param name="maxPort"></param>
+        /// <returns></returns>
+        private static ushort _guessAnRtpPort(ushort minPort, ushort maxPort)
+        {
+            lock (Common._getRtpPortLock)
+            {
+                IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+                List<IPEndPoint> ipEndPoints = ipProperties.GetActiveTcpListeners().ToList();
+                if (minPort > maxPort)
+                {
+                    for (ushort i = maxPort; i <= minPort; i++)
+                    {
+                        if (UtilsHelper.IsOdd(i))
+                        {
+                            continue;
+                        }
+
+                        if (ipEndPoints.Count > 0)
+                        {
+                            var ret = ipEndPoints.FindLast(x => x.Port == i);
+                            if (ret == null)
+                            {
+                                return i;
+                            }
+                        }
+                        else
+                        {
+                            return i;
+                        }
+                    }
+                }
+
+                if (minPort < maxPort)
+                {
+                    for (ushort i = minPort; i <= maxPort; i++)
+                    {
+                        if (UtilsHelper.IsOdd(i))
+                        {
+                            continue;
+                        }
+
+                        if (ipEndPoints.Count > 0)
+                        {
+                            var ret = ipEndPoints.FindLast(x => x.Port == i);
+                            if (ret == null)
+                            {
+                                return i;
+                            }
+                        }
+                        else
+                        {
+                            return i;
+                        }
+                    }
+                }
+
+                if (minPort == maxPort)
+                {
+                    if (UtilsHelper.IsOdd(minPort))
+                    {
+                        return 0;
+                    }
+
+                    if (ipEndPoints.Count > 0)
+                    {
+                        var ret = ipEndPoints.FindLast(x => x.Port == minPort);
+                        if (ret == null)
+                        {
+                            return minPort;
+                        }
+                    }
+                    else
+                    {
+                        return minPort;
+                    }
+                }
+
+                return 0;
+            }
+        }
+
+
         /// <summary>
         /// 获取流媒体服务器运行状态
         /// </summary>
@@ -423,27 +512,25 @@ namespace AKStreamKeeper.Services
             ushort port = 0;
             if ((min == null || min == 0) && (max == null || max == 0))
             {
-                port = UtilsHelper.GuessAnRtpPort(Common.AkStreamKeeperConfig.MinRtpPort,
+                port = _guessAnRtpPort(Common.AkStreamKeeperConfig.MinRtpPort,
                     Common.AkStreamKeeperConfig.MaxRtpPort);
             }
             else
             {
-                port = UtilsHelper.GuessAnRtpPort((ushort) min, (ushort) max);
+                port = _guessAnRtpPort((ushort) min, (ushort) max);
             }
 
             if (port > 0)
             {
                 return port;
             }
-            else
+
+            rs = new ResponseStruct()
             {
-                rs = new ResponseStruct()
-                {
-                    Code = ErrorNumber.Sys_SocketPortForRtpExcept,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_SocketPortForRtpExcept],
-                };
-                return 0;
-            }
+                Code = ErrorNumber.Sys_SocketPortForRtpExcept,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_SocketPortForRtpExcept],
+            };
+            return 0;
         }
     }
 }

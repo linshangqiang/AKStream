@@ -30,6 +30,7 @@ namespace AKStreamKeeper
             new List<KeyValuePair<double, string>>();
 
         private static object _akStreamDiskInfoOfRecordMapLock = new object();
+        public static object _getRtpPortLock=new object();
         private static long _counter1 = 0;
         private static bool _firstPost = true;
 
