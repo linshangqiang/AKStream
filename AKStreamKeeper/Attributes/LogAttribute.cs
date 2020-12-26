@@ -5,7 +5,7 @@ using LibLogger;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace AKStreamWeb.Attributes
+namespace AKStreamKeeper.Attributes
 {
     /// <summary>
     /// 日志记录类，所有经过httpcontroller的进出日志都会被记录

@@ -2,6 +2,7 @@ using System;
 
 namespace LibCommon
 {
+    [Serializable]
     public class AkStreamException : Exception
     {
         public ResponseStruct ResponseStruct;

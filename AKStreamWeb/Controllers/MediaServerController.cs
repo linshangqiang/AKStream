@@ -12,7 +12,7 @@ namespace AKStreamWeb.Controllers.WebHook
     [ApiController]
     [Route("/MediaServer")]
     [SwaggerTag("流媒体相关接口")]
-    public class MediaServerController
+    public class MediaServerController : ControllerBase
     {
         /// <summary>
         /// 流媒体心跳
@@ -24,21 +24,12 @@ namespace AKStreamWeb.Controllers.WebHook
         public ResMediaServerKeepAlive MediaServerKeepAlive(MediaServerKeepAlive req)
         {
             ResponseStruct rs;
-            try
+            var ret = MediaServerService.MediaServerKeepAlive(req, out rs);
+            if (ret == null || !rs.Code.Equals(ErrorNumber.None))
             {
-                return MediaServerService.MediaServerKeepAlive(req, out rs);
+                throw new AkStreamException(rs);
             }
-            catch (Exception ex)
-            {
-                ResponseStruct exRs = new ResponseStruct()
-                {
-                    Code = ErrorNumber.Sys_WebApi_Except,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_WebApi_Except],
-                    ExceptMessage = ex.Message,
-                    ExceptStackTrace = ex.StackTrace,
-                };
-                throw  new AkStreamException(exRs );
-            }
+            return ret;
         }
     }
 }

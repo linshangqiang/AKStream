@@ -21,8 +21,6 @@ namespace LibCommon
     /// </summary>
     public static class UtilsHelper
     {
-
-
         /// <summary>
         /// 是否是正常可用的端口
         /// </summary>
@@ -45,6 +43,7 @@ namespace LibCommon
                 return false;
             }
         }
+
         /// <summary>
         /// 检测端口是否被占用
         /// </summary>
@@ -52,34 +51,107 @@ namespace LibCommon
         /// <returns></returns>
         private static bool PortInUse(int port)
         {
-            bool inUse = false;
-
             IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
-
-            foreach (IPEndPoint endPoint in ipEndPoints)
+            List<IPEndPoint> ipEndPoints = ipProperties.GetActiveTcpListeners().ToList();
+            if (ipEndPoints.Count > 0)
             {
-                if (endPoint.Port == port)
+                var ret = ipEndPoints.FindLast(x => x.Port == port);
+                return ret == null ? false : true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 选择一个可用的rtp端口，仅使用偶数端口
+        /// </summary>
+        /// <param name="minPort"></param>
+        /// <param name="maxPort"></param>
+        /// <returns></returns>
+        public static ushort GuessAnRtpPort(ushort minPort, ushort maxPort)
+        {
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            List<IPEndPoint> ipEndPoints = ipProperties.GetActiveTcpListeners().ToList();
+            if (minPort > maxPort)
+            {
+                for (ushort i = maxPort; i <= minPort; i++)
                 {
-                    inUse = true;
-                    break;
+                    if (IsOdd(i))
+                    {
+                        continue;
+                    }
+
+                    if (ipEndPoints.Count > 0)
+                    {
+                        var ret = ipEndPoints.FindLast(x => x.Port == i);
+                        if (ret == null)
+                        {
+                            return i;
+                        }
+                    }
+                    else
+                    {
+                        return i;
+                    }
                 }
             }
 
-            return inUse;
+            if (minPort < maxPort)
+            {
+                for (ushort i = minPort; i <= maxPort; i++)
+                {
+                    if (IsOdd(i))
+                    {
+                        continue;
+                    }
+
+                    if (ipEndPoints.Count > 0)
+                    {
+                        var ret = ipEndPoints.FindLast(x => x.Port == i);
+                        if (ret == null)
+                        {
+                            return i;
+                        }
+                    }
+                    else
+                    {
+                        return i;
+                    }
+                }
+            }
+            if (minPort == maxPort)
+            {
+                if (IsOdd(minPort))
+                {
+                    return 0;
+                }
+
+                if (ipEndPoints.Count > 0)
+                {
+                    var ret = ipEndPoints.FindLast(x => x.Port == minPort);
+                    if (ret == null)
+                    {
+                        return minPort;
+                    }
+                }
+                else
+                {
+                    return minPort;
+                }
+            }
+            return 0;
         }
-        
+
         /// <summary>
         /// DateTime转时间戳
         /// </summary>
         /// <param name="time">DateTime时间</param>
         /// <param name="type">0为毫秒,1为秒</param>
         /// <returns></returns>
-        public static string ConvertTimestamp(DateTime time,int type=0)
+        public static string ConvertTimestamp(DateTime time, int type = 0)
         {
             double intResult = 0;
             DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
-            if (type==0)
+            if (type == 0)
             {
                 intResult = (time - startTime).TotalMilliseconds;
             }
@@ -91,9 +163,10 @@ namespace LibCommon
             {
                 Console.WriteLine("参数错误!");
             }
+
             return Math.Round(intResult, 0).ToString();
         }
-     
+
         /// <summary>
         /// 判断是否为奇数
         /// </summary>
@@ -143,7 +216,7 @@ namespace LibCommon
         public static T XMLToObject<T>(XElement xmlBody)
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
-    
+
             return (T) xmlSerializer.Deserialize(xmlBody.CreateReader());
         }
 

@@ -139,9 +139,9 @@ namespace AKStreamKeeper
             app.UseSwagger();
             // 配置SwaggerUI
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "AKStreamKeeper"); });
-
             app.UseRouting();
-
+            app.UseCors("cors");
+            app.UseMiddleware<ExceptionMiddleware>(); //ExceptionMiddleware 加入管道
             app.UseAuthorization();
 
 

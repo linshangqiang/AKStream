@@ -23,9 +23,11 @@ namespace LibCommon
         Sys_DataBaseNotReady = -1010, //数据库没有就绪
         Sys_NetworkPortExcept = -1011, //端口不可用
         Sys_DiskInfoExcept = -1012, //磁盘不可用
-        Sys_UrlExcept=-1013,//参数中URL异常
-        Sys_ReadIniFileExcept=-1014,//读取ini文件异常
-        Sys_WriteIniFileExcept=-1015,//写入ini文件异常
+        Sys_UrlExcept = -1013, //参数中URL异常
+        Sys_ReadIniFileExcept = -1014, //读取ini文件异常
+        Sys_WriteIniFileExcept = -1015, //写入ini文件异常
+        Sys_SocketPortForRtpExcept = -1016, //查找可用rtp端口时异常，可能已无可用端口
+        Sys_SpecifiedFileNotExist = -1017, //指定文件不存在
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
@@ -44,8 +46,12 @@ namespace LibCommon
         MediaServer_TimeExcept = -3002, //服务器时间异常，建议同步
         MediaServer_BinNotFound = -3003, //流媒体服务器可执行文件不存在
         MediaServer_ConfigNotFound = -3004, //流媒体服务器配置文件不存在，建议手工运行一次流媒体服务器使其自动生成配置文件模板
-        
-
+        MediaServer_InstanceIsNull=-3005,//流媒体服务实例为空，请先创建流媒体服务实例
+        MediaServer_StartUpExcept=-3006,//启动流媒体服务器失败
+        MediaServer_ShutdownExcept=-3007,//停止流媒体服务器失败
+        MediaServer_RestartExcept=-3008,//重启流媒体服务器失败
+        MediaServer_ReloadExcept=-3009,//流媒体服务器配置热加载失败
+        MediaServer_NotRunning=-3010,//流媒体服务器没有运行
 
         Other = -6000 //其他异常
     }
@@ -78,6 +84,8 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sys_UrlExcept] = "参数中URL异常";
             ErrorDic[ErrorNumber.Sys_ReadIniFileExcept] = "读取ini文件异常";
             ErrorDic[ErrorNumber.Sys_WriteIniFileExcept] = "写入ini文件异常";
+            ErrorDic[ErrorNumber.Sys_SocketPortForRtpExcept] = "查找可用rtp端口时异常，可能已无可用端口";
+            ErrorDic[ErrorNumber.Sys_SpecifiedFileNotExist] = "指定文件不存在";
             ErrorDic[ErrorNumber.Sip_StartExcept] = "启动Sip服务异常";
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";
@@ -96,6 +104,13 @@ namespace LibCommon
             ErrorDic[ErrorNumber.MediaServer_TimeExcept] = "流媒体服务器时间异常，建议同步";
             ErrorDic[ErrorNumber.MediaServer_BinNotFound] = "流媒体服务器可执行文件不存在";
             ErrorDic[ErrorNumber.MediaServer_ConfigNotFound] = "流媒体服务器配置文件不存在，建议手工运行一次流媒体服务器使其自动生成配置文件模板";
+            ErrorDic[ErrorNumber.MediaServer_InstanceIsNull] = "流媒体服务实例为空，请先创建流媒体服务实例";
+            ErrorDic[ErrorNumber.MediaServer_StartUpExcept] = "启动流媒体服务器失败";
+            ErrorDic[ErrorNumber.MediaServer_ShutdownExcept] = "停止流媒体服务器失败";
+            ErrorDic[ErrorNumber.MediaServer_RestartExcept] = "重启流媒体服务器失败";
+            ErrorDic[ErrorNumber.MediaServer_ReloadExcept] = "流媒体服务器配置热加载失败";
+            ErrorDic[ErrorNumber.MediaServer_NotRunning] = "流媒体服务器没有运行";
+            
             ErrorDic[ErrorNumber.Other] = "未知错误";
         }
     }
