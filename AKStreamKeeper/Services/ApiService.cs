@@ -23,7 +23,8 @@ namespace AKStreamKeeper.Services
             lock (Common._getRtpPortLock)
             {
                 IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-                List<IPEndPoint> ipEndPoints = ipProperties.GetActiveTcpListeners().ToList();
+                List<IPEndPoint> tcpIpEndPoints = ipProperties.GetActiveTcpListeners().ToList();
+                List<IPEndPoint> udpIpEndPoints = ipProperties.GetActiveUdpListeners().ToList();
                 if (minPort > maxPort)
                 {
                     for (ushort i = maxPort; i <= minPort; i++)
@@ -33,10 +34,11 @@ namespace AKStreamKeeper.Services
                             continue;
                         }
 
-                        if (ipEndPoints.Count > 0)
+                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
                         {
-                            var ret = ipEndPoints.FindLast(x => x.Port == i);
-                            if (ret == null)
+                            var ret = tcpIpEndPoints.FindLast(x => x.Port == i);
+                            var ret2 = udpIpEndPoints.FindLast(x => x.Port == i);
+                            if (ret == null && ret2==null)
                             {
                                 return i;
                             }
@@ -57,10 +59,11 @@ namespace AKStreamKeeper.Services
                             continue;
                         }
 
-                        if (ipEndPoints.Count > 0)
+                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
                         {
-                            var ret = ipEndPoints.FindLast(x => x.Port == i);
-                            if (ret == null)
+                            var ret = tcpIpEndPoints.FindLast(x => x.Port == i);
+                            var ret2 = udpIpEndPoints.FindLast(x => x.Port == i);
+                            if (ret == null && ret2==null)
                             {
                                 return i;
                             }
@@ -79,10 +82,11 @@ namespace AKStreamKeeper.Services
                         return 0;
                     }
 
-                    if (ipEndPoints.Count > 0)
+                    if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
                     {
-                        var ret = ipEndPoints.FindLast(x => x.Port == minPort);
-                        if (ret == null)
+                        var ret = tcpIpEndPoints.FindLast(x => x.Port == minPort);
+                        var ret2 = udpIpEndPoints.FindLast(x => x.Port == minPort);
+                        if (ret == null && ret2==null)
                         {
                             return minPort;
                         }
