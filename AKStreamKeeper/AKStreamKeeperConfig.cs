@@ -15,10 +15,11 @@ namespace AKStreamKeeper
         private string _mediaServerPath;
         private string _akStreamWebRegisterUrl;
         private List<string> _customRecordPathList;
-        private bool _useSSL=false;
-        private ushort _minRtpPort;
-        private ushort _maxRtpPort;
-        
+        private bool _useSSL = false;
+        private ushort _minRtpPort = 10001;
+        private ushort _maxRtpPort = 30000;
+        private string _ffmpegPath;
+
 
         /// <summary>
         /// ipv4地址
@@ -99,6 +100,15 @@ namespace AKStreamKeeper
         {
             get => _maxRtpPort;
             set => _maxRtpPort = value;
+        }
+
+        /// <summary>
+        /// ffmpeg的可执行文件路径
+        /// </summary>
+        public string FFmpegPath
+        {
+            get => _ffmpegPath;
+            set => _ffmpegPath = value;
         }
     }
 }

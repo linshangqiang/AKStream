@@ -631,6 +631,7 @@ namespace AKStreamKeeper
                     $"[{LoggerHead}]->获取AKStreamKeeper配置文件时异常,系统无法运行->\r\n{JsonHelper.ToJson(rs, Formatting.Indented)}");
                 Environment.Exit(0); //退出程序 
             }
+            
 
             ProcessHelper.KillProcess(_akStreamKeeperConfig.MediaServerPath); //启动前先删除掉所有流媒体进程
             while (StartupMediaServer() <= 0)
@@ -642,6 +643,13 @@ namespace AKStreamKeeper
 
             Logger.Info(
                 $"[{LoggerHead}]->流媒体服务器启动成功->进程ID:{MediaKitServerInstance.GetPid()}");
+            
+            ret = UtilsHelper.CheckFFmpegBin(_akStreamKeeperConfig.FFmpegPath);
+            if (!ret)
+            {
+                Logger.Warn(
+                    $"[{LoggerHead}]->检测发现FFmpeg可执行文件{_akStreamKeeperConfig.FFmpegPath}不存在或者无法正常运行,这会导致裁剪合并视频文件功能无法使用");
+            }
         }
 
         static Common()

@@ -22,6 +22,40 @@ namespace LibCommon
     public static class UtilsHelper
     {
         /// <summary>
+        /// 检查ffmpeg是否存在，是否正常
+        /// </summary>
+        /// <param name="ffpath"></param>
+        /// <returns></returns>
+        public static bool CheckFFmpegBin(string ffpath = "")
+        {
+            if (string.IsNullOrEmpty(ffpath))
+            {
+                ffpath = "ffmpeg";
+            }
+
+            ProcessHelper tmpProcessHelper = new ProcessHelper(null, null, null);
+            tmpProcessHelper.RunProcess(ffpath, "", 1000, out string std, out string err);
+
+            if (!string.IsNullOrEmpty(std))
+            {
+                if (std.ToLower().Contains("ffmpeg version"))
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(err))
+            {
+                if (err.ToLower().Contains("ffmpeg version"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        /// <summary>
         /// 是否是正常可用的端口
         /// </summary>
         /// <param name="number"></param>
