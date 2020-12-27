@@ -55,24 +55,22 @@ namespace AKStreamWeb.Services
                 {
                     if (req.FirstPost)
                     {
-                      
-                            
-                            mediaServer.Dispose();
-                            Common.MediaServerList.Remove(mediaServer);
-                            result = new ResMediaServerKeepAlive()
-                            {
-                                Rs = rs,
-                                RecommendTimeSynchronization = false,
-                                ServerDateTime = DateTime.Now,
-                                NeedRestartMediaServer = true,
-                            };
-                            Logger.Debug(
-                                $"[{Common.LoggerHead}]->清理MediaServerList中的的流媒体服务器实例,要求重启流媒体服务器->当前流媒体服务器数量:{ Common.MediaServerList.Count}");
-                            return result;
-                       
+                        mediaServer.Dispose();
+                        Common.MediaServerList.Remove(mediaServer);
+                        result = new ResMediaServerKeepAlive()
+                        {
+                            Rs = rs,
+                            RecommendTimeSynchronization = false,
+                            ServerDateTime = DateTime.Now,
+                            NeedRestartMediaServer = true,
+                        };
+                        Logger.Debug(
+                            $"[{Common.LoggerHead}]->清理MediaServerList中的的流媒体服务器实例,要求重启流媒体服务器->当前流媒体服务器数量:{Common.MediaServerList.Count}");
+                        return result;
                     }
+
                     //已经存在的
-                    if ((DateTime.Now - mediaServer.KeepAliveTime).Seconds < 5)//10秒内多次心跳请求直接回复
+                    if ((DateTime.Now - mediaServer.KeepAliveTime).Seconds < 5) //10秒内多次心跳请求直接回复
                     {
                         mediaServer.KeepAliveTime = DateTime.Now;
                         result = new ResMediaServerKeepAlive()
@@ -83,6 +81,7 @@ namespace AKStreamWeb.Services
                         };
                         return result;
                     }
+
                     mediaServer.Secret = req.Secret;
                     mediaServer.IpV4Address = req.IpV4Address;
                     mediaServer.IpV6Address = req.IpV6Address;
@@ -104,8 +103,9 @@ namespace AKStreamWeb.Services
                     mediaServer.ZlmRecordFileSec = req.ZlmRecordFileSec;
                     if (req.PerformanceInfo != null) //更新性能信息
                     {
-                        mediaServer.PerformanceInfo =  req.PerformanceInfo;
+                        mediaServer.PerformanceInfo = req.PerformanceInfo;
                     }
+
                     result = new ResMediaServerKeepAlive()
                     {
                         Rs = rs,
@@ -137,11 +137,12 @@ namespace AKStreamWeb.Services
                     tmpMediaServer.RtpPortMin = req.RtpPortMin;
                     tmpMediaServer.ServerDateTime = req.ServerDateTime;
                     tmpMediaServer.ZlmRecordFileSec = req.ZlmRecordFileSec;
-                    
+
                     if (req.PerformanceInfo != null) //更新性能信息
                     {
-                        tmpMediaServer.PerformanceInfo =req.PerformanceInfo;
+                        tmpMediaServer.PerformanceInfo = req.PerformanceInfo;
                     }
+
                     tmpMediaServer.WebApiHelper = new WebApiHelper(tmpMediaServer.IpV4Address,
                         tmpMediaServer.UseSsl ? tmpMediaServer.HttpsPort : tmpMediaServer.HttpPort,
                         tmpMediaServer.Secret, "", tmpMediaServer.UseSsl);
@@ -158,6 +159,7 @@ namespace AKStreamWeb.Services
                     }
                 }
             }
+
             return result;
         }
     }

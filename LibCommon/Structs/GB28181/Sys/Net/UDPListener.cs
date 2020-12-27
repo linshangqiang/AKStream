@@ -32,7 +32,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                 Thread listenThread = new Thread(new ThreadStart(Listen));
                 listenThread.Name = THREAD_NAME + Crypto.GetRandomString(4);
                 listenThread.Start();
-
             }
             catch (Exception excp)
             {

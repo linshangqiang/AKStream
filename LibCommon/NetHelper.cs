@@ -7,7 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using LibLogger;
-using Org.BouncyCastle.Crypto.Macs;
 
 namespace LibCommon
 {
@@ -605,12 +604,12 @@ namespace LibCommon
         private static string FileToBase64(string filePath)
         {
             FileStream fsForRead = new FileStream(filePath, FileMode.Open);
-         
+
             try
             {
                 fsForRead.Seek(0, SeekOrigin.Begin);
                 byte[] bs = new byte[fsForRead.Length];
-                int log=Convert.ToInt32(fsForRead.Length);
+                int log = Convert.ToInt32(fsForRead.Length);
                 fsForRead.Read(bs, 0, log);
                 return Convert.ToBase64String(bs);
             }
@@ -634,24 +633,25 @@ namespace LibCommon
         public static bool DownloadFileToBase64(string url, out string base64out)
         {
             base64out = "";
-            string tmpFilePath = GCommon.TmpPicsPath + "Snap_" + DateTime.Now.Ticks+".jpg";
+            string tmpFilePath = GCommon.TmpPicsPath + "Snap_" + DateTime.Now.Ticks + ".jpg";
             var ret = Download(url, tmpFilePath);
             if (ret)
             {
                 try
                 {
-                     base64out = FileToBase64(tmpFilePath);
-                     return true;
+                    base64out = FileToBase64(tmpFilePath);
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     throw ex;
                 }
             }
+
             return false;
         }
-        
-        
+
+
         /// <summary>
         /// Http方式下载文件
         /// </summary>

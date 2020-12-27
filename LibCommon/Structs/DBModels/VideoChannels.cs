@@ -45,7 +45,7 @@ namespace LibCommon.Structs.DBModels
         private DateTime _updateTime;
         private bool? _enabled;
         private bool? _noPlayerBreak;
-        
+
 
         /// <summary>
         /// 数据库主键
@@ -66,7 +66,7 @@ namespace LibCommon.Structs.DBModels
             get => _mainId;
             set => _mainId = value ?? throw new ArgumentNullException(nameof(value));
         }
-        
+
         /// <summary>
         /// 流媒体服务器ID
         /// </summary>
@@ -127,7 +127,7 @@ namespace LibCommon.Structs.DBModels
             set => _pDepartmentName = value;
         }
 
-        
+
         /// <summary>
         /// 设备的网络类型
         /// </summary>
@@ -282,7 +282,7 @@ namespace LibCommon.Structs.DBModels
             get => _enabled;
             set => _enabled = value;
         }
-        
+
 
         /// <summary>
         /// 无人观察时断开流端口，此字段为true时AutoVideo字段必须为Flase

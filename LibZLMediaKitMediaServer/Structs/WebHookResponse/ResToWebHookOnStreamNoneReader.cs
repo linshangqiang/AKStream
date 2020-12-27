@@ -1,7 +1,6 @@
 using System;
 using LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit;
 
-
 namespace LibZLMediaKitMediaServer.Structs.WebHookResponse
 {
     [Serializable]

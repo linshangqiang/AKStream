@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 踢掉多个session
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitKickSessions:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitKickSessions : ReqZLMediaKitRequestBase
     {
         private int? _local_port;
         private string? _peer_ip;

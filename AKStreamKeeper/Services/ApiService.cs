@@ -34,11 +34,11 @@ namespace AKStreamKeeper.Services
                             continue;
                         }
 
-                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
+                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count > 0)
                         {
                             var ret = tcpIpEndPoints.FindLast(x => x.Port == i);
                             var ret2 = udpIpEndPoints.FindLast(x => x.Port == i);
-                            if (ret == null && ret2==null)
+                            if (ret == null && ret2 == null)
                             {
                                 return i;
                             }
@@ -59,11 +59,11 @@ namespace AKStreamKeeper.Services
                             continue;
                         }
 
-                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
+                        if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count > 0)
                         {
                             var ret = tcpIpEndPoints.FindLast(x => x.Port == i);
                             var ret2 = udpIpEndPoints.FindLast(x => x.Port == i);
-                            if (ret == null && ret2==null)
+                            if (ret == null && ret2 == null)
                             {
                                 return i;
                             }
@@ -82,11 +82,11 @@ namespace AKStreamKeeper.Services
                         return 0;
                     }
 
-                    if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count>0)
+                    if (tcpIpEndPoints.Count > 0 || udpIpEndPoints.Count > 0)
                     {
                         var ret = tcpIpEndPoints.FindLast(x => x.Port == minPort);
                         var ret2 = udpIpEndPoints.FindLast(x => x.Port == minPort);
-                        if (ret == null && ret2==null)
+                        if (ret == null && ret2 == null)
                         {
                             return minPort;
                         }
@@ -114,11 +114,11 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (Common.MediaKitServerInstance != null)
+            if (Common.MediaServerInstance != null)
             {
-                if (Common.MediaKitServerInstance.IsRunning)
+                if (Common.MediaServerInstance.IsRunning)
                 {
-                    return Common.MediaKitServerInstance.GetPid();
+                    return Common.MediaServerInstance.GetPid();
                 }
 
                 return -1;
@@ -139,11 +139,11 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (Common.MediaKitServerInstance != null)
+            if (Common.MediaServerInstance != null)
             {
-                if (Common.MediaKitServerInstance.IsRunning)
+                if (Common.MediaServerInstance.IsRunning)
                 {
-                    var ret = Common.MediaKitServerInstance.Reload();
+                    var ret = Common.MediaServerInstance.Reload();
                     if (ret > 0)
                     {
                         Logger.Info($"[{Common.LoggerHead}]->热加载流媒体服务器配置文件成功");
@@ -189,9 +189,9 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (Common.MediaKitServerInstance != null)
+            if (Common.MediaServerInstance != null)
             {
-                var ret = Common.MediaKitServerInstance.Restart();
+                var ret = Common.MediaServerInstance.Restart();
                 if (ret > 0)
                 {
                     Logger.Info($"[{Common.LoggerHead}]->重启流媒体服务器成功->PID:{ret}");
@@ -228,15 +228,15 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (Common.MediaKitServerInstance != null)
+            if (Common.MediaServerInstance != null)
             {
-                if (!Common.MediaKitServerInstance.IsRunning)
+                if (!Common.MediaServerInstance.IsRunning)
                 {
                     Logger.Info($"[{Common.LoggerHead}]->关闭流媒体服务器->流媒体不在运行状态");
                     return true;
                 }
 
-                var ret = Common.MediaKitServerInstance.Shutdown();
+                var ret = Common.MediaServerInstance.Shutdown();
                 if (ret)
                 {
                     Logger.Info($"[{Common.LoggerHead}]->关闭流媒体服务器成功");
@@ -273,16 +273,16 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (Common.MediaKitServerInstance != null)
+            if (Common.MediaServerInstance != null)
             {
-                if (Common.MediaKitServerInstance.IsRunning)
+                if (Common.MediaServerInstance.IsRunning)
                 {
-                    var pid = Common.MediaKitServerInstance.GetPid();
+                    var pid = Common.MediaServerInstance.GetPid();
                     Logger.Info($"[{Common.LoggerHead}]->启动流媒体服务器->流媒体服务器处于启动状态->PID:{pid}");
                     return pid;
                 }
 
-                var ret = Common.MediaKitServerInstance.Startup();
+                var ret = Common.MediaServerInstance.Startup();
                 if (ret > 0)
                 {
                     Logger.Info($"[{Common.LoggerHead}]->启动流媒体服务器成功->PID:{ret}");

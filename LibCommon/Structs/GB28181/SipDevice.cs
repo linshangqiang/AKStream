@@ -23,8 +23,7 @@ namespace LibCommon.Structs.GB28181
         private string? _password;
         private DateTime _keepAliveTime;
         private int _keepAliveLostTime;
-        private Timer _keepAliveCheckTimer
-            ;
+        private Timer _keepAliveCheckTimer;
         private SIPRequest? _lastSipRequest;
         private SIPResponse? _lastSipResponse;
         private SIPURI? _contactUri;

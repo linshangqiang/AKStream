@@ -1,4 +1,5 @@
 using System;
+using LibCommon.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -7,7 +8,6 @@ namespace LibCommon.Structs
     [Serializable]
     public class PushMediaInfo
     {
-      
         private string _mediaServerIpAddress;
         private PushStreamSocketType _pushStreamSocketType;
         private ushort _streamPort;
@@ -22,7 +22,6 @@ namespace LibCommon.Structs
             set => _mediaServerIpAddress = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-       
 
         /// <summary>
         /// 推流socket类型
@@ -42,7 +41,5 @@ namespace LibCommon.Structs
             get => _streamPort;
             set => _streamPort = value;
         }
-
-      
     }
 }

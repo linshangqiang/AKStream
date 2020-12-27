@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 截图请求的结构
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitGetSnap:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitGetSnap : ReqZLMediaKitRequestBase
     {
         private string _url;
         private int _timeout_sec;

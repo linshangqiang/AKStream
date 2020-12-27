@@ -106,6 +106,7 @@ namespace LibCommon.Structs.GB28181.Sys
                 {
                     smtpClient.Credentials = new NetworkCredential(m_smtpSendUsername, m_smtpSendPassword, "");
                 }
+
                 smtpClient.Send(email);
             }
             catch (Exception ex)

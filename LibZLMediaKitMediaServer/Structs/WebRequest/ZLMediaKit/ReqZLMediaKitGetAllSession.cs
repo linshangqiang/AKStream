@@ -6,9 +6,8 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 获取session的结构
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitGetAllSession:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitGetAllSession : ReqZLMediaKitRequestBase
     {
-
         private int? _local_port;
         private string? _peer_ip;
 

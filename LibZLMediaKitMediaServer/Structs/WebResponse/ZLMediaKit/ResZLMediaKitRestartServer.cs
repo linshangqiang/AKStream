@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
     /// 重启服务器的回复结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitRestartServer:ResZLMediaKitResponseBase
+    public class ResZLMediaKitRestartServer : ResZLMediaKitResponseBase
     {
         private string? _msg;
 

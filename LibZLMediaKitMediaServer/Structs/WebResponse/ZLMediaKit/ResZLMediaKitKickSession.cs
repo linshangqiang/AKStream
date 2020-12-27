@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
     /// 踢掉session的返回结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitKickSession:ResZLMediaKitResponseBase
+    public class ResZLMediaKitKickSession : ResZLMediaKitResponseBase
     {
         private string _msg;
 

@@ -6,9 +6,8 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
     /// 请求开始录制的回复结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitStartRecord:ResZLMediaKitResponseBase
+    public class ResZLMediaKitStartRecord : ResZLMediaKitResponseBase
     {
-
         private bool _result;
 
         public bool Result

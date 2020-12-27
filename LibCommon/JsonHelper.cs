@@ -8,26 +8,24 @@ using Newtonsoft.Json.Linq;
 
 namespace LibCommon
 {
-
     public class BoolConvert : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(bool) || objectType==typeof(Boolean));
+            return (objectType == typeof(bool) || objectType == typeof(Boolean));
         }
-        
+
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             bool b = (bool) value!;
             if (b)
             {
-                writer.WriteValue("1"); 
+                writer.WriteValue("1");
             }
             else
             {
-                writer.WriteValue("0");   
+                writer.WriteValue("0");
             }
-           
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object? existingValue,
@@ -42,9 +40,9 @@ namespace LibCommon
             {
                 return false;
             }
-          
         }
     }
+
     class IpAddressConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -114,7 +112,6 @@ namespace LibCommon
             _jsonSettings.Converters.Add(datetimeConverter);
             _jsonSettings.Converters.Add(new IpAddressConverter());
             _jsonSettings.Converters.Add(new IpEndPointConverter());
-          
         }
 
 
@@ -177,7 +174,7 @@ namespace LibCommon
         public static T FromJson<T>(this string json, MissingMemberHandling p = MissingMemberHandling.Ignore)
         {
             _jsonSettings.MissingMemberHandling = p;
-         
+
             try
             {
                 return JsonConvert.DeserializeObject<T>(json, _jsonSettings)!;

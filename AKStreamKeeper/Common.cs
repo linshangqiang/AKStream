@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Timers;
+using AKStreamKeeper.Services;
 using LibCommon;
 using LibCommon.Structs;
 using LibCommon.Structs.WebResponse;
@@ -30,9 +30,13 @@ namespace AKStreamKeeper
             new List<KeyValuePair<double, string>>();
 
         private static object _akStreamDiskInfoOfRecordMapLock = new object();
-        public static object _getRtpPortLock=new object();
+        public static object _getRtpPortLock = new object();
         private static long _counter1 = 0;
         private static bool _firstPost = true;
+        public static string CutOrMergePath = GCommon.BaseStartPath + "/CutMergeFile/";
+        public static string CutOrMergeTempPath = GCommon.BaseStartPath + "/CutMergeTempDir/";
+
+        public static int FFmpegThreadCount = 2;
 
         public delegate void MediaServerKilled(bool self = false);
 
@@ -64,7 +68,7 @@ namespace AKStreamKeeper
             set => _loggerHead = value;
         }
 
-        public static ZLMediaKitServerInstance MediaKitServerInstance;
+        public static MediaServerInstance MediaServerInstance;
 
         /// <summary>
         /// 启动流媒体服务器
@@ -73,12 +77,12 @@ namespace AKStreamKeeper
         private static int StartupMediaServer()
         {
             ProcessHelper.KillProcess(_akStreamKeeperConfig.MediaServerPath);
-            if (MediaKitServerInstance == null)
+            if (MediaServerInstance == null)
             {
-                MediaKitServerInstance = new ZLMediaKitServerInstance(_akStreamKeeperConfig.MediaServerPath);
+                MediaServerInstance = new MediaServerInstance(_akStreamKeeperConfig.MediaServerPath);
             }
 
-            return MediaKitServerInstance.Startup();
+            return MediaServerInstance.Startup();
         }
 
         /// <summary>
@@ -100,7 +104,7 @@ namespace AKStreamKeeper
                 }
 
                 Logger.Info(
-                    $"[{LoggerHead}]->尝试重新启动流媒体服务器启动成功->进程ID:{MediaKitServerInstance.GetPid()}");
+                    $"[{LoggerHead}]->尝试重新启动流媒体服务器启动成功->进程ID:{MediaServerInstance.GetPid()}");
             }
         }
 
@@ -543,9 +547,8 @@ namespace AKStreamKeeper
                 }
             }
 
-            if (_counter1 % 5 == 0 && MediaKitServerInstance != null) //发心跳给服务器
+            if (_counter1 % 5 == 0 && MediaServerInstance != null) //发心跳给服务器
             {
-                
                 MediaServerKeepAlive tmpKeepAlive = new MediaServerKeepAlive();
                 if (_firstPost)
                 {
@@ -556,27 +559,28 @@ namespace AKStreamKeeper
                 {
                     tmpKeepAlive.FirstPost = false;
                 }
-                tmpKeepAlive.Secret = MediaKitServerInstance.Secret;
+
+                tmpKeepAlive.Secret = MediaServerInstance.Secret;
                 tmpKeepAlive.PerformanceInfo = KeeperPerformanceInfo;
                 tmpKeepAlive.UseSsl = _akStreamKeeperConfig.UseSsl;
                 IPInfo ip = UtilsHelper.GetIpAddressByMacAddress(KeeperPerformanceInfo.NetWorkStat.Mac, true);
                 tmpKeepAlive.IpV4Address = ip.IpV4;
                 tmpKeepAlive.IpV6Address = ip.IpV6 == null ? "" : ip.IpV6;
-                tmpKeepAlive.MediaServerId = MediaKitServerInstance.MediaServerId;
-                tmpKeepAlive.MediaServerPid = MediaKitServerInstance.GetPid();
+                tmpKeepAlive.MediaServerId = MediaServerInstance.MediaServerId;
+                tmpKeepAlive.MediaServerPid = MediaServerInstance.GetPid();
                 tmpKeepAlive.RecordPathList = _akStreamDiskInfoOfRecordMap;
                 tmpKeepAlive.RtpPortMax = _akStreamKeeperConfig.MaxRtpPort;
                 tmpKeepAlive.RtpPortMin = _akStreamKeeperConfig.MinRtpPort;
                 tmpKeepAlive.ServerDateTime = DateTime.Now;
-                tmpKeepAlive.ZlmHttpPort = MediaKitServerInstance.ZlmHttpPort;
-                tmpKeepAlive.ZlmHttpsPort = MediaKitServerInstance.ZlmHttpsPort;
-                tmpKeepAlive.ZlmRtmpPort = MediaKitServerInstance.ZlmRtmpPort;
-                tmpKeepAlive.ZlmRtmpsPort = MediaKitServerInstance.ZlmRtmpsPort;
-                tmpKeepAlive.ZlmRtspPort = MediaKitServerInstance.ZlmRtspPort;
-                tmpKeepAlive.ZlmRtspsPort = MediaKitServerInstance.ZlmRtspsPort;
+                tmpKeepAlive.ZlmHttpPort = MediaServerInstance.ZlmHttpPort;
+                tmpKeepAlive.ZlmHttpsPort = MediaServerInstance.ZlmHttpsPort;
+                tmpKeepAlive.ZlmRtmpPort = MediaServerInstance.ZlmRtmpPort;
+                tmpKeepAlive.ZlmRtmpsPort = MediaServerInstance.ZlmRtmpsPort;
+                tmpKeepAlive.ZlmRtspPort = MediaServerInstance.ZlmRtspPort;
+                tmpKeepAlive.ZlmRtspsPort = MediaServerInstance.ZlmRtspsPort;
                 tmpKeepAlive.KeeperWebApiPort = _akStreamKeeperConfig.WebApiPort;
-                tmpKeepAlive.ZlmRecordFileSec = MediaKitServerInstance.ZlmRecordFileSec;
-                string reqData = JsonHelper.ToJson(tmpKeepAlive,Formatting.Indented);
+                tmpKeepAlive.ZlmRecordFileSec = MediaServerInstance.ZlmRecordFileSec;
+                string reqData = JsonHelper.ToJson(tmpKeepAlive, Formatting.Indented);
                 try
                 {
                     var httpRet = NetHelper.HttpPostRequest(_akStreamKeeperConfig.AkStreamWebRegisterUrl, null, reqData,
@@ -590,7 +594,7 @@ namespace AKStreamKeeper
                             {
                                 Logger.Info(
                                     $"[{LoggerHead}]->控制服务器反馈，要求重启流媒体服务器,马上重启");
-                                MediaKitServerInstance.Restart();
+                                MediaServerInstance.Restart();
                             }
 
                             if (resMediaServerKeepAlive.RecommendTimeSynchronization)
@@ -631,7 +635,7 @@ namespace AKStreamKeeper
                     $"[{LoggerHead}]->获取AKStreamKeeper配置文件时异常,系统无法运行->\r\n{JsonHelper.ToJson(rs, Formatting.Indented)}");
                 Environment.Exit(0); //退出程序 
             }
-            
+
 
             ProcessHelper.KillProcess(_akStreamKeeperConfig.MediaServerPath); //启动前先删除掉所有流媒体进程
             while (StartupMediaServer() <= 0)
@@ -642,8 +646,8 @@ namespace AKStreamKeeper
             }
 
             Logger.Info(
-                $"[{LoggerHead}]->流媒体服务器启动成功->进程ID:{MediaKitServerInstance.GetPid()}");
-            
+                $"[{LoggerHead}]->流媒体服务器启动成功->进程ID:{MediaServerInstance.GetPid()}");
+
             ret = UtilsHelper.CheckFFmpegBin(_akStreamKeeperConfig.FFmpegPath);
             if (!ret)
             {
@@ -654,7 +658,18 @@ namespace AKStreamKeeper
 
         static Common()
         {
-            ZLMediaKitServerInstance.OnMediaKilled += OnMediaServerKilled;
+            if (!Directory.Exists(CutOrMergePath))
+            {
+                Directory.CreateDirectory(CutOrMergePath);
+            }
+
+            if (!Directory.Exists(CutOrMergeTempPath))
+            {
+                Directory.CreateDirectory(CutOrMergeTempPath);
+            }
+
+            CutMergeService.start = true;
+            MediaServerInstance.OnMediaKilled += OnMediaServerKilled;
         }
     }
 }

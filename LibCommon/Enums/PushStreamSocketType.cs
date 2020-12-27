@@ -1,6 +1,6 @@
 using System;
 
-namespace LibCommon
+namespace LibCommon.Enums
 {
     [Serializable]
     public enum PushStreamSocketType

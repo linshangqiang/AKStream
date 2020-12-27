@@ -7,7 +7,6 @@ using LibCommon.Structs;
 using LibZLMediaKitMediaServer.Structs.WebHookRequest;
 using LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit;
 
-
 namespace LibZLMediaKitMediaServer
 {
     /// <summary>
@@ -24,7 +23,7 @@ namespace LibZLMediaKitMediaServer
         private int _zlmediakitPid;
         private DateTime _keepAliveTime;
         private WebApiHelper _webApiHelper;
-        private List<KeyValuePair<double,string>> _recordPathList;
+        private List<KeyValuePair<double, string>> _recordPathList;
         private ushort _rtpPortMin;
         private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
         private bool _isRunning;
@@ -42,7 +41,7 @@ namespace LibZLMediaKitMediaServer
         private Timer _keepAliveCheckTimer;
         private int _countmod = 0;
         private ResZLMediaKitMediaList _mediaServerStreamList;
-        private List<ReqForWebHookOnPlay> _mediaServerPlayerList=new List<ReqForWebHookOnPlay>();
+        private List<ReqForWebHookOnPlay> _mediaServerPlayerList = new List<ReqForWebHookOnPlay>();
 
         private static ConcurrentDictionary<string, ushort> _rtpPortDictionary =
             new ConcurrentDictionary<string, ushort>();
@@ -63,8 +62,8 @@ namespace LibZLMediaKitMediaServer
                     {
                         _countmod = 0;
                     }
-                    
-                    var ret = _webApiHelper.GetServerConfig(out  ResponseStruct rs);
+
+                    var ret = _webApiHelper.GetServerConfig(out ResponseStruct rs);
                     if (ret != null && rs.Code == ErrorNumber.None)
                     {
                         this._config = ret;
@@ -262,7 +261,7 @@ namespace LibZLMediaKitMediaServer
             get => _config;
             set => _config = value;
         }
-        
+
 
         /// <summary>
         /// 此流媒体服务器当前的所有流信息

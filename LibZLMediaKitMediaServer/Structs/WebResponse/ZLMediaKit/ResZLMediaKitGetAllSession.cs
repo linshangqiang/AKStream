@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
 {
-
     [Serializable]
     public class Item
     {
@@ -68,13 +67,13 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             set => _typeid = value;
         }
     }
-    
-    
+
+
     /// <summary>
     /// TcpSession列表回复结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitGetAllSession:ResZLMediaKitResponseBase
+    public class ResZLMediaKitGetAllSession : ResZLMediaKitResponseBase
     {
         private List<Item> _data;
 

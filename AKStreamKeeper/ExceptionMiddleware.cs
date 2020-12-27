@@ -47,8 +47,9 @@ namespace AKStreamKeeper
             string info = $@"StatusCode:{context.Response.StatusCode}";
             string remoteIpAddr = context.Connection.RemoteIpAddress.ToString();
             info = $@"{info}  Body: {error}";
-            Logger.Error($@"[{Common.LoggerHead}]->HTTP-OUTPUT    {remoteIpAddr}    {context.Request.Method}    {context.Request.Path} -> " +
-                                info);
+            Logger.Error(
+                $@"[{Common.LoggerHead}]->HTTP-OUTPUT    {remoteIpAddr}    {context.Request.Method}    {context.Request.Path} -> " +
+                info);
 
             await context.Response.WriteAsync(error);
         }
@@ -68,8 +69,9 @@ namespace AKStreamKeeper
             string info = $@"StatusCode:{context.Response.StatusCode}";
             string remoteIpAddr = context.Connection.RemoteIpAddress.ToString();
             info = $@"{info}  Body: {error}";
-            Logger.Error($@"[{Common.LoggerHead}]->HTTP-OUTPUT    {remoteIpAddr}    {context.Request.Method}    {context.Request.Path} -> " +
-                                info);
+            Logger.Error(
+                $@"[{Common.LoggerHead}]->HTTP-OUTPUT    {remoteIpAddr}    {context.Request.Method}    {context.Request.Path} -> " +
+                info);
             await context.Response.WriteAsync(error);
         }
     }

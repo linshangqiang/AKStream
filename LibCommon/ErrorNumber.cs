@@ -46,12 +46,12 @@ namespace LibCommon
         MediaServer_TimeExcept = -3002, //服务器时间异常，建议同步
         MediaServer_BinNotFound = -3003, //流媒体服务器可执行文件不存在
         MediaServer_ConfigNotFound = -3004, //流媒体服务器配置文件不存在，建议手工运行一次流媒体服务器使其自动生成配置文件模板
-        MediaServer_InstanceIsNull=-3005,//流媒体服务实例为空，请先创建流媒体服务实例
-        MediaServer_StartUpExcept=-3006,//启动流媒体服务器失败
-        MediaServer_ShutdownExcept=-3007,//停止流媒体服务器失败
-        MediaServer_RestartExcept=-3008,//重启流媒体服务器失败
-        MediaServer_ReloadExcept=-3009,//流媒体服务器配置热加载失败
-        MediaServer_NotRunning=-3010,//流媒体服务器没有运行
+        MediaServer_InstanceIsNull = -3005, //流媒体服务实例为空，请先创建流媒体服务实例
+        MediaServer_StartUpExcept = -3006, //启动流媒体服务器失败
+        MediaServer_ShutdownExcept = -3007, //停止流媒体服务器失败
+        MediaServer_RestartExcept = -3008, //重启流媒体服务器失败
+        MediaServer_ReloadExcept = -3009, //流媒体服务器配置热加载失败
+        MediaServer_NotRunning = -3010, //流媒体服务器没有运行
 
         Other = -6000 //其他异常
     }
@@ -110,7 +110,7 @@ namespace LibCommon
             ErrorDic[ErrorNumber.MediaServer_RestartExcept] = "重启流媒体服务器失败";
             ErrorDic[ErrorNumber.MediaServer_ReloadExcept] = "流媒体服务器配置热加载失败";
             ErrorDic[ErrorNumber.MediaServer_NotRunning] = "流媒体服务器没有运行";
-            
+
             ErrorDic[ErrorNumber.Other] = "未知错误";
         }
     }

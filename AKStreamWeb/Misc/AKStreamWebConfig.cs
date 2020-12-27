@@ -18,7 +18,7 @@ namespace AKStreamWeb.Misc
             get => _mediaServerFirstToRestart;
             set => _mediaServerFirstToRestart = value;
         }
-        
+
 
         /// <summary>
         /// 数据库类型

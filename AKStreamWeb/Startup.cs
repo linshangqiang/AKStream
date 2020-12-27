@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using LibCommon;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -94,14 +91,14 @@ namespace AKStreamWeb
             {
                 // 添加文档信息
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "AKStreamWeb", Version = "v1"});
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "AKStreamWeb.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "AKStreamWeb.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "AKStreamWeb.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "AKStreamWeb.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibCommon.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibCommon.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml"));
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

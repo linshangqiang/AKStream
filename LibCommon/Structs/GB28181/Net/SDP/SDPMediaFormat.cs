@@ -38,7 +38,6 @@ namespace LibCommon.Structs.GB28181.Net.SDP
 
         static SDPMediaFormat()
         {
-         
         }
 
         public SDPMediaFormat(int formatID)
@@ -95,7 +94,5 @@ namespace LibCommon.Structs.GB28181.Net.SDP
         {
             FormatParameterAttribute = attribute;
         }
-
-      
     }
 }

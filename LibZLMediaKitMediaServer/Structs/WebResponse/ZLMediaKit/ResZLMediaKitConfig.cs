@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using LibCommon;
 using Newtonsoft.Json;
 
@@ -254,6 +253,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _general_resetWhenRePlay;
             set => _general_resetWhenRePlay = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("general.rtmp_demand")]
         public bool? General_Rtmp_Demand
@@ -261,6 +261,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _general_rtmp_demand;
             set => _general_rtmp_demand = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("general.rtsp_demand")]
         public bool? General_Rtsp_Demand
@@ -275,6 +276,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _general_streamNoneReaderDelayMS;
             set => _general_streamNoneReaderDelayMS = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("general.ts_demand")]
         public bool? General_Ts_Demand
@@ -282,6 +284,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _general_ts_demand;
             set => _general_ts_demand = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("hls.broadcastRecordTs")]
         public bool? Hls_BroadcastRecordTs
@@ -331,6 +334,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _hook_admin_params;
             set => _hook_admin_params = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("hook.enable")]
         public bool? Hook_Enable
@@ -443,6 +447,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _http_charSet;
             set => _http_charSet = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("http.dirMenu")]
         public bool? Http_DirMenu
@@ -527,6 +532,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _record_appName;
             set => _record_appName = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("record.fastStart")]
         public bool? Record_FastStart
@@ -548,6 +554,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _record_filePath;
             set => _record_filePath = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("record.fileRepeat")]
         public bool? Record_FileRepeat
@@ -583,6 +590,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _rtmp_keepAliveSecond;
             set => _rtmp_keepAliveSecond = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("rtmp.modifyStamp")]
         public bool? Rtmp_ModifyStamp
@@ -639,6 +647,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _rtp_videoMtuSize;
             set => _rtp_videoMtuSize = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("rtp_proxy.checkSource")]
         public bool? Rtp_Proxy_CheckSource
@@ -667,6 +676,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _rtp_Proxy_timeoutSec;
             set => _rtp_Proxy_timeoutSec = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("rtsp.authBasic")]
         public bool? Rtsp_AuthBasic
@@ -674,6 +684,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
             get => _rtsp_authBasic;
             set => _rtsp_authBasic = value;
         }
+
         [JsonConverter(typeof(BoolConvert))]
         [JsonProperty("rtsp.directProxy")]
         public bool? RtspDirectProxy

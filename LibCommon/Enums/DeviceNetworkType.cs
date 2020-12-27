@@ -8,7 +8,7 @@ namespace LibCommon.Enums
     [Serializable]
     public enum DeviceNetworkType
     {
-        Mobile,//移动网络
-        Fixed//固定网络
+        Mobile, //移动网络
+        Fixed //固定网络
     }
 }

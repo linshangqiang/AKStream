@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 是否录制的请求结构
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitIsRecording:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitIsRecording : ReqZLMediaKitRequestBase
     {
         private int _type;
         private string _vhost;

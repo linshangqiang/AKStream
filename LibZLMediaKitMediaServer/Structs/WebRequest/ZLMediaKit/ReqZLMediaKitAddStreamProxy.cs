@@ -13,7 +13,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
         private bool? _enable_mp4;
         private int _rtp_type;
 
-        
+
         /// <summary>
         /// vhost
         /// </summary>

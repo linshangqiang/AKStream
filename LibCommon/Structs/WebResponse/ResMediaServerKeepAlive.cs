@@ -2,13 +2,12 @@ using System;
 
 namespace LibCommon.Structs.WebResponse
 {
-    
     [Serializable]
-    public class ResMediaServerKeepAlive:AKStreamWebResponseBase
+    public class ResMediaServerKeepAlive : AKStreamWebResponseBase
     {
         private bool _recommendTimeSynchronization = false;
         private DateTime _serverDateTime;
-        private bool _needRestartMediaServer=false;
+        private bool _needRestartMediaServer = false;
 
         /// <summary>
         /// 是否建议同步时间

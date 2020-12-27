@@ -35,8 +35,6 @@ namespace LibCommon.Structs.GB28181.XML
         /// </summary>
         private void Serialize(T t)
         {
-           
-
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 OmitXmlDeclaration = false,
@@ -51,7 +49,6 @@ namespace LibCommon.Structs.GB28181.XML
             s.Serialize(w, t, xns);
             w.Flush();
             w.Close();
-           
         }
 
         public virtual string Serialize<T1>(T1 obj)
@@ -73,7 +70,7 @@ namespace LibCommon.Structs.GB28181.XML
             return Encoding.UTF8.GetString(stream.ToArray()); //.Replace("\r", "");
         }
 
-       
+
         /// <summary>
         /// 反序列
         /// </summary>

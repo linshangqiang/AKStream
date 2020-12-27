@@ -3,14 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using LibCommon;
 using LibCommon.Enums;
 using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.XML;
 using LibSystemInfo;
-using SIPSorcery.SIP;
 
 namespace LibGB28181SipServer
 {
@@ -81,7 +79,7 @@ namespace LibGB28181SipServer
             get => _needResponseRequests;
             set => _needResponseRequests = value;
         }
-      
+
 
         /// <summary>
         /// 收到的设备目录线程安全队列，收到的设备目录先缓存在这里
@@ -136,7 +134,7 @@ namespace LibGB28181SipServer
                     sipServerConfig.SipUsername = "admin";
                     sipServerConfig.SipPassword = "123#@!qwe";
                     sipServerConfig.GbVersion = "GB-2016";
-                    sipServerConfig.MsgProtocol = "TCP";//使用TCP可以完美支持tcp信令
+                    sipServerConfig.MsgProtocol = "TCP"; //使用TCP可以完美支持tcp信令
                     sipServerConfig.SipPort = 5060;
                     sipServerConfig.IpV6Enable = !string.IsNullOrEmpty(ipInfo.IpV6);
                     if (sipServerConfig.IpV6Enable)
@@ -162,6 +160,7 @@ namespace LibGB28181SipServer
                     {
                         sipServerConfig.NoAuthenticationRequireds = new List<NoAuthenticationRequired>();
                     }
+
                     sipServerConfig.NoAuthenticationRequireds.Add(new NoAuthenticationRequired()
                     {
                         DeviceId = sipServerConfig.ServerSipDeviceId,

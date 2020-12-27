@@ -8,7 +8,6 @@ using LibLogger;
 using LibZLMediaKitMediaServer;
 using Newtonsoft.Json;
 
-
 namespace AKStreamWeb
 {
     public static class Common
@@ -179,7 +178,7 @@ namespace AKStreamWeb
                 }
 
                 Logger.Info(
-                    $"[{LoggerHead}]->AKStreamWeb配置文件加完成->\r\n{JsonHelper.ToJson(Common.AkStreamWebConfig, Formatting.Indented)}");
+                    $"[{LoggerHead}]->AKStreamWeb配置文件加完成->\r\n{JsonHelper.ToJson(AkStreamWebConfig, Formatting.Indented)}");
             }
             catch (AkStreamException ex)
             {

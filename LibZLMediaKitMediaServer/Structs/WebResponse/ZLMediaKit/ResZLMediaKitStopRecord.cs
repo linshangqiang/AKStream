@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
     /// 停止录制返回结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitStopRecord:ResZLMediaKitResponseBase
+    public class ResZLMediaKitStopRecord : ResZLMediaKitResponseBase
     {
         private bool _result;
 

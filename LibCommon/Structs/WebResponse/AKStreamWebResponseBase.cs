@@ -1,5 +1,4 @@
 using System;
-using LibCommon;
 
 namespace LibCommon.Structs.WebResponse
 {

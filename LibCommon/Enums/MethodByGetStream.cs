@@ -8,7 +8,7 @@ namespace LibCommon.Enums
     [Serializable]
     public enum MethodByGetStream
     {
-        SelfMethod,//内置方法AddStreamProxy
-        UseFFmpeg,//引用ffmpeg,AddFFmpegSourceProxy
+        SelfMethod, //内置方法AddStreamProxy
+        UseFFmpeg, //引用ffmpeg,AddFFmpegSourceProxy
     }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace AKStreamWeb.Models
 {
     public class ErrorViewModel

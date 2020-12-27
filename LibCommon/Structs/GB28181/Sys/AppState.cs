@@ -23,7 +23,7 @@ namespace LibCommon.Structs.GB28181.Sys
         // From http://fightingforalostcause.net/misc/2006/compare-email-regex.php.
         public const string EMAIL_VALIDATION_REGEX =
             @"^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-zA-Z0-9]{1}[a-zA-Z0-9\-]{0,62}[a-zA-Z0-9]{1})|[a-zA-Z])\.)+[a-zA-Z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$";
-        
+
         private static StringDictionary m_appConfigSettings; // Contains application configuration key, value pairs.
         private static X509Certificate2 m_encryptedSettingsCertificate;
         public static readonly string NewLine = Environment.NewLine;
@@ -47,7 +47,7 @@ namespace LibCommon.Structs.GB28181.Sys
                     // ensure that any classes using the logger won't get null references.
                     ConfigureConsoleLogger();
                 }
-               
+
 
                 // Initialise the string dictionary to hold the application settings.
                 m_appConfigSettings = new StringDictionary();
@@ -64,7 +64,7 @@ namespace LibCommon.Structs.GB28181.Sys
             }
         }
 
-     
+
         /// <summary>
         /// Configures the logging object to use a console logger. This would normally be used
         /// as a fallback when either the application does not have any logging configuration
@@ -72,7 +72,6 @@ namespace LibCommon.Structs.GB28181.Sys
         /// </summary>
         public static void ConfigureConsoleLogger()
         {
-           
         }
 
         /// <summary>
@@ -97,7 +96,6 @@ namespace LibCommon.Structs.GB28181.Sys
                     {
                         if (setting.StartsWith(ENCRYPTED_SETTING_PREFIX))
                         {
-
                             X509Certificate2 encryptedSettingsCertificate = GetEncryptedSettingsCertificate();
                             if (encryptedSettingsCertificate != null)
                             {

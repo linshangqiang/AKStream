@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LibCommon.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -117,6 +118,7 @@ namespace LibCommon.Structs
             get => _mediaServerIp;
             set => _mediaServerIp = value ?? throw new ArgumentNullException(nameof(value));
         }
+
         /// <summary>
         /// 推流的端口
         /// </summary>
@@ -162,7 +164,6 @@ namespace LibCommon.Structs
             set => _app = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-       
 
         /// <summary>
         /// 流ID
@@ -191,7 +192,6 @@ namespace LibCommon.Structs
             set => ssrc = value;
         }
 
-      
 
         /// <summary>
         /// 推流的socket类型 

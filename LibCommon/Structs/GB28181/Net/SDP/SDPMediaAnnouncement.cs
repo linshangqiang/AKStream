@@ -144,10 +144,8 @@ namespace LibCommon.Structs.GB28181.Net.SDP
             {
                 foreach (SDPMediaFormat mediaFormat in MediaFormats)
                 {
-                
                     formatAttributes += MEDIA_FORMAT_ATTRIBUE_PREFIX + mediaFormat.FormatID + " " + mediaFormat.Name +
                                         "/" + mediaFormat.ClockRate + m_CRLF;
-                   
                 }
             }
 

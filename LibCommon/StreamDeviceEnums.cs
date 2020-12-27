@@ -28,10 +28,10 @@ namespace LibCommon
         /// 推流中
         /// </summary>
         PUSHON,
+
         /// <summary>
         /// 忽略，不做处理
         /// </summary>
         IGNORE,
-     
     }
 }

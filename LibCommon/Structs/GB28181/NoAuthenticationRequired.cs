@@ -20,7 +20,7 @@ namespace LibCommon.Structs.GB28181
             get => _ipV4Address;
             set => _ipV4Address = value;
         }
-        
+
         /// <summary>
         /// 设备ipv6地址(可空)
         /// </summary>

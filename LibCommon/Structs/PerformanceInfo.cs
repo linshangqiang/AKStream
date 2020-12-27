@@ -78,7 +78,8 @@ namespace LibCommon.Structs
             set => _updateTime = value;
         }
     }
-     [Serializable]
+
+    [Serializable]
     public class MemoryInfo
     {
         private ulong _total;

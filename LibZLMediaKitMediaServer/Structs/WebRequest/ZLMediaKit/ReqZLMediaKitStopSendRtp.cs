@@ -6,11 +6,12 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 请求结束向上级发送Rtp流
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitStopSendRtp:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitStopSendRtp : ReqZLMediaKitRequestBase
     {
         private string _vhost;
         private string _app;
         private string _stream;
+        private string _ssrc;
 
         /// <summary>
         /// vhost
@@ -37,6 +38,15 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
         {
             get => _stream;
             set => _stream = value;
+        }
+
+        /// <summary>
+        /// 根据ssrc关停某路rtp推流，置空时关闭所有流
+        /// </summary>
+        public string Ssrc
+        {
+            get => _ssrc;
+            set => _ssrc = value;
         }
     }
 }

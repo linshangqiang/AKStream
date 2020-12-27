@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using LibCommon;
 using LibCommon.Structs;
@@ -7,7 +6,6 @@ using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.XML;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
 
 namespace LibGB28181SipServer
 {
@@ -38,6 +36,7 @@ namespace LibGB28181SipServer
                 _autoResetEvent.Dispose();
             }
         }
+
         [JsonConverter(typeof(StringEnumConverter))]
         public CommandType CommandType
         {
@@ -96,8 +95,6 @@ namespace LibGB28181SipServer
             }
         }
 
-        
-        
 
         /// <summary>
         /// 获取通道录像文件列表
@@ -162,7 +159,7 @@ namespace LibGB28181SipServer
             }
         }
 
-        
+
         /// <summary>
         /// 请求终止回放流
         /// </summary>
@@ -190,7 +187,7 @@ namespace LibGB28181SipServer
                 Dispose();
             }
         }
-        
+
 
         /// <summary>
         /// 请求终止时实流
@@ -236,6 +233,7 @@ namespace LibGB28181SipServer
                 {
                     return false;
                 }
+
                 sipChannel.PushStatus = PushStatus.PUSHON;
                 return true;
             }
@@ -263,6 +261,7 @@ namespace LibGB28181SipServer
                 {
                     return false;
                 }
+
                 record.PushStatus = PushStatus.PUSHON;
                 return true;
             }
@@ -271,6 +270,7 @@ namespace LibGB28181SipServer
                 Dispose();
             }
         }
+
         /// <summary>
         /// 获取设备目录
         /// </summary>
@@ -283,7 +283,7 @@ namespace LibGB28181SipServer
             {
                 _commandType = CommandType.Catalog;
                 _autoResetEvent2 = new AutoResetEvent(false);
-                Common.SipServer.DeviceCatalogQuery(sipDevice, _autoResetEvent,_autoResetEvent2, out rs, _timeout);
+                Common.SipServer.DeviceCatalogQuery(sipDevice, _autoResetEvent, _autoResetEvent2, out rs, _timeout);
                 var isTimeout = _autoResetEvent.WaitOne(_timeout);
                 if (!isTimeout || !rs.Code.Equals(ErrorNumber.None))
                 {

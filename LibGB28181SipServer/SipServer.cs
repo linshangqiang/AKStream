@@ -131,6 +131,7 @@ namespace LibGB28181SipServer
                     };
                     Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
                 }
+
                 if (commandType == CommandType.Playback && obj != null)
                 {
                     ((RecordInfo.Item) obj).InviteSipRequest = req;
@@ -139,6 +140,7 @@ namespace LibGB28181SipServer
                 {
                     sipChannel.InviteSipRequest = req;
                 }
+
                 sipChannel.LastSipRequest = req;
                 Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
                 await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
@@ -211,7 +213,7 @@ namespace LibGB28181SipServer
                 req.Body = xmlBody;
                 req.Header.CallId = CallProperties.CreateNewCallId();
                 req.Header.CSeq = UtilsHelper.CreateNewCSeq();
-              
+
                 if (needResponse)
                 {
                     var nrt = new NeedReturnTask(Common.NeedResponseRequests)
@@ -227,10 +229,10 @@ namespace LibGB28181SipServer
                     };
                     Common.NeedResponseRequests.TryAdd(req.Header.CallId, nrt);
                 }
+
                 sipDevice.LastSipRequest = req;
                 Logger.Debug($"[{Common.LoggerHead}]->发送Sip请求->{req}");
                 await _sipTransport.SendRequestAsync(sipDevice.RemoteEndPoint, req);
-                
             }
             catch (Exception ex)
             {
@@ -292,7 +294,7 @@ namespace LibGB28181SipServer
                     Code = ErrorNumber.Sip_Channel_StatusExcept,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_StatusExcept],
                 };
-                return;  
+                return;
             }
 
             if (!sipChannel.SipChannelType.Equals(SipChannelType.VideoChannel) &&
@@ -610,7 +612,7 @@ namespace LibGB28181SipServer
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-           
+
 
             if (Common.SipDevices.FindLast(x => x.DeviceId.Equals(ptzCtrl.SipDevice.DeviceId)) == null) //设备是否在列表中存在
             {
@@ -622,6 +624,7 @@ namespace LibGB28181SipServer
                 evnt.Set();
                 return;
             }
+
             SIPMethodsEnum method = SIPMethodsEnum.MESSAGE;
             string ptzCmdStr = GetPtzCmd(ptzCtrl.PtzCommandType, ptzCtrl.Speed);
             PTZControl ptz = null;
@@ -682,7 +685,6 @@ namespace LibGB28181SipServer
             {
                 rs = ex.ResponseStruct;
                 evnt.Set();
-                
             }
         }
 
@@ -886,16 +888,17 @@ namespace LibGB28181SipServer
                 return;
             }
 
-            if (!record.SipChannel.SipChannelStatus.Equals(DevStatus.OK) || !record.SipChannel.SipChannelStatus.Equals(DevStatus.ON))
+            if (!record.SipChannel.SipChannelStatus.Equals(DevStatus.OK) ||
+                !record.SipChannel.SipChannelStatus.Equals(DevStatus.ON))
             {
                 rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.Sip_Channel_StatusExcept,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.Sip_Channel_StatusExcept],
                 };
-                return;  
+                return;
             }
-            
+
             if (pushStatus != PushStatus.IGNORE)
             {
                 if (record.PushStatus == pushStatus)
@@ -1053,15 +1056,15 @@ namespace LibGB28181SipServer
 
                 var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(record.SipChannel.ParentId));
                 SIPMethodsEnum method = SIPMethodsEnum.BYE;
-                
+
                 IPAddress sipDeviceIpAddr = tmpSipDevice.RemoteEndPoint.Address;
                 int sipDevicePort = tmpSipDevice.RemoteEndPoint.Port;
                 SIPProtocolsEnum protocols = tmpSipDevice.RemoteEndPoint.Protocol;
-               
-                
+
+
                 var toSipUri = new SIPURI(SIPSchemesEnum.sip,
                     new SIPEndPoint(protocols, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
-                 toSipUri.User = record.SipChannel.DeviceId;
+                toSipUri.User = record.SipChannel.DeviceId;
                 SIPToHeader to = new SIPToHeader(null, toSipUri, null);
                 IPAddress sipServerIpAddress = IPAddress.Parse(Common.SipServerConfig.SipIpAddress);
                 var fromSipUri = new SIPURI(SIPSchemesEnum.sip, sipServerIpAddress, Common.SipServerConfig.SipPort);
@@ -1154,8 +1157,8 @@ namespace LibGB28181SipServer
                 IPAddress sipDeviceIpAddr = tmpSipDevice.RemoteEndPoint.Address;
                 int sipDevicePort = tmpSipDevice.RemoteEndPoint.Port;
                 SIPProtocolsEnum protocols = tmpSipDevice.RemoteEndPoint.Protocol;
-               
-                
+
+
                 var toSipUri = new SIPURI(SIPSchemesEnum.sip,
                     new SIPEndPoint(protocols, new IPEndPoint(sipDeviceIpAddr, sipDevicePort)));
                 toSipUri.User = sipChannel.DeviceId;

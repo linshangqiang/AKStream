@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 获取rtp信息请求结构
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitGetRtpInfo:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitGetRtpInfo : ReqZLMediaKitRequestBase
     {
         private string _stream_id;
 

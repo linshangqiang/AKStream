@@ -22,7 +22,7 @@ namespace LibCommon.Structs.GB28181
         private int _keepAliveInterval;
         private int _keepAliveLostNumber;
         private bool _ipV6Enable = false;
-        private List<NoAuthenticationRequired>? _noAuthenticationRequireds=new List<NoAuthenticationRequired>();
+        private List<NoAuthenticationRequired>? _noAuthenticationRequireds = new List<NoAuthenticationRequired>();
 
 
         /// <summary>

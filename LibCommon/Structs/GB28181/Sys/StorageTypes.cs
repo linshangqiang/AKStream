@@ -22,7 +22,6 @@ namespace LibCommon.Structs.GB28181.Sys
 
     public class StorageTypesConverter
     {
-
         public static StorageTypes GetStorageType(string storageType)
         {
             try

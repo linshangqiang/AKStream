@@ -14,7 +14,7 @@ namespace AKStreamKeeper
     /// 流媒体服务器的进程实例
     /// </summary>
     [Serializable]
-    public class ZLMediaKitServerInstance
+    public class MediaServerInstance
     {
         private string _binPath;
         private string _configPath;
@@ -23,7 +23,7 @@ namespace AKStreamKeeper
         private string _secret;
         private string _mediaServerId;
         private static int _pid;
-        private bool _isRunning=>CheckRunning();
+        private bool _isRunning => CheckRunning();
         private ushort _zlmHttpPort;
         private ushort _zlmHttpsPort;
         private ushort _zlmRtspPort;
@@ -33,9 +33,9 @@ namespace AKStreamKeeper
         private ushort _zlmRtpProxyPort;
         private uint _zlmRecordFileSec;
         private string _zlmFFMPEGCmd;
-        private static  bool _isSelfClose = false;
+        private static bool _isSelfClose = false;
 
-        public  static event Common.MediaServerKilled OnMediaKilled = null!;
+        public static event Common.MediaServerKilled OnMediaKilled = null!;
 
         private static ProcessHelper _mediaServerProcessHelper =
             new ProcessHelper(p_StdOutputDataReceived, p_ErrOutputDataReceived, p_Process_Exited!);
@@ -169,7 +169,6 @@ namespace AKStreamKeeper
         public bool IsRunning
         {
             get => _isRunning;
-
         }
 
         /// <summary>
@@ -177,7 +176,7 @@ namespace AKStreamKeeper
         /// </summary>
         /// <param name="binPath"></param>
         /// <param name="configPath"></param>
-        public ZLMediaKitServerInstance(string binPath, string configPath = "")
+        public MediaServerInstance(string binPath, string configPath = "")
         {
             _binPath = binPath;
             if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
@@ -194,7 +193,7 @@ namespace AKStreamKeeper
             try
             {
                 var ret = GetConfig(out rs);
-                if (!ret  || !rs.Code.Equals(ErrorNumber.None))
+                if (!ret || !rs.Code.Equals(ErrorNumber.None))
                 {
                     throw new AkStreamException(rs);
                 }
@@ -204,8 +203,6 @@ namespace AKStreamKeeper
                 {
                     throw new AkStreamException(rs);
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -216,7 +213,7 @@ namespace AKStreamKeeper
                     ExceptMessage = ex.Message,
                     ExceptStackTrace = ex.StackTrace,
                 };
-                throw new AkStreamException(rs);  
+                throw new AkStreamException(rs);
             }
         }
 
@@ -233,7 +230,7 @@ namespace AKStreamKeeper
                 var parser = new FileIniDataParser();
                 try
                 {
-                    IniData data = parser.ReadFile(_configPath,Encoding.UTF8);
+                    IniData data = parser.ReadFile(_configPath, Encoding.UTF8);
                     Uri AKStreamWebUri = new Uri(Common.AkStreamKeeperConfig.AkStreamWebRegisterUrl);
                     string h = AKStreamWebUri.Host.ToString();
                     string p = AKStreamWebUri.Port.ToString();
@@ -319,9 +316,9 @@ namespace AKStreamKeeper
                             fileIniStrings[i] = ";" + fileIniStrings[i];
                         }
                     }
-                    
-                    File.WriteAllLines(_configPath,fileIniStrings);
-                    IniData data = parser.ReadFile(_configPath,Encoding.UTF8);
+
+                    File.WriteAllLines(_configPath, fileIniStrings);
+                    IniData data = parser.ReadFile(_configPath, Encoding.UTF8);
 
                     #region 检查MediaServerId
 
@@ -342,7 +339,7 @@ namespace AKStreamKeeper
                                 ExceptMessage = ex.Message,
                                 ExceptStackTrace = ex.StackTrace,
                             };
-                            throw new AkStreamException(rs); 
+                            throw new AkStreamException(rs);
                         }
                     }
 
@@ -351,8 +348,7 @@ namespace AKStreamKeeper
                     _tmpStr = data["api"]["secret"];
                     if (!string.IsNullOrEmpty(_tmpStr))
                     {
-                        _secret = _tmpStr; 
-                       
+                        _secret = _tmpStr;
                     }
                     else
                     {
@@ -686,10 +682,11 @@ namespace AKStreamKeeper
         {
             if (_isRunning)
             {
-              var tmpPro=new ProcessHelper();
-              tmpPro.RunProcess("/bin/bash",
-                  $"-c 'killall -1 {Path.GetFileNameWithoutExtension(_process.StartInfo.FileName)}'",1000,out _,out _);
-              return _process.Id;
+                var tmpPro = new ProcessHelper();
+                tmpPro.RunProcess("/bin/bash",
+                    $"-c 'killall -1 {Path.GetFileNameWithoutExtension(_process.StartInfo.FileName)}'", 1000, out _,
+                    out _);
+                return _process.Id;
             }
 
             return -1;
@@ -705,6 +702,7 @@ namespace AKStreamKeeper
             {
                 return _pid;
             }
+
             string binDir = Path.GetDirectoryName(_binPath);
             string configDir = Path.GetDirectoryName(_configPath);
             Process ret;

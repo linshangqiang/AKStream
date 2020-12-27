@@ -31,7 +31,7 @@ namespace LibCommon
                 Process.GetProcessesByName(Path.GetFileNameWithoutExtension(filePath));
             foreach (var process in processes)
             {
-               process.Kill(); 
+                process.Kill();
             }
         }
 

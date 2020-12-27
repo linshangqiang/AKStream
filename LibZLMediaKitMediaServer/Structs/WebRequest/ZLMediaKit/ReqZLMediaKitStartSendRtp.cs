@@ -6,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
     /// 向上级推rtp流请求结构
     /// </summary>
     [Serializable]
-    public class ReqZLMediaKitStartSendRtp:ReqZLMediaKitRequestBase
+    public class ReqZLMediaKitStartSendRtp : ReqZLMediaKitRequestBase
     {
         private string _vhost;
         private string _app;
@@ -15,6 +15,8 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
         private string _dst_url;
         private string _dst_port;
         private string _is_udp;
+        private ushort _src_port;
+
 
         /// <summary>
         /// vhost
@@ -77,6 +79,15 @@ namespace LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit
         {
             get => _is_udp;
             set => _is_udp = value;
+        }
+
+        /// <summary>
+        /// 使用的本机端口，为0或不传时默认为随机端口
+        /// </summary>
+        public ushort Src_Port
+        {
+            get => _src_port;
+            set => _src_port = value;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
-using LibCommon.Structs;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.XML;
 using SIPSorcery.SIP;
@@ -13,17 +13,14 @@ namespace LibCommon
         public static string BaseStartPath = Environment.CurrentDirectory; //程序启动的目录
 
         public static string
-            BaseStartFullPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName; //程序启动的全路径
+            BaseStartFullPath = Process.GetCurrentProcess().MainModule.FileName; //程序启动的全路径
 
         public static string? WorkSpacePath = AppDomain.CurrentDomain.BaseDirectory; //程序运行的目录
         public static string? WorkSpaceFullPath = Environment.GetCommandLineArgs()[0]; //程序运行的全路径
         public static string? CommandLine = Environment.CommandLine; //程序启动命令
         public static string ConfigPath = BaseStartPath + "/Config/";
-        public static string TmpPicsPath=BaseStartPath + "/.tmppics/";//用于截图缓存
-    
-        
-        
-     
+        public static string TmpPicsPath = BaseStartPath + "/.tmppics/"; //用于截图缓存
+
 
         #region 各类事件委托
 
@@ -50,6 +47,7 @@ namespace LibCommon
         /// </summary>
         /// <param name="record"></param>
         public delegate void InviteHistroyVideoFinished(RecordInfo.Item record);
+
         /// <summary>
         /// 当收到心跳数据时
         /// </summary>
@@ -89,22 +87,19 @@ namespace LibCommon
         /// <param name="sipDevice"></param>
         /// <param name="deivceInfo"></param>
         public delegate void DeviceInfoReceived(SipDevice sipDevice, DeviceInfo deivceInfo);
-        
-     
-     
 
         #endregion
 
 
         static GCommon()
         {
-           
             //使用CodePagesEncodingProvider去注册扩展编码,以支持utf-x以外的字符集
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             if (!Directory.Exists(ConfigPath)) //如果配置文件目录不存在，则创建目录
             {
                 Directory.CreateDirectory(ConfigPath);
             }
+
             if (!Directory.Exists(TmpPicsPath))
             {
                 Directory.CreateDirectory(TmpPicsPath);

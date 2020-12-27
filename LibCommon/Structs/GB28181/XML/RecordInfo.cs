@@ -169,7 +169,7 @@ namespace LibCommon.Structs.GB28181.XML
             private PushStatus _pushStatus;
             private string _ssrcId;
             private string _stream;
-            
+
             [XmlIgnore]
             /// <summary>
             /// 额外真加SSRCId
@@ -183,6 +183,7 @@ namespace LibCommon.Structs.GB28181.XML
                 get => _ssrcId;
                 set => _ssrcId = value ?? throw new ArgumentNullException(nameof(value));
             }
+
             [XmlIgnore]
             /// <summary>
             /// 额外真加Stream
@@ -191,9 +192,9 @@ namespace LibCommon.Structs.GB28181.XML
             public string Stream
             {
                 get => _stream;
-                set => _stream = value ?? throw new ArgumentNullException(nameof(value)); 
+                set => _stream = value ?? throw new ArgumentNullException(nameof(value));
             }
-            
+
             /// <summary>
             /// 推流时的request
             /// 要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
@@ -206,6 +207,7 @@ namespace LibCommon.Structs.GB28181.XML
                 get => _inviteSipRequest;
                 set => _inviteSipRequest = value;
             }
+
             [JsonIgnore]
             [XmlIgnore]
             /// <summary>
@@ -217,6 +219,7 @@ namespace LibCommon.Structs.GB28181.XML
                 get => _inviteSipResponse;
                 set => _inviteSipResponse = value;
             }
+
             [JsonIgnore]
             [XmlIgnore]
             /// <summary>
@@ -227,19 +230,20 @@ namespace LibCommon.Structs.GB28181.XML
                 get => _sipDevice;
                 set => _sipDevice = value;
             }
+
             [JsonIgnore]
             [XmlIgnore]
             /// <summary>
             /// 录像文件所在Sip通道
             /// </summary>
-            
+
             public SipChannel? SipChannel
             {
                 get => _sipChannel;
                 set => _sipChannel = value;
             }
-            
-            
+
+
             /// <summary>
             /// 推流状态
             /// </summary>
@@ -249,7 +253,7 @@ namespace LibCommon.Structs.GB28181.XML
                 get => _mediaServerStreamInfo;
                 set => _mediaServerStreamInfo = value;
             }
-            
+
 
             /// <summary>
             /// 推流状态

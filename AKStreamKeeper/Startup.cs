@@ -1,19 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using LibCommon;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -98,14 +93,14 @@ namespace AKStreamKeeper
             {
                 // 添加文档信息
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "AKStreamKeeper", Version = "v1"});
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "AKStreamKeeper.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "AKStreamKeeper.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibCommon.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
-                if (File.Exists(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml")))
-                    c.IncludeXmlComments(Path.Combine(LibCommon.GCommon.BaseStartPath, "LibSystemInfo.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "AKStreamKeeper.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "AKStreamKeeper.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibCommon.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibCommon.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
+                if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml")))
+                    c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml"));
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -145,27 +140,29 @@ namespace AKStreamKeeper
             app.UseAuthorization();
 
 
-
             if (Common.AkStreamKeeperConfig.CustomRecordPathList != null &&
                 Common.AkStreamKeeperConfig.CustomRecordPathList.Count > 0)
             {
-                foreach (var path in  Common.AkStreamKeeperConfig.CustomRecordPathList)
+                foreach (var path in Common.AkStreamKeeperConfig.CustomRecordPathList)
                 {
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
                     }
+
                     app.UseStaticFiles(new StaticFileOptions
                     {
                         FileProvider =
                             new PhysicalFileProvider(path),
-                        OnPrepareResponse = (c) => { c.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); },
-                        RequestPath = new PathString("/"+path)
+                        OnPrepareResponse = (c) =>
+                        {
+                            c.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                        },
+                        RequestPath = new PathString("/" + path)
                     });
-                }  
+                }
             }
-           
-            
+
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using LibCommon;
 using LibCommon.Structs;
 
 namespace LibSystemInfo
@@ -13,7 +12,7 @@ namespace LibSystemInfo
         /// </summary>
         public static List<DriveInfoDiy> GetDrivesInfo()
         {
-            System.IO.DriveInfo[] driveInfoArr = System.IO.DriveInfo.GetDrives();
+            DriveInfo[] driveInfoArr = DriveInfo.GetDrives();
             List<DriveInfoDiy> result = new List<DriveInfoDiy>();
             foreach (var drv in driveInfoArr)
             {

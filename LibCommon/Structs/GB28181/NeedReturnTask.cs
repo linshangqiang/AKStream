@@ -25,8 +25,8 @@ namespace LibCommon.Structs.GB28181
         private SipChannel _sipChannel;
         private SipDevice _sipDevice;
         private CommandType _commandType;
-        private AutoResetEvent? _autoResetEvent2;//锁二，用于特殊的数据同步，如获取sip录像列表
-        private object? _obj;//额外的通用类
+        private AutoResetEvent? _autoResetEvent2; //锁二，用于特殊的数据同步，如获取sip录像列表
+        private object? _obj; //额外的通用类
 
 
         /// <summary>

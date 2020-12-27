@@ -7,11 +7,11 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using LibCommon.Structs;
-using LibCommon.Structs.GB28181;
 using Newtonsoft.Json;
 
 namespace LibCommon
@@ -34,27 +34,34 @@ namespace LibCommon
             }
 
             ProcessHelper tmpProcessHelper = new ProcessHelper(null, null, null);
-            tmpProcessHelper.RunProcess(ffpath, "", 1000, out string std, out string err);
-
-            if (!string.IsNullOrEmpty(std))
+            try
             {
-                if (std.ToLower().Contains("ffmpeg version"))
-                {
-                    return true;
-                }
-            }
+                tmpProcessHelper.RunProcess(ffpath, "", 1000, out string std, out string err);
 
-            if (!string.IsNullOrEmpty(err))
+                if (!string.IsNullOrEmpty(std))
+                {
+                    if (std.ToLower().Contains("ffmpeg version"))
+                    {
+                        return true;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(err))
+                {
+                    if (err.ToLower().Contains("ffmpeg version"))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch
             {
-                if (err.ToLower().Contains("ffmpeg version"))
-                {
-                    return true;
-                }
+                return false;
             }
-
-            return false;
         }
-        
+
         /// <summary>
         /// 是否是正常可用的端口
         /// </summary>
@@ -92,10 +99,11 @@ namespace LibCommon
                 var ret = ipEndPoints.FindLast(x => x.Port == port);
                 return ret == null ? false : true;
             }
+
             return false;
         }
 
-       
+
         /// <summary>
         /// DateTime转时间戳
         /// </summary>
@@ -105,7 +113,7 @@ namespace LibCommon
         public static string ConvertTimestamp(DateTime time, int type = 0)
         {
             double intResult = 0;
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
             if (type == 0)
             {
                 intResult = (time - startTime).TotalMilliseconds;
@@ -143,7 +151,7 @@ namespace LibCommon
             {
                 MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
                 byte[] bytValue, bytHash;
-                bytValue = System.Text.Encoding.UTF8.GetBytes(str);
+                bytValue = Encoding.UTF8.GetBytes(str);
                 bytHash = md5.ComputeHash(bytValue);
                 md5.Clear();
                 string sTemp = "";

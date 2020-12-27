@@ -15,7 +15,6 @@
 //-----------------------------------------------------------------------------
 
 using System;
-using System.Net;
 using Microsoft.Extensions.Logging;
 
 namespace SIPSorcery.SIP

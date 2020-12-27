@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
 using LibCommon;
 using LibCommon.Enums;
 using LibCommon.Structs;
@@ -17,12 +15,12 @@ namespace Test_SipGate
     {
         public static void OnRegister(string sipDeviceJson)
         {
-         //   Console.WriteLine("=================设备注册了->" + sipDeviceJson);
+            //   Console.WriteLine("=================设备注册了->" + sipDeviceJson);
         }
 
         public static void OnUnRegister(string sipDeviceJson)
         {
-           // Console.WriteLine("=================设备注销了->" + sipDeviceJson);
+            // Console.WriteLine("=================设备注销了->" + sipDeviceJson);
         }
 
         public static void OnKeepalive(string deviceId, DateTime keepAliveTime, int lostTimes)
@@ -35,27 +33,28 @@ namespace Test_SipGate
 
         public static void OnDeviceStatusReceived(SipDevice sipDevice, DeviceStatus deviceStatus)
         {
-         //   Console.WriteLine("=================收到设备状态信息->" + sipDevice.DeviceId+"->\r\n"+JsonHelper.ToJson(deviceStatus,Formatting.Indented));  
+            //   Console.WriteLine("=================收到设备状态信息->" + sipDevice.DeviceId+"->\r\n"+JsonHelper.ToJson(deviceStatus,Formatting.Indented));  
         }
 
         public static void OnInviteHistoryVideoFinished(RecordInfo.Item record)
         {
-            Console.WriteLine("=================收到回放流结束通知->\r\n" + JsonHelper.ToJson(record,Formatting.Indented));  
+            Console.WriteLine("=================收到回放流结束通知->\r\n" + JsonHelper.ToJson(record, Formatting.Indented));
         }
 
         public static void OnDeviceReadyReceived(SipDevice sipDevice)
         {
             ResponseStruct rs;
-          //  Console.WriteLine("=================收到设备就绪通知->" + sipDevice.DeviceId);
+            //  Console.WriteLine("=================收到设备就绪通知->" + sipDevice.DeviceId);
             SipMethodProxy sipMethodProxy = new SipMethodProxy(5000);
             if (sipMethodProxy.DeviceCatalogQuery(sipDevice, out rs))
             {
-                Console.WriteLine("=================设备目录获取成功->" + JsonHelper.ToJson(sipDevice.SipChannels,Formatting.Indented));
+                Console.WriteLine("=================设备目录获取成功->" +
+                                  JsonHelper.ToJson(sipDevice.SipChannels, Formatting.Indented));
             }
             else
             {
-                Console.WriteLine("=================设备目录获取失败->" + sipDevice.DeviceId+"\r\n"+JsonHelper.ToJson(rs,Formatting.Indented)); 
- 
+                Console.WriteLine("=================设备目录获取失败->" + sipDevice.DeviceId + "\r\n" +
+                                  JsonHelper.ToJson(rs, Formatting.Indented));
             }
 
             SipMethodProxy sipMethodProxy2 = new SipMethodProxy(5000);
@@ -65,8 +64,8 @@ namespace Test_SipGate
             }
             else
             {
-                Console.WriteLine("=================获取设备信息失败->" + sipDevice.DeviceId+"\r\n"+JsonHelper.ToJson(rs,Formatting.Indented)); 
-
+                Console.WriteLine("=================获取设备信息失败->" + sipDevice.DeviceId + "\r\n" +
+                                  JsonHelper.ToJson(rs, Formatting.Indented));
             }
 
             SipMethodProxy sipMethodProxy3 = new SipMethodProxy(5000);
@@ -76,7 +75,8 @@ namespace Test_SipGate
             }
             else
             {
-                 Console.WriteLine("=================获取设备状态信息失败->" + sipDevice.DeviceId+"\r\n"+JsonHelper.ToJson(rs,Formatting.Indented)); 
+                Console.WriteLine("=================获取设备状态信息失败->" + sipDevice.DeviceId + "\r\n" +
+                                  JsonHelper.ToJson(rs, Formatting.Indented));
             }
         }
 
@@ -93,8 +93,7 @@ namespace Test_SipGate
                 Console.WriteLine("[Debug]\t程序运行路径:" + GCommon.WorkSpacePath);
                 Console.WriteLine("[Debug]\t程序运行全路径:" + GCommon.WorkSpaceFullPath);
                 Console.WriteLine("[Debug]\t程序启动命令:" + GCommon.CommandLine);
-         
-                
+
 
 #endif
 
@@ -189,25 +188,29 @@ namespace Test_SipGate
 
                                     var sipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(aa[1]));
                                     if (sipDevice == null)
-                                    { Logger.Info("----------------------------------------命令->请求获取设备录像文件列表时发现设备不存在");
+                                    {
+                                        Logger.Info("----------------------------------------命令->请求获取设备录像文件列表时发现设备不存在");
                                         break;
                                     }
+
                                     var sipChannel = sipDevice.SipChannels.FindLast(x => x.DeviceId.Equals(aa[2]));
                                     if (sipDevice != null && sipChannel != null)
                                     {
                                         SipQueryRecordFile sipQueryRecordFile = new SipQueryRecordFile();
                                         sipQueryRecordFile.SipRecordFileQueryType = SipRecordFileQueryType.all;
                                         sipQueryRecordFile.StartTime = DateTime.Parse("2020-12-12 22:00:00");
-                                        sipQueryRecordFile.EndTime =  DateTime.Parse("2020-12-13 23:00:00");
+                                        sipQueryRecordFile.EndTime = DateTime.Parse("2020-12-13 23:00:00");
                                         SipMethodProxy sipMethodProxy = new SipMethodProxy(5000);
                                         var ret = sipMethodProxy.QueryRecordFileList(sipChannel, sipQueryRecordFile,
                                             out rs);
                                         if (ret)
                                         {
                                             Logger.Info("----------------------------------------命令->请求获取设备录像文件列表成功");
-                                         
+
                                             Logger.Info("----------------------------------------查询收到的录像文件列表\r\n" +
-                                                         JsonHelper.ToJson(sipChannel.GetLastRecordInfoList(OrderBy.DESC), Formatting.Indented));
+                                                        JsonHelper.ToJson(
+                                                            sipChannel.GetLastRecordInfoList(OrderBy.DESC),
+                                                            Formatting.Indented));
                                         }
                                         else
                                         {
@@ -236,7 +239,8 @@ namespace Test_SipGate
                                         }
                                         else
                                         {
-                                            Logger.Info("----------------------------------------命令->请求终止实时流失败"+JsonHelper.ToJson(rs,Formatting.Indented));
+                                            Logger.Info("----------------------------------------命令->请求终止实时流失败" +
+                                                        JsonHelper.ToJson(rs, Formatting.Indented));
                                         }
                                     }
                                 }
@@ -265,7 +269,7 @@ namespace Test_SipGate
                                 }
 
                                 break;
-                           
+
                             case "EXIT":
                                 return;
                             case "L":
@@ -328,13 +332,12 @@ namespace Test_SipGate
                                         var ret = sipMethodProxy.Invite(sipChannel, pushMediaInfo, out rs);
                                         if (ret)
                                         {
-                                            Logger.Info("----------------------------------------命令->请求实时流成功"); 
-                                           
+                                            Logger.Info("----------------------------------------命令->请求实时流成功");
                                         }
                                         else
                                         {
                                             Logger.Info("----------------------------------------命令->请求实时流失败\r\n" +
-                                                         JsonHelper.ToJson(rs));
+                                                        JsonHelper.ToJson(rs));
                                         }
                                     }
                                 }
@@ -343,7 +346,6 @@ namespace Test_SipGate
                             case "I":
                                 if (aa.Length > 4)
                                 {
-                                   
                                     //I 34020000001110000001 34020000001320000008 1323362910 192.168.2.43
                                     string sipdeviceid = aa[1];
                                     string sipchaid = aa[2];
@@ -364,21 +366,23 @@ namespace Test_SipGate
                                                 pushMediaInfo.MediaServerIpAddress = medip;
                                                 pushMediaInfo.PushStreamSocketType = PushStreamSocketType.UDP;
                                                 SipMethodProxy sipMethodProxy = new SipMethodProxy(5000);
-                                                var ret = sipMethodProxy.InviteRecord(record.Value, pushMediaInfo, out rs);
+                                                var ret = sipMethodProxy.InviteRecord(record.Value, pushMediaInfo,
+                                                    out rs);
                                                 if (ret)
                                                 {
-                                                    Logger.Info("----------------------------------------命令->请求回放流成功"); 
-                                           
+                                                    Logger.Info("----------------------------------------命令->请求回放流成功");
                                                 }
                                                 else
                                                 {
-                                                    Logger.Info("----------------------------------------命令->请求回放流失败\r\n" +
-                                                                JsonHelper.ToJson(rs));
-                                                } 
+                                                    Logger.Info(
+                                                        "----------------------------------------命令->请求回放流失败\r\n" +
+                                                        JsonHelper.ToJson(rs));
+                                                }
                                             }
                                             else
                                             {
-                                                Logger.Info("----------------------------------------命令->请求回放流时发生录像文件不存在");   
+                                                Logger.Info(
+                                                    "----------------------------------------命令->请求回放流时发生录像文件不存在");
                                             }
                                         }
                                         else
@@ -396,7 +400,6 @@ namespace Test_SipGate
                             case "KI":
                                 if (aa.Length > 4)
                                 {
-                                   
                                     //I 34020000001110000001 34020000001320000008 1323362910 192.168.2.43
                                     string sipdeviceid = aa[1];
                                     string sipchaid = aa[2];
@@ -412,28 +415,30 @@ namespace Test_SipGate
                                                 sipchann.LastRecordInfos.FindLast(x => x.Value.SsrcId.Equals(recordid));
                                             if (record.Value != null)
                                             {
-                                             
                                                 SipMethodProxy sipMethodProxy = new SipMethodProxy(5000);
                                                 var ret = sipMethodProxy.DeInvite(record.Value, out rs);
                                                 if (ret)
                                                 {
-                                                    Logger.Info("----------------------------------------命令->请求终止回放流成功"); 
-                                           
+                                                    Logger.Info(
+                                                        "----------------------------------------命令->请求终止回放流成功");
                                                 }
                                                 else
                                                 {
-                                                    Logger.Info("----------------------------------------命令->请求终止回放流失败\r\n" +
-                                                                JsonHelper.ToJson(rs));
-                                                } 
+                                                    Logger.Info(
+                                                        "----------------------------------------命令->请求终止回放流失败\r\n" +
+                                                        JsonHelper.ToJson(rs));
+                                                }
                                             }
                                             else
                                             {
-                                                Logger.Info("----------------------------------------命令->请求终止回放流时发生录像文件不存在");   
+                                                Logger.Info(
+                                                    "----------------------------------------命令->请求终止回放流时发生录像文件不存在");
                                             }
                                         }
                                         else
                                         {
-                                            Logger.Info("----------------------------------------命令->请求终止回放流时发生sip通道不存在");
+                                            Logger.Info(
+                                                "----------------------------------------命令->请求终止回放流时发生sip通道不存在");
                                         }
                                     }
                                     else

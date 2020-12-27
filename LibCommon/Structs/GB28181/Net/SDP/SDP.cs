@@ -13,7 +13,7 @@ namespace LibCommon.Structs.GB28181.Net.SDP
         public const string ICE_UFRAG_ATTRIBUTE_PREFIX = "ice-ufrag";
         public const string ICE_PWD_ATTRIBUTE_PREFIX = "ice-pwd";
         public const string ICE_CANDIDATE_ATTRIBUTE_PREFIX = "candidate";
-        
+
         public decimal Version = SDP_PROTOCOL_VERSION;
 
         // Owner fields.

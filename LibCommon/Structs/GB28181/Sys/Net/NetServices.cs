@@ -67,7 +67,7 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                         attempts++;
                     }
                 }
-                
+
                 return randomClient;
             }
             catch
@@ -85,7 +85,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
 
             lock (_allocatePortsMutex)
             {
-
                 var inUseUDPPorts =
                     (from p in IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners()
                         where p.Port >= startPort && p.Port <= endPort &&
@@ -152,7 +151,6 @@ namespace LibCommon.Structs.GB28181.Sys.Net
                                 controlSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
                                     ProtocolType.Udp);
                                 controlSocket.Bind(new IPEndPoint(localAddress, controlPort));
-
                             }
 
                             bindSuccess = true;

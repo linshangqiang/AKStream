@@ -1,5 +1,4 @@
 using System;
-using System.Security;
 
 namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
 {
@@ -7,7 +6,7 @@ namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
     /// 踢掉多个session的回复结构
     /// </summary>
     [Serializable]
-    public class ResZLMediaKitKickSessions:ResZLMediaKitKickSession
+    public class ResZLMediaKitKickSessions : ResZLMediaKitKickSession
     {
         private int _count_hit;
 

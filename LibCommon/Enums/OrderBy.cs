@@ -7,6 +7,5 @@ namespace LibCommon.Enums
     {
         ASC,
         DESC,
-        
     }
 }

@@ -11,7 +11,6 @@ using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.Net.SIP;
 using LibCommon.Structs.GB28181.XML;
 using LibLogger;
-using Newtonsoft.Json;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
 
@@ -581,39 +580,43 @@ namespace LibGB28181SipServer
         /// <returns></returns>
         private static bool CheckDeviceAuthenticationNeed(string sipDeviceId, string ipv4, string ipv6)
         {
-         var found=   Common.SipServerConfig.NoAuthenticationRequireds.FindAll(x => x.DeviceId.Equals(sipDeviceId.Trim()));
-         if (found != null && found.Count > 0)
-         {
-             foreach (var obj in found)
-             {
-                 if (obj != null)
-                 {
-                     string tmpIpv4 = obj.IpV4Address;
-                     string tmpIpv6 = obj.IpV6Address;
-                     if (string.IsNullOrEmpty(tmpIpv4) && string.IsNullOrEmpty(tmpIpv6))
-                     {
-                         return false;//如果没有指定ip,则sipdeivceid一致，不需要鉴权
-                     }
-                     
-                     if (!string.IsNullOrEmpty(tmpIpv4) && !string.IsNullOrEmpty(ipv4))
-                     {
-                         if (tmpIpv4.Trim().Equals(ipv4.Trim()))
-                         {
-                             return false;//ipv4一致，不需要鉴权
-                         }
-                     }
-                     if (!string.IsNullOrEmpty(tmpIpv6) && !string.IsNullOrEmpty(ipv6))
-                     {
-                         if (tmpIpv6.Trim().Equals(ipv6.Trim()))
-                         {
-                             return false;//ipv6一致，不需要鉴权
-                         }
-                     }
-                 }
-             }   
-         }
-         return true;//需要鉴权
+            var found = Common.SipServerConfig.NoAuthenticationRequireds.FindAll(x =>
+                x.DeviceId.Equals(sipDeviceId.Trim()));
+            if (found != null && found.Count > 0)
+            {
+                foreach (var obj in found)
+                {
+                    if (obj != null)
+                    {
+                        string tmpIpv4 = obj.IpV4Address;
+                        string tmpIpv6 = obj.IpV6Address;
+                        if (string.IsNullOrEmpty(tmpIpv4) && string.IsNullOrEmpty(tmpIpv6))
+                        {
+                            return false; //如果没有指定ip,则sipdeivceid一致，不需要鉴权
+                        }
+
+                        if (!string.IsNullOrEmpty(tmpIpv4) && !string.IsNullOrEmpty(ipv4))
+                        {
+                            if (tmpIpv4.Trim().Equals(ipv4.Trim()))
+                            {
+                                return false; //ipv4一致，不需要鉴权
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(tmpIpv6) && !string.IsNullOrEmpty(ipv6))
+                        {
+                            if (tmpIpv6.Trim().Equals(ipv6.Trim()))
+                            {
+                                return false; //ipv6一致，不需要鉴权
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true; //需要鉴权
         }
+
         /// <summary>
         /// 处理sip设备注册事件
         /// </summary>
@@ -626,7 +629,6 @@ namespace LibGB28181SipServer
             SIPEndPoint remoteEndPoint,
             SIPRequest sipRequest)
         {
-            
             Logger.Debug(
                 $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的Sip设备注册信息->{sipRequest}");
 
@@ -679,7 +681,8 @@ namespace LibGB28181SipServer
                 }
                 else
                 {
-                    if (Common.SipServerConfig.Authentication && CheckDeviceAuthenticationNeed(sipDeviceId,sipDeviceIpV4Address,sipDeviceIpV6Address))
+                    if (Common.SipServerConfig.Authentication &&
+                        CheckDeviceAuthenticationNeed(sipDeviceId, sipDeviceIpV4Address, sipDeviceIpV6Address))
                     {
                         if (sipRequest.Header.AuthenticationHeader == null)
                         {
@@ -1020,9 +1023,9 @@ namespace LibGB28181SipServer
                                     await InviteOk(sipResponse, record);
                                     if (_task.TimeoutCheckTimer != null && _task.TimeoutCheckTimer.Enabled == true)
                                     {
-                                        _task.TimeoutCheckTimer.Enabled = false;//不再执行超时自动销毁，回放结束后会有事件通知
-                                        
+                                        _task.TimeoutCheckTimer.Enabled = false; //不再执行超时自动销毁，回放结束后会有事件通知
                                     }
+
                                     Common.NeedResponseRequests.TryAdd(
                                         "MEDIASTATUS" + sipResponse.Header.CallId,
                                         _task); //再次加入等待列表,播放完成时会回调,使用同一个callid

@@ -3,7 +3,7 @@ using System;
 namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
 {
     [Serializable]
-    public class ResZLMediaKitIsRecording:ResZLMediaKitResponseBase
+    public class ResZLMediaKitIsRecording : ResZLMediaKitResponseBase
     {
         private bool _status;
 

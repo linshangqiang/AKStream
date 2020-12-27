@@ -3,9 +3,8 @@ using System;
 namespace LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit
 {
     [Serializable]
-    public class ResZLMediaKitGetRtpInfo:ResZLMediaKitResponseBase
+    public class ResZLMediaKitGetRtpInfo : ResZLMediaKitResponseBase
     {
-       
         private bool _exist;
         private string _peer_ip;
         private int _peer_port;
