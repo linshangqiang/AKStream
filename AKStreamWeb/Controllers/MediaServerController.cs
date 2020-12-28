@@ -2,12 +2,15 @@ using AKStreamWeb.Attributes;
 using AKStreamWeb.Services;
 using LibCommon;
 using LibCommon.Structs;
+using LibCommon.Structs.WebRequest;
 using LibCommon.Structs.WebResponse;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace AKStreamWeb.Controllers.WebHook
 {
+    [Log]
+    [AuthVerify]
     [ApiController]
     [Route("/MediaServer")]
     [SwaggerTag("流媒体相关接口")]
@@ -19,8 +22,7 @@ namespace AKStreamWeb.Controllers.WebHook
         /// <returns></returns>
         [Route("WebHook/MediaServerKeepAlive")]
         [HttpPost]
-        [Log]
-        public ResMediaServerKeepAlive MediaServerKeepAlive(MediaServerKeepAlive req)
+        public ResMediaServerKeepAlive MediaServerKeepAlive(ReqMediaServerKeepAlive req)
         {
             ResponseStruct rs;
             var ret = MediaServerService.MediaServerKeepAlive(req, out rs);

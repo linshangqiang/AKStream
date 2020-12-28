@@ -3,7 +3,7 @@ using System;
 namespace LibCommon.Structs.WebResponse
 {
     [Serializable]
-    public class ResMediaServerKeepAlive : AKStreamWebResponseBase
+    public class ResMediaServerKeepAlive : ResAKStreamWebResponseBase
     {
         private bool _recommendTimeSynchronization = false;
         private DateTime _serverDateTime;

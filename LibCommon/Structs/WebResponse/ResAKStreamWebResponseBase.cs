@@ -6,7 +6,7 @@ namespace LibCommon.Structs.WebResponse
     /// web回复结构基类
     /// </summary>
     [Serializable]
-    public class AKStreamWebResponseBase
+    public class ResAKStreamWebResponseBase
     {
         private ResponseStruct _rs;
 

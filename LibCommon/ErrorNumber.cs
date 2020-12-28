@@ -28,6 +28,8 @@ namespace LibCommon
         Sys_WriteIniFileExcept = -1015, //写入ini文件异常
         Sys_SocketPortForRtpExcept = -1016, //查找可用rtp端口时异常，可能已无可用端口
         Sys_SpecifiedFileNotExist = -1017, //指定文件不存在
+        Sys_InvalidAccessKey=-1018,//访问密钥失效
+        Sys_AKStreamKeeperNotRunning=-1019,//AKStreamKeeper流媒体服务器治理程序没有运行
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
@@ -86,6 +88,8 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sys_WriteIniFileExcept] = "写入ini文件异常";
             ErrorDic[ErrorNumber.Sys_SocketPortForRtpExcept] = "查找可用rtp端口时异常，可能已无可用端口";
             ErrorDic[ErrorNumber.Sys_SpecifiedFileNotExist] = "指定文件不存在";
+            ErrorDic[ErrorNumber.Sys_InvalidAccessKey] = "访问密钥失效";
+            ErrorDic[ErrorNumber.Sys_AKStreamKeeperNotRunning] = "AKStreamKeeper流媒体服务器治理程序没有运行";
             ErrorDic[ErrorNumber.Sip_StartExcept] = "启动Sip服务异常";
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";

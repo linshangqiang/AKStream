@@ -101,6 +101,7 @@ namespace AKStreamKeeper
                     c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibZLMediaKitMediaServer.xml"));
                 if (File.Exists(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml")))
                     c.IncludeXmlComments(Path.Combine(GCommon.BaseStartPath, "LibSystemInfo.xml"));
+           
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -133,7 +134,14 @@ namespace AKStreamKeeper
             // 启用Swagger中间件
             app.UseSwagger();
             // 配置SwaggerUI
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "AKStreamKeeper"); });
+            app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AKStreamKeeper");
+                    
+                }
+                
+                
+            );
             app.UseRouting();
             app.UseCors("cors");
             app.UseMiddleware<ExceptionMiddleware>(); //ExceptionMiddleware 加入管道

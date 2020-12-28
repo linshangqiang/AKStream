@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace LibCommon.Structs
+namespace LibCommon.Structs.WebRequest.AKStreamKeeper
 {
     /// <summary>
     /// 
     /// </summary>
     [Serializable]
-    public enum TaskStatus
+    public enum MyTaskStatus
     {
         Create,
         Packaging,
@@ -22,13 +22,13 @@ namespace LibCommon.Structs
     /// 
     /// </summary>
     [Serializable]
-    public class CutMergeTask
+    public class ReqKeeperCutMergeTask
     {
         private List<CutMergeStruct>? _cutMergeFileList;
         private string? _taskId;
         private string? _callbakUrl;
         private DateTime _createTime;
-        private TaskStatus? _taskStatus;
+        private MyTaskStatus? _taskStatus;
         private string? _playUrl;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace LibCommon.Structs
         /// 
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
-        public TaskStatus? TaskStatus
+        public MyTaskStatus? TaskStatus
         {
             get => _taskStatus;
             set => _taskStatus = value;

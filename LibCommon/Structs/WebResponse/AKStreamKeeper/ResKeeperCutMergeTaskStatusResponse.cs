@@ -1,14 +1,15 @@
 using System;
+using LibCommon.Structs.WebRequest.AKStreamKeeper;
 
-namespace LibCommon.Structs.WebResponse
+namespace LibCommon.Structs.WebResponse.AKStreamKeeper
 {
     [Serializable]
-    public class CutMergeTaskStatusResponse
+    public class ResKeeperCutMergeTaskStatusResponse
     {
         private string? _taskId;
         private string? _callbakUrl;
         private DateTime _createTime;
-        private TaskStatus? _taskStatus;
+        private MyTaskStatus? _taskStatus;
         private string? _playUrl;
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace LibCommon.Structs.WebResponse
             set => _createTime = value;
         }
 
-        public TaskStatus? TaskStatus
+        public MyTaskStatus? TaskStatus
         {
             get => _taskStatus;
             set => _taskStatus = value;

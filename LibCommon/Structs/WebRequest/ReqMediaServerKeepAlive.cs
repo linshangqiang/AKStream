@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace LibCommon.Structs
+namespace LibCommon.Structs.WebRequest
 {
     /// <summary>
     /// 流媒体服务器的心跳结构
     /// </summary>
     [Serializable]
-    public class MediaServerKeepAlive
+    public class ReqMediaServerKeepAlive
     {
         private string _ipV4Address;
         private string _ipV6Address;
@@ -29,6 +29,8 @@ namespace LibCommon.Structs
         private DateTime _serverDateTime; //流媒体服务器当前时间
         private PerformanceInfo? _performanceInfo;
         private bool _firstPost = false;
+        private string _accessKey;
+        private bool _mediaServerIsRunning = false;
 
 
         /// <summary>
@@ -187,6 +189,21 @@ namespace LibCommon.Structs
         {
             get => _firstPost;
             set => _firstPost = value;
+        }
+
+        public string AccessKey
+        {
+            get => _accessKey;
+            set => _accessKey = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// 流媒体服务器是否正在运行
+        /// </summary>
+        public bool MediaServerIsRunning
+        {
+            get => _mediaServerIsRunning;
+            set => _mediaServerIsRunning = value;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace AKStreamWeb
         private static string _loggerHead = "AKStreamWeb";
         private static ORMHelper _ormHelper;
         private static string _configPath = GCommon.ConfigPath + "AKStreamWeb.json";
+        public static bool IsDebug = false;
 
 
         /// <summary>
@@ -107,6 +108,7 @@ namespace AKStreamWeb
                     OrmConnStr = "请配置正确的数据库连接字符串",
                     DbType = "请配置正确的数据库类型如 MySql、Sqlite等",
                     WebApiPort = 5800,
+                    AccessKey = UtilsHelper.generalGuid(),
                 };
                 try
                 {
@@ -196,9 +198,11 @@ namespace AKStreamWeb
             Console.WriteLine("[Debug]\t程序运行路径:" + GCommon.WorkSpacePath);
             Console.WriteLine("[Debug]\t程序运行全路径:" + GCommon.WorkSpaceFullPath);
             Console.WriteLine("[Debug]\t程序启动命令:" + GCommon.CommandLine);
+            IsDebug = true;
+
 
 #endif
-            /*try
+            try
             {
                 OrmHelper = new ORMHelper(AkStreamWebConfig.OrmConnStr, AkStreamWebConfig.DbType);
             }
@@ -225,7 +229,7 @@ namespace AKStreamWeb
                 Logger.Error(
                     $"[{LoggerHead}]->数据库连接异常,系统无法运行->\r\n{JsonHelper.ToJson(rsa, Formatting.Indented)}\r\n系统支持以下数据库连接,请根据下表正确设置dBType字段->\r\n{supportDataBaseList}");
                 Environment.Exit(0); //退出程序
-            }*/
+            }
 
             SipServer = new SipServer();
             SipMsgProcess.OnRegisterReceived += SipServerCallBack.OnRegister;

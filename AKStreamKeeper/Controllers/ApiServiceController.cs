@@ -1,12 +1,16 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using AKStreamKeeper.Attributes;
 using AKStreamKeeper.Services;
 using LibCommon;
+using LibCommon.Structs.WebResponse.AKStreamKeeper;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace AKStreamKeeper.Controllers
 {
+    [Log]
+    [AuthVerify]
     [ApiController]
     [Route("/ApiService")]
     [SwaggerTag("流媒体服务器相关接口")]
@@ -15,11 +19,12 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 获取流媒体服务器运行状态
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns>返回pid,大于0说明正在运行，否则为未运行</returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("CheckMediaServerRunning")]
         [HttpGet]
-        public int CheckMediaServerRunning()
+        public int CheckMediaServerRunning([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = ApiService.CheckMediaServerRunning(out rs);
@@ -31,14 +36,16 @@ namespace AKStreamKeeper.Controllers
             return ret;
         }
 
+
         /// <summary>
         /// 热加载流媒体服务器配置
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("ReloadMediaServer")]
         [HttpGet]
-        public bool ReloadMediaServer()
+        public bool ReloadMediaServer([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = ApiService.ReloadMediaServer(out rs);
@@ -53,11 +60,12 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 重启流媒体服务器
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("RestartMediaServer")]
         [HttpGet]
-        public int RestartMediaServer()
+        public int RestartMediaServer([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = ApiService.RestartMediaServer(out rs);
@@ -72,11 +80,12 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 终止流媒体服务器
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("ShutdownMediaServer")]
         [HttpGet]
-        public bool ShutdownMediaServer()
+        public bool ShutdownMediaServer([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = ApiService.ShutdownMediaServer(out rs);
@@ -91,11 +100,12 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 启动流媒体服务器
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("StartMediaServer")]
         [HttpGet]
-        public int StartMediaServer()
+        public int StartMediaServer([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = ApiService.StartMediaServer(out rs);
@@ -110,11 +120,13 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 清理空目录
         /// </summary>
+        /// <param name="AccessKey"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("CleanUpEmptyDir")]
         [HttpGet]
-        public bool CleanUpEmptyDir(string? filePath = "")
+        public bool CleanUpEmptyDir([FromHeader(Name = "AccessKey")] string AccessKey, string? filePath = "")
         {
             ResponseStruct rs;
             var ret = ApiService.CleanUpEmptyDir(out rs);
@@ -129,12 +141,13 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 批量删除文件
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <param name="fileList"></param>
         /// <returns>当有文件未正常删除时返回这些文件列表</returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("DeleteFileList")]
         [HttpPost]
-        public List<string> DeleteFileList(List<string> fileList)
+        public ResKeeperDeleteFileList DeleteFileList([FromHeader(Name = "AccessKey")] string AccessKey, List<string> fileList)
         {
             ResponseStruct rs;
             var ret = ApiService.DeleteFileList(fileList, out rs);
@@ -149,12 +162,13 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 文件是否存在
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        /// <exception cref="HttpResponseException"></exception>
+        /// <exception cref="AkStreamException"></exception>
         [Route("FileExists")]
         [HttpGet]
-        public bool FileExists(string filePath)
+        public bool FileExists([FromHeader(Name = "AccessKey")] string AccessKey, string filePath)
         {
             ResponseStruct rs;
             var ret = ApiService.FileExists(filePath, out rs);
@@ -169,11 +183,11 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 健康检测
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
         [Route("WebApiHealth")]
         [HttpGet]
-        [Log]
-        public string WebApiHealth()
+        public string WebApiHealth([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             return "OK";
         }
@@ -181,13 +195,13 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 删除一个指定的文件
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <param name="filePath"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("DeleteFile")]
         [HttpGet]
-        [Log]
-        public bool DeleteFile(string filePath)
+        public bool DeleteFile([FromHeader(Name = "AccessKey")] string AccessKey, string filePath)
         {
             ResponseStruct rs;
             var ret = ApiService.DeleteFile(filePath, out rs);
@@ -200,14 +214,17 @@ namespace AKStreamKeeper.Controllers
         }
 
         /// <summary>
-        /// 获取一个可用的rtp端口（配置文件中minPort-maxPort的范围内的偶数端口）
+        ///  获取一个可用的rtp端口（配置文件中minPort-maxPort的范围内的偶数端口）
         /// </summary>
+        /// <param name="AccessKey"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
         /// <returns></returns>
         /// <exception cref="AkStreamException"></exception>
         [Route("GuessAnRtpPort")]
         [HttpGet]
-        [Log]
-        public ushort GuessAnRtpPort(ushort? min = 0, ushort? max = 0)
+        public ushort GuessAnRtpPort([FromHeader(Name = "AccessKey")] string AccessKey, ushort? min = 0,
+            ushort? max = 0)
         {
             ResponseStruct rs;
             var ret = ApiService.GuessAnRtpPort(out rs, min, max);

@@ -23,10 +23,12 @@ namespace LibZLMediaKitMediaServer
         private int _zlmediakitPid;
         private DateTime _keepAliveTime;
         private WebApiHelper _webApiHelper;
+        private KeeperWebApi _keeperWebApi;
         private List<KeyValuePair<double, string>> _recordPathList;
         private ushort _rtpPortMin;
         private ushort _rtpPortMax; //仅使用min-max中的偶数类端口
-        private bool _isRunning;
+        private bool _isKeeperRunning;
+        private bool _isMediaServerRunning;
         private bool _useSSL;
         private ushort _httpsPort;
         private ushort _rtmpsPort;
@@ -35,6 +37,7 @@ namespace LibZLMediaKitMediaServer
         private ushort _rtmpPort;
         private ushort _rtspPort;
         private uint _zlmRecordFileSec;
+        private string _accessKey;
         private DateTime _serverDateTime;
         private PerformanceInfo? _performanceInfo;
         private ResZLMediaKitConfig? _config;
@@ -66,10 +69,40 @@ namespace LibZLMediaKitMediaServer
                     var ret = _webApiHelper.GetServerConfig(out ResponseStruct rs);
                     if (ret != null && rs.Code == ErrorNumber.None)
                     {
-                        this._config = ret;
+                        _config = ret;
+                    }
+                }
+                if (Math.Abs((DateTime.Now - _keepAliveTime).Seconds) > 10 || _countmod % 30 == 0)//如果超过10秒没有心跳，就主动查一次健康情况，同时30秒必须查询一次
+                {
+                    var ret = _webApiHelper.GetThreadsLoad(out ResponseStruct rs);
+                    if (!rs.Code.Equals(ErrorNumber.None))
+                    {
+                        _isMediaServerRunning = false;
+                    }
+                    else
+                    {
+                        _isMediaServerRunning = true;
+                    }
+                }
+                
+            }
+
+            if (_keeperPort != null)
+            {
+                if (Math.Abs((DateTime.Now - _keepAliveTime).Seconds) > 10 || _countmod % 10 == 0)//如果超过10秒没有心跳，就主动查一次健康情况，同时10秒必须查询一次
+                {
+                    var ret = _keeperWebApi.KeeperHealth(out ResponseStruct rs);
+                    if (!rs.Code.Equals(ErrorNumber.None))
+                    {
+                        _isKeeperRunning = false;
+                    }
+                    else
+                    {
+                        _isKeeperRunning = true;
                     }
                 }
             }
+            
         }
 
         private void startTimer()
@@ -161,6 +194,11 @@ namespace LibZLMediaKitMediaServer
             set => _webApiHelper = value;
         }
 
+        public KeeperWebApi KeeperWebApi
+        {
+            get => _keeperWebApi;
+            set => _keeperWebApi = value;
+        }
 
         public List<KeyValuePair<double, string>> RecordPathList
         {
@@ -192,10 +230,16 @@ namespace LibZLMediaKitMediaServer
             set => _performanceInfo = value;
         }
 
-        public bool IsRunning
+        public bool IsKeeperRunning
         {
-            get => _isRunning;
-            set => _isRunning = value;
+            get => _isKeeperRunning;
+            set => _isKeeperRunning = value;
+        }
+
+        public bool IsMediaServerRunning
+        {
+            get => _isMediaServerRunning;
+            set => _isMediaServerRunning = value;
         }
 
         public bool UseSsl
@@ -245,6 +289,12 @@ namespace LibZLMediaKitMediaServer
         {
             get => _zlmRecordFileSec;
             set => _zlmRecordFileSec = value;
+        }
+
+        public string AccessKey
+        {
+            get => _accessKey;
+            set => _accessKey = value;
         }
 
         public DateTime ServerDateTime

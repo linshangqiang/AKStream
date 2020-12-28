@@ -1,13 +1,19 @@
 using System.Collections.Generic;
+using AKStreamKeeper.Attributes;
 using AKStreamKeeper.Services;
 using LibCommon;
 using LibCommon.Structs;
+using LibCommon.Structs.WebRequest;
+using LibCommon.Structs.WebRequest.AKStreamKeeper;
 using LibCommon.Structs.WebResponse;
+using LibCommon.Structs.WebResponse.AKStreamKeeper;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace AKStreamKeeper.Controllers
 {
+    [Log]
+    [AuthVerify]
     [ApiController]
     [Route("/CutMergeService")]
     [SwaggerTag("裁剪与合并视频相关接口")]
@@ -16,10 +22,12 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 获取合并裁剪任务积压列表
         /// </summary>
+        /// <param name="AccessKey"></param>
         /// <returns></returns>
+        /// <exception cref="AkStreamException"></exception>
         [HttpGet]
         [Route("GetBacklogTaskList")]
-        public List<CutMergeTaskStatusResponse> GetBacklogTaskList()
+        public List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = CutMergeService.GetBacklogTaskList(out rs);
@@ -35,10 +43,14 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 获取合并剪辑任务的进度信息
         /// </summary>
+        /// <param name="AccessKey"></param>
+        /// <param name="taskId"></param>
         /// <returns></returns>
+        /// <exception cref="AkStreamException"></exception>
         [HttpGet]
         [Route("GetMergeTaskStatus")]
-        public CutMergeTaskStatusResponse GetMergeTaskStatus(string taskId)
+        public ResKeeperCutMergeTaskStatusResponse GetMergeTaskStatus([FromHeader(Name = "AccessKey")] string AccessKey,
+            string taskId)
         {
             ResponseStruct rs;
             var ret = CutMergeService.GetMergeTaskStatus(taskId, out rs);
@@ -53,13 +65,14 @@ namespace AKStreamKeeper.Controllers
         /// <summary>
         /// 添加一个裁剪合并任务
         /// </summary>
-        /// <param name="rcmv"></param>
+        /// <param name="AccessKey"></param>
         /// <param name="task"></param>
         /// <returns></returns>
-        /// <exception cref="HttpResponseException"></exception>
+        /// <exception cref="AkStreamException"></exception>
         [Route("AddCutOrMergeTask")]
         [HttpPost]
-        public CutMergeTaskResponse AddCutOrMergeTask(CutMergeTask task)
+        public ResKeeperCutMergeTaskResponse AddCutOrMergeTask([FromHeader(Name = "AccessKey")] string AccessKey,
+            ReqKeeperCutMergeTask task)
         {
             ResponseStruct rs;
             var ret = CutMergeService.AddCutOrMergeTask(task, out rs);

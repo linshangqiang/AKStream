@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 using AKStreamKeeper.Misc;
 using LibCommon;
 using LibCommon.Structs;
-using LibCommon.Structs.WebResponse;
+
+using LibCommon.Structs.WebRequest.AKStreamKeeper;
+using LibCommon.Structs.WebResponse.AKStreamKeeper;
 using LibLogger;
-using TaskStatus = LibCommon.Structs.TaskStatus;
 
 namespace AKStreamKeeper.Services
 {
     public static class CutMergeService
     {
         public static bool start = false;
-        public static BlockingCollection<CutMergeTask> CutMergeTaskList = new BlockingCollection<CutMergeTask>(10);
-        public static List<CutMergeTask> CutMergeTaskStatusList = new List<CutMergeTask>();
+        public static BlockingCollection<ReqKeeperCutMergeTask> CutMergeTaskList = new BlockingCollection<ReqKeeperCutMergeTask>(10);
+        public static List<ReqKeeperCutMergeTask> CutMergeTaskStatusList = new List<ReqKeeperCutMergeTask>();
 
         static CutMergeService()
         {
@@ -55,7 +56,7 @@ namespace AKStreamKeeper.Services
         /// <param name="taskId"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static CutMergeTaskStatusResponse GetMergeTaskStatus(string taskId, out ResponseStruct rs)
+        public static ResKeeperCutMergeTaskStatusResponse GetMergeTaskStatus(string taskId, out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -70,7 +71,7 @@ namespace AKStreamKeeper.Services
             }
 
 
-            var result = new CutMergeTaskStatusResponse()
+            var result = new ResKeeperCutMergeTaskStatusResponse()
             {
                 CallbakUrl = ret.CallbakUrl,
                 CreateTime = ret.CreateTime,
@@ -88,7 +89,7 @@ namespace AKStreamKeeper.Services
         /// </summary>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static List<CutMergeTaskStatusResponse> GetBacklogTaskList(out ResponseStruct rs)
+        public static List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList(out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -97,13 +98,13 @@ namespace AKStreamKeeper.Services
             };
             if (CutMergeTaskStatusList != null && CutMergeTaskStatusList.Count > 0)
             {
-                var retList = CutMergeTaskStatusList.FindAll(x => x.TaskStatus == TaskStatus.Create).ToList();
+                var retList = CutMergeTaskStatusList.FindAll(x => x.TaskStatus == MyTaskStatus.Create).ToList();
                 if (retList != null && retList.Count > 0)
                 {
-                    List<CutMergeTaskStatusResponse> resultList = new List<CutMergeTaskStatusResponse>();
+                    List<ResKeeperCutMergeTaskStatusResponse> resultList = new List<ResKeeperCutMergeTaskStatusResponse>();
                     foreach (var ret in retList!)
                     {
-                        CutMergeTaskStatusResponse res = new CutMergeTaskStatusResponse()
+                        ResKeeperCutMergeTaskStatusResponse res = new ResKeeperCutMergeTaskStatusResponse()
                         {
                             CallbakUrl = ret.CallbakUrl,
                             CreateTime = ret.CreateTime,
@@ -129,7 +130,7 @@ namespace AKStreamKeeper.Services
         /// <param name="task"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static CutMergeTaskResponse AddCutOrMergeTask(CutMergeTask task, out ResponseStruct rs)
+        public static ResKeeperCutMergeTaskResponse AddCutOrMergeTask(ReqKeeperCutMergeTask task, out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -141,7 +142,7 @@ namespace AKStreamKeeper.Services
                 Logger.Info("接受一个裁剪合并请求 ->" + task.TaskId);
                 CutMergeTaskList.Add(task);
                 CutMergeTaskStatusList.Add(task);
-                return new CutMergeTaskResponse()
+                return new ResKeeperCutMergeTaskResponse()
                 {
                     Duration = -1,
                     FilePath = "",
@@ -171,9 +172,9 @@ namespace AKStreamKeeper.Services
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        private static CutMergeTask packageToTsStreamFile(CutMergeTask task)
+        private static ReqKeeperCutMergeTask packageToTsStreamFile(ReqKeeperCutMergeTask task)
         {
-            task.TaskStatus = TaskStatus.Packaging;
+            task.TaskStatus = MyTaskStatus.Packaging;
             string tsPath = Common.CutOrMergeTempPath + task.TaskId + "/ts";
             if (!Directory.Exists(tsPath))
             {
@@ -215,9 +216,9 @@ namespace AKStreamKeeper.Services
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        private static string mergeProcess(CutMergeTask task)
+        private static string mergeProcess(ReqKeeperCutMergeTask task)
         {
-            task.TaskStatus = TaskStatus.Mergeing;
+            task.TaskStatus = MyTaskStatus.Mergeing;
             string mergePath = Common.CutOrMergeTempPath + task.TaskId;
             string outPutPath = Common.CutOrMergePath +
                                 DateTime.Now.Date.ToString("yyyy-MM-dd");
@@ -321,7 +322,7 @@ namespace AKStreamKeeper.Services
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        public static CutMergeTaskResponse CutMerge(CutMergeTask task)
+        public static ResKeeperCutMergeTaskResponse CutMerge(ReqKeeperCutMergeTask task)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start(); //  开始监视代码运行时间
@@ -339,7 +340,7 @@ namespace AKStreamKeeper.Services
                     task = packageToTsStreamFile(task); //转ts文件
 
 
-                    task.TaskStatus = TaskStatus.Cutting;
+                    task.TaskStatus = MyTaskStatus.Cutting;
 
                     List<CutMergeStruct> cutFileList = task.CutMergeFileList!
                         .FindAll(x => x.CutEndPos != null && x.CutStartPos != null).ToList();
@@ -358,7 +359,7 @@ namespace AKStreamKeeper.Services
                     string filePath = mergeProcess(task);
 
                     task.ProcessPercentage = 100f;
-                    task.TaskStatus = TaskStatus.Closed;
+                    task.TaskStatus = MyTaskStatus.Closed;
                     stopwatch.Stop(); //  停止监视
                     TimeSpan timespan = stopwatch.Elapsed;
                     if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
@@ -374,7 +375,7 @@ namespace AKStreamKeeper.Services
                         }
 
                         Logger.Debug($"[{Common.LoggerHead}]->裁剪合并任务成功->TaskId:{task.TaskId}");
-                        return new CutMergeTaskResponse
+                        return new ResKeeperCutMergeTaskResponse
                         {
                             FilePath = newPath,
                             FileSize = new FileInfo(filePath).Length,
@@ -387,7 +388,7 @@ namespace AKStreamKeeper.Services
 
                     Logger.Warn($"[{Common.LoggerHead}]->裁剪合并任务失败->TaskId:{task.TaskId}");
 
-                    return new CutMergeTaskResponse
+                    return new ResKeeperCutMergeTaskResponse
                     {
                         FilePath = "",
                         Status = CutMergeRequestStatus.Failed,

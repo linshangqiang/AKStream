@@ -1,12 +1,12 @@
 using System;
 
-namespace LibCommon.Structs.WebRequest
+namespace LibCommon.Structs.WebRequest.AKStreamKeeper
 {
     /// <summary>
     /// 
     /// </summary>
     [Serializable]
-    public class ReqCutOrMergeVideoFile
+    public class ReqKeeperCutOrMergeVideoFile
     {
         private DateTime _startTime;
         private DateTime _endTime;

@@ -9,6 +9,7 @@ namespace AKStreamWeb.Misc
         private string _ormConnStr;
         private string _dbType;
         private ushort _webApiPort = 5800;
+        private string _accessKey;
 
         /// <summary>
         /// 流媒体服务器首次注册是否要求其重新mediaserver
@@ -46,6 +47,15 @@ namespace AKStreamWeb.Misc
         {
             get => _webApiPort;
             set => _webApiPort = value;
+        }
+
+        /// <summary>
+        /// 访问webapi的密钥
+        /// </summary>
+        public string AccessKey
+        {
+            get => _accessKey;
+            set => _accessKey = value;
         }
     }
 }

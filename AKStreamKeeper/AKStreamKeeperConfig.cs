@@ -19,6 +19,7 @@ namespace AKStreamKeeper
         private ushort _minRtpPort = 10001;
         private ushort _maxRtpPort = 30000;
         private string _ffmpegPath;
+        private string _accessKey;
 
 
         /// <summary>
@@ -109,6 +110,15 @@ namespace AKStreamKeeper
         {
             get => _ffmpegPath;
             set => _ffmpegPath = value;
+        }
+
+        /// <summary>
+        /// 访问webapi需要携带的key
+        /// </summary>
+        public string AccessKey
+        {
+            get => _accessKey;
+            set => _accessKey = value;
         }
     }
 }

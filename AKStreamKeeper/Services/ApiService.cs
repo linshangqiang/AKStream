@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
 using LibCommon;
+using LibCommon.Structs.WebResponse.AKStreamKeeper;
 using LibLogger;
 
 namespace AKStreamKeeper.Services
@@ -394,7 +395,7 @@ namespace AKStreamKeeper.Services
         /// <param name="fileList"></param>
         /// <param name="rs"></param>
         /// <returns>返回未正常删除的文件列表</returns>
-        public static List<string> DeleteFileList(List<string> fileList, out ResponseStruct rs)
+        public static ResKeeperDeleteFileList DeleteFileList(List<string> fileList, out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -421,7 +422,10 @@ namespace AKStreamKeeper.Services
                     Thread.Sleep(10);
                 }
 
-                return result;
+                return new ResKeeperDeleteFileList()
+                {
+                    PathList = result,
+                };
             }
 
             rs = new ResponseStruct()
@@ -429,7 +433,7 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.Sys_ParamsIsNotRight,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_ParamsIsNotRight],
             };
-            return new List<string>();
+            return new ResKeeperDeleteFileList();
         }
 
         /// <summary>

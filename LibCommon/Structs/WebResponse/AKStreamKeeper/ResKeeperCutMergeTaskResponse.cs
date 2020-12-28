@@ -1,8 +1,11 @@
 using System;
-using LibCommon.Structs.WebRequest;
+using LibCommon.Structs.WebRequest.AKStreamKeeper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace LibCommon.Structs.WebResponse
+namespace LibCommon.Structs.WebResponse.AKStreamKeeper
 {
+    [Serializable]
     public enum CutMergeRequestStatus
     {
         Succeed,
@@ -11,18 +14,18 @@ namespace LibCommon.Structs.WebResponse
     }
 
     [Serializable]
-    public class CutMergeTaskResponse
+    public class ResKeeperCutMergeTaskResponse
     {
-        private CutMergeTask _task = null!;
+        private ReqKeeperCutMergeTask _task = null!;
         private string? _filePath;
         private string? _uri;
         private long? _fileSize;
         private long? _duration;
         private CutMergeRequestStatus? _status;
         private double? _timeConsuming;
-        private ReqCutOrMergeVideoFile? _request;
+        private ReqKeeperCutOrMergeVideoFile? _request;
 
-        public CutMergeTask Task
+        public ReqKeeperCutMergeTask Task
         {
             get => _task;
             set => _task = value ?? throw new ArgumentNullException(nameof(value));
@@ -52,6 +55,7 @@ namespace LibCommon.Structs.WebResponse
             set => _duration = value;
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public CutMergeRequestStatus? Status
         {
             get => _status;
@@ -64,7 +68,7 @@ namespace LibCommon.Structs.WebResponse
             set => _timeConsuming = value;
         }
 
-        public ReqCutOrMergeVideoFile? Request
+        public ReqKeeperCutOrMergeVideoFile? Request
         {
             get => _request;
             set => _request = value;

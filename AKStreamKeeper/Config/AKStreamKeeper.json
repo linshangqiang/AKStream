@@ -1,5 +1,5 @@
 {
-  "IpV4Address": "172.20.10.2",
+  "IpV4Address": "192.168.2.90",
   "IpV6Address": "fe80::8:807:2143:28a1%5",
   "WebApiPort": 6880,
   "MediaServerPath": "/Users/chatop/Projects/Clion/ZLMediaKit/release/mac/Debug/MediaServer",
@@ -10,5 +10,7 @@
   ],
   "UseSsl": false,
   "MinRtpPort": 10001,
-  "MaxRtpPort": 20000
+  "MaxRtpPort": 20000,
+  "FFmpegPath": "/usr/local/bin/ffmpeg",
+  "AccessKey": "RUB02GT3-SN24YGYW-84NQLDHF-1NRPA627-8IYY9I6W-D98L1INF"
 }

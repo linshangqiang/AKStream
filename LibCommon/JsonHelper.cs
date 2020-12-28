@@ -181,7 +181,7 @@ namespace LibCommon
             }
             catch (Exception ex)
             {
-                Logger.Error($"[{_loggerHead}]->Json返序列化异常->{ex.Message}\r\n{ex.StackTrace}");
+                Logger.Error($"[{_loggerHead}]->Json返序列化异常->{ex.Message}\r\n{ex.StackTrace}\r\njson内容：{json}");
                 return default(T)!;
             }
         }

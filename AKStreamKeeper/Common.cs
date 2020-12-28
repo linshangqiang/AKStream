@@ -7,6 +7,7 @@ using System.Timers;
 using AKStreamKeeper.Services;
 using LibCommon;
 using LibCommon.Structs;
+using LibCommon.Structs.WebRequest;
 using LibCommon.Structs.WebResponse;
 using LibLogger;
 using LibSystemInfo;
@@ -39,6 +40,11 @@ namespace AKStreamKeeper
         public static int FFmpegThreadCount = 2;
 
         public delegate void MediaServerKilled(bool self = false);
+
+        /// <summary>
+        /// 调试模式，不判断accesskey
+        /// </summary>
+        public static bool IsDebug = false;
 
 
         /// <summary>
@@ -267,6 +273,7 @@ namespace AKStreamKeeper
                 _akStreamKeeperConfig.MaxRtpPort = 20000;
                 _akStreamKeeperConfig.MinRtpPort = 10001;
                 _akStreamKeeperConfig.FFmpegPath = "./ffmpeg";
+                _akStreamKeeperConfig.AccessKey = UtilsHelper.generalGuid();
                 _akStreamKeeperConfig.AkStreamWebRegisterUrl =
                     $"http://127.0.0.1:5800/MediaServer/WebHook/MediaServerKeepAlive";
                 _akStreamKeeperConfig.CustomRecordPathList = new List<string>();
@@ -550,7 +557,7 @@ namespace AKStreamKeeper
 
             if (_counter1 % 5 == 0 && MediaServerInstance != null) //发心跳给服务器
             {
-                MediaServerKeepAlive tmpKeepAlive = new MediaServerKeepAlive();
+                ReqMediaServerKeepAlive tmpKeepAlive = new ReqMediaServerKeepAlive();
                 if (_firstPost)
                 {
                     tmpKeepAlive.FirstPost = true;
@@ -581,6 +588,8 @@ namespace AKStreamKeeper
                 tmpKeepAlive.ZlmRtspsPort = MediaServerInstance.ZlmRtspsPort;
                 tmpKeepAlive.KeeperWebApiPort = _akStreamKeeperConfig.WebApiPort;
                 tmpKeepAlive.ZlmRecordFileSec = MediaServerInstance.ZlmRecordFileSec;
+                tmpKeepAlive.AccessKey = _akStreamKeeperConfig.AccessKey;
+                tmpKeepAlive.MediaServerIsRunning = MediaServerInstance.IsRunning;
                 string reqData = JsonHelper.ToJson(tmpKeepAlive, Formatting.Indented);
                 try
                 {
@@ -636,6 +645,7 @@ namespace AKStreamKeeper
                     $"[{LoggerHead}]->获取AKStreamKeeper配置文件时异常,系统无法运行->\r\n{JsonHelper.ToJson(rs, Formatting.Indented)}");
                 Environment.Exit(0); //退出程序 
             }
+
             ret = UtilsHelper.CheckFFmpegBin(_akStreamKeeperConfig.FFmpegPath);
             if (!ret)
             {
@@ -643,6 +653,7 @@ namespace AKStreamKeeper
                     $"[{LoggerHead}]->检测发现FFmpeg可执行文件{_akStreamKeeperConfig.FFmpegPath}不存在或者无法正常运行,系统无法运行");
                 Environment.Exit(0); //退出程序 
             }
+
             ProcessHelper.KillProcess(_akStreamKeeperConfig.MediaServerPath); //启动前先删除掉所有流媒体进程
             while (StartupMediaServer() <= 0)
             {
@@ -653,12 +664,13 @@ namespace AKStreamKeeper
 
             Logger.Info(
                 $"[{LoggerHead}]->流媒体服务器启动成功->进程ID:{MediaServerInstance.GetPid()}");
-
-         
         }
 
         static Common()
         {
+#if (DEBUG)
+            IsDebug = true;
+#endif
             if (!Directory.Exists(CutOrMergePath))
             {
                 Directory.CreateDirectory(CutOrMergePath);
