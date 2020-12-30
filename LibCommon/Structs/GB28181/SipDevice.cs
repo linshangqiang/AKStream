@@ -38,7 +38,8 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 对sip通道操作时的锁
         /// </summary>
-        [JsonIgnore] public object SipChannelOptLock = new object();
+        [JsonIgnore] 
+        public object SipChannelOptLock = new object();
 
         public void Dispose()
         {

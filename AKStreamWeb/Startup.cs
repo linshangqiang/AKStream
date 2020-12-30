@@ -144,6 +144,8 @@ namespace AKStreamWeb
             app.UseCors("cors");
             app.UseMiddleware<ExceptionMiddleware>(); //ExceptionMiddleware 加入管道
             app.UseAuthorization();
+            
+            
 
             app.UseEndpoints(endpoints =>
             {

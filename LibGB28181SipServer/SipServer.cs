@@ -134,7 +134,7 @@ namespace LibGB28181SipServer
 
                 if (commandType == CommandType.Playback && obj != null)
                 {
-                    ((RecordInfo.Item) obj).InviteSipRequest = req;
+                    ((RecordInfo.RecItem) obj).InviteSipRequest = req;
                 }
                 else if (commandType == CommandType.Play)
                 {
@@ -347,7 +347,7 @@ namespace LibGB28181SipServer
         /// <param name="record"></param>
         /// <param name="pushMediaInfo"></param>
         /// <returns></returns>
-        private string MediaSdpCreate(RecordInfo.Item record, PushMediaInfo pushMediaInfo)
+        private string MediaSdpCreate(RecordInfo.RecItem record, PushMediaInfo pushMediaInfo)
         {
             var tmpSipDevice = Common.SipDevices.FindLast(x => x.DeviceId.Equals(record.SipDevice.DeviceId));
             if (tmpSipDevice != null)
@@ -866,7 +866,7 @@ namespace LibGB28181SipServer
         /// <param name="record"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        private void CheckInviteParam(RecordInfo.Item record, PushStatus pushStatus, out ResponseStruct rs)
+        private void CheckInviteParam(RecordInfo.RecItem record, PushStatus pushStatus, out ResponseStruct rs)
         {
             if (record.SipDevice == null)
             {
@@ -931,7 +931,7 @@ namespace LibGB28181SipServer
             };
         }
 
-        public void InviteRecord(RecordInfo.Item record, PushMediaInfo pushMediaInfo, AutoResetEvent evnt,
+        public void InviteRecord(RecordInfo.RecItem record, PushMediaInfo pushMediaInfo, AutoResetEvent evnt,
             out ResponseStruct rs, int timeout = 5000)
         {
             try
@@ -1040,7 +1040,7 @@ namespace LibGB28181SipServer
         }
 
 
-        public void DeInvite(RecordInfo.Item record, AutoResetEvent evnt,
+        public void DeInvite(RecordInfo.RecItem record, AutoResetEvent evnt,
             out ResponseStruct rs, int timeout = 5000)
         {
             try

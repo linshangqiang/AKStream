@@ -6,6 +6,7 @@ using LibCommon;
 using LibCommon.Structs;
 using LibZLMediaKitMediaServer.Structs.WebHookRequest;
 using LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit;
+using Newtonsoft.Json;
 
 namespace LibZLMediaKitMediaServer
 {
@@ -188,12 +189,13 @@ namespace LibZLMediaKitMediaServer
             set => _keepAliveTime = value;
         }
 
+        [JsonIgnore]
         public WebApiHelper WebApiHelper
         {
             get => _webApiHelper;
             set => _webApiHelper = value;
         }
-
+        [JsonIgnore]
         public KeeperWebApi KeeperWebApi
         {
             get => _keeperWebApi;
@@ -218,6 +220,7 @@ namespace LibZLMediaKitMediaServer
             set => _rtpPortMax = value;
         }
 
+        [JsonIgnore]
         public static ConcurrentDictionary<string, ushort> RtpPortDictionary
         {
             get => _rtpPortDictionary;

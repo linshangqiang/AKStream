@@ -104,7 +104,7 @@ namespace LibGB28181SipServer
                 string macAddr = "";
                 var sys = systemInfo.GetSystemInfoObject();
                 int i = 0;
-                while (sys == null && sys.NetWorkStat == null && i < 50)
+                while ((sys == null || sys.NetWorkStat == null) && i < 50)
                 {
                     i++;
                     Thread.Sleep(20);

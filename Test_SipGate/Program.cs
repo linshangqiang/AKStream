@@ -36,7 +36,7 @@ namespace Test_SipGate
             //   Console.WriteLine("=================收到设备状态信息->" + sipDevice.DeviceId+"->\r\n"+JsonHelper.ToJson(deviceStatus,Formatting.Indented));  
         }
 
-        public static void OnInviteHistoryVideoFinished(RecordInfo.Item record)
+        public static void OnInviteHistoryVideoFinished(RecordInfo.RecItem record)
         {
             Console.WriteLine("=================收到回放流结束通知->\r\n" + JsonHelper.ToJson(record, Formatting.Indented));
         }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using LibCommon;
-using LibCommon.Structs.WebRequest;
 using LibCommon.Structs.WebRequest.AKStreamKeeper;
-using LibCommon.Structs.WebResponse;
 using LibCommon.Structs.WebResponse.AKStreamKeeper;
 
 namespace LibZLMediaKitMediaServer
@@ -453,11 +451,7 @@ namespace LibZLMediaKitMediaServer
                 }
                 else
                 {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.MediaServer_WebApiDataExcept,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.MediaServer_WebApiDataExcept],
-                    };
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -709,7 +703,7 @@ namespace LibZLMediaKitMediaServer
         /// </summary>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList(out ResponseStruct rs)
+        public ResKeeperCutMergeTaskStatusResponseList GetBacklogTaskList(out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -724,7 +718,7 @@ namespace LibZLMediaKitMediaServer
                 var httpRet = NetHelper.HttpGetRequest(url, headers, "utf-8", 5000);
                 if (!string.IsNullOrEmpty(httpRet))
                 {
-                    var reslist = JsonHelper.FromJson<List<ResKeeperCutMergeTaskStatusResponse>>(httpRet);
+                    var reslist = JsonHelper.FromJson<ResKeeperCutMergeTaskStatusResponseList>(httpRet);
                     if (reslist != null)
                     {
                         return reslist;
@@ -740,11 +734,7 @@ namespace LibZLMediaKitMediaServer
                 }
                 else
                 {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.MediaServer_WebApiDataExcept,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.MediaServer_WebApiDataExcept],
-                    };
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -799,11 +789,7 @@ namespace LibZLMediaKitMediaServer
                 }
                 else
                 {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.MediaServer_WebApiDataExcept,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.MediaServer_WebApiDataExcept],
-                    };
+                    return null;
                 }
             }
             catch (Exception ex)

@@ -89,7 +89,7 @@ namespace AKStreamKeeper.Services
         /// </summary>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList(out ResponseStruct rs)
+        public static ResKeeperCutMergeTaskStatusResponseList GetBacklogTaskList(out ResponseStruct rs)
         {
             rs = new ResponseStruct()
             {
@@ -98,10 +98,10 @@ namespace AKStreamKeeper.Services
             };
             if (CutMergeTaskStatusList != null && CutMergeTaskStatusList.Count > 0)
             {
+                List<ResKeeperCutMergeTaskStatusResponse> resultList = new List<ResKeeperCutMergeTaskStatusResponse>();
                 var retList = CutMergeTaskStatusList.FindAll(x => x.TaskStatus == MyTaskStatus.Create).ToList();
                 if (retList != null && retList.Count > 0)
                 {
-                    List<ResKeeperCutMergeTaskStatusResponse> resultList = new List<ResKeeperCutMergeTaskStatusResponse>();
                     foreach (var ret in retList!)
                     {
                         ResKeeperCutMergeTaskStatusResponse res = new ResKeeperCutMergeTaskStatusResponse()
@@ -115,11 +115,13 @@ namespace AKStreamKeeper.Services
                         resultList.Add(res);
                     }
 
-                    return resultList;
+                    ResKeeperCutMergeTaskStatusResponseList tmp= new ResKeeperCutMergeTaskStatusResponseList();
+                    tmp.CutMergeTaskStatusResponseList = resultList;
+                    return tmp;
                 }
             }
 
-            return null!;
+            return null;
         }
 
 

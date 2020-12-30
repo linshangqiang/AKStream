@@ -147,19 +147,19 @@ namespace LibCommon.Structs.GB28181.XML
         /// </summary>
         public class RecordList
         {
-            private List<Item> _recordItems = new List<Item>();
+            private List<RecItem> _recordItems = new List<RecItem>();
 
             /// <summary>
             /// 设备项
             /// </summary>
             [XmlElement("Item")]
-            public List<Item> Items
+            public List<RecItem> Items
             {
                 get { return _recordItems; }
             }
         }
 
-        public class Item
+        public class RecItem
         {
             private SIPRequest? _inviteSipRequest = null;
             private SIPResponse? _inviteSipResponse = null;

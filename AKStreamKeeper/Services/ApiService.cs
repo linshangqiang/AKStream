@@ -449,17 +449,8 @@ namespace AKStreamKeeper.Services
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            var ret = File.Exists(filePath);
-            if (!ret)
-            {
-                rs = new ResponseStruct()
-                {
-                    Code = ErrorNumber.Sys_SpecifiedFileNotExist,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_SpecifiedFileNotExist],
-                };
-            }
-
-            return ret;
+            return  File.Exists(filePath);
+           
         }
 
         /// <summary>
@@ -498,8 +489,8 @@ namespace AKStreamKeeper.Services
             {
                 rs = new ResponseStruct()
                 {
-                    Code = ErrorNumber.Sys_SpecifiedFileNotExist,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_SpecifiedFileNotExist],
+                    Code = ErrorNumber.Sys_SpecifiedFileNotExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.Sys_SpecifiedFileNotExists],
                 };
                 return false;
             }

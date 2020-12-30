@@ -27,7 +27,7 @@ namespace AKStreamKeeper.Controllers
         /// <exception cref="AkStreamException"></exception>
         [HttpGet]
         [Route("GetBacklogTaskList")]
-        public List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList([FromHeader(Name = "AccessKey")] string AccessKey)
+        public ResKeeperCutMergeTaskStatusResponseList GetBacklogTaskList([FromHeader(Name = "AccessKey")] string AccessKey)
         {
             ResponseStruct rs;
             var ret = CutMergeService.GetBacklogTaskList(out rs);

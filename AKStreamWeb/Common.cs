@@ -238,6 +238,7 @@ namespace AKStreamWeb
             SipMsgProcess.OnDeviceReadyReceived += SipServerCallBack.OnDeviceReadyReceived;
             SipMsgProcess.OnDeviceStatusReceived += SipServerCallBack.OnDeviceStatusReceived;
             SipMsgProcess.OnInviteHistoryVideoFinished += SipServerCallBack.OnInviteHistoryVideoFinished;
+            SipMsgProcess.OnCatalogReceived += SipServerCallBack.OnCatalogReceived;
             try
             {
                 ResponseStruct rs;

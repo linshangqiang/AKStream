@@ -18,7 +18,7 @@ namespace LibCommon.Structs.DBModels
     [Index("idx_vcs_ipv4", "IpV4Address", false)]
     [Index("idx_vcs_ipv6", "IpV6Address", false)]
     [Index("idx_vcs_enbl", "Enabled", false)]
-    public class VideoChannels
+    public class VideoChannel
     {
         private long _id;
         private string _mainId;
@@ -31,6 +31,7 @@ namespace LibCommon.Structs.DBModels
         private DeviceNetworkType _deviceNetworkType;
         private DeviceStreamType _deviceStreamType;
         private MethodByGetStream _methodByGetStream;
+        private VideoDeviceType _videoDeviceType;
         private bool _autoVideo;
         private bool _autoRecord;
         private string _ipV4Address;
@@ -160,6 +161,17 @@ namespace LibCommon.Structs.DBModels
             get => _methodByGetStream;
             set => _methodByGetStream = value;
         }
+        /// <summary>
+        /// 设备类型，IPC,NVR,DVR
+        /// </summary>
+        [Column(MapType = typeof(string))]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public VideoDeviceType VideoDeviceType
+        {
+            get => _videoDeviceType;
+            set => _videoDeviceType = value;
+        }
+
 
         /// <summary>
         /// 是否自动启用推拉流

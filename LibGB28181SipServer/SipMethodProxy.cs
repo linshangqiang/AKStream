@@ -166,7 +166,7 @@ namespace LibGB28181SipServer
         /// <param name="record"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public bool DeInvite(RecordInfo.Item record, out ResponseStruct rs)
+        public bool DeInvite(RecordInfo.RecItem record, out ResponseStruct rs)
         {
             try
             {
@@ -250,7 +250,7 @@ namespace LibGB28181SipServer
         /// <param name="pushMediaInfo"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public bool InviteRecord(RecordInfo.Item record, PushMediaInfo pushMediaInfo, out ResponseStruct rs)
+        public bool InviteRecord(RecordInfo.RecItem record, PushMediaInfo pushMediaInfo, out ResponseStruct rs)
         {
             try
             {

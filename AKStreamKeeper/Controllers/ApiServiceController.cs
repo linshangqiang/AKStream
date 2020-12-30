@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using AKStreamKeeper.Attributes;
 using AKStreamKeeper.Services;
 using LibCommon;
@@ -155,7 +154,7 @@ namespace AKStreamKeeper.Controllers
             {
                 throw new AkStreamException(rs);
             }
-
+            
             return ret;
         }
 
@@ -172,7 +171,7 @@ namespace AKStreamKeeper.Controllers
         {
             ResponseStruct rs;
             var ret = ApiService.FileExists(filePath, out rs);
-            if (!ret || !rs.Code.Equals(ErrorNumber.None))
+            if (!rs.Code.Equals(ErrorNumber.None))
             {
                 throw new AkStreamException(rs);
             }

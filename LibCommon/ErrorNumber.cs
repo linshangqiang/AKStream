@@ -27,9 +27,12 @@ namespace LibCommon
         Sys_ReadIniFileExcept = -1014, //读取ini文件异常
         Sys_WriteIniFileExcept = -1015, //写入ini文件异常
         Sys_SocketPortForRtpExcept = -1016, //查找可用rtp端口时异常，可能已无可用端口
-        Sys_SpecifiedFileNotExist = -1017, //指定文件不存在
+        Sys_SpecifiedFileNotExists = -1017, //指定文件不存在
         Sys_InvalidAccessKey=-1018,//访问密钥失效
         Sys_AKStreamKeeperNotRunning=-1019,//AKStreamKeeper流媒体服务器治理程序没有运行
+        Sys_DataBaseLimited=-1020,//数据库操作受限，请检查相关参数，如分页查询时每页不能超过10000行
+        Sys_DB_VideoChannelNotExists=-1021,//数据库中不存在指定音视频通道
+        Sys_DataBaseExcept=-1022,//数据库执行异常
         Sip_StartExcept = -2000, //启动Sip服务异常
         Sip_StopExcept = -2001, //停止Sip服务异常
         Sip_Except_DisposeSipDevice = -2002, //Sip网关内部异常(销毁Sip设备时)
@@ -87,9 +90,12 @@ namespace LibCommon
             ErrorDic[ErrorNumber.Sys_ReadIniFileExcept] = "读取ini文件异常";
             ErrorDic[ErrorNumber.Sys_WriteIniFileExcept] = "写入ini文件异常";
             ErrorDic[ErrorNumber.Sys_SocketPortForRtpExcept] = "查找可用rtp端口时异常，可能已无可用端口";
-            ErrorDic[ErrorNumber.Sys_SpecifiedFileNotExist] = "指定文件不存在";
+            ErrorDic[ErrorNumber.Sys_SpecifiedFileNotExists] = "指定文件不存在";
             ErrorDic[ErrorNumber.Sys_InvalidAccessKey] = "访问密钥失效";
             ErrorDic[ErrorNumber.Sys_AKStreamKeeperNotRunning] = "AKStreamKeeper流媒体服务器治理程序没有运行";
+            ErrorDic[ErrorNumber.Sys_DataBaseLimited] = "数据库操作受限，请检查相关参数，如分页查询时每页不能超过10000行,第一页从1开始而不是从0开始";
+            ErrorDic[ErrorNumber.Sys_DB_VideoChannelNotExists] = "数据库中不存在指定音视频通道";
+            ErrorDic[ErrorNumber.Sys_DataBaseExcept] = "数据库执行异常";
             ErrorDic[ErrorNumber.Sip_StartExcept] = "启动Sip服务异常";
             ErrorDic[ErrorNumber.Sip_StopExcept] = "停止Sip服务异常";
             ErrorDic[ErrorNumber.Sip_Except_DisposeSipDevice] = "Sip网关内部异常(销毁Sip设备时)";

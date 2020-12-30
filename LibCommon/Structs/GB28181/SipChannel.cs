@@ -29,8 +29,8 @@ namespace LibCommon.Structs.GB28181
         private SIPResponse _inviteSipResponse; //要把请求实时视频时的req和res存起来，因为在结束时要用到这两个内容
         private SIPRequest _lastSipRequest; //保存最后一次sipRequest
 
-        private List<KeyValuePair<int, RecordInfo.Item>> _lastRecordInfos =
-            new List<KeyValuePair<int, RecordInfo.Item>>(); //最后一次获取到的录像文件列表
+        private List<KeyValuePair<int, RecordInfo.RecItem>> _lastRecordInfos =
+            new List<KeyValuePair<int, RecordInfo.RecItem>>(); //最后一次获取到的录像文件列表
 
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace LibCommon.Structs.GB28181
         /// <summary>
         /// 最后一次获取到的录像文件列表
         /// </summary>
-        public List<KeyValuePair<int, RecordInfo.Item>> LastRecordInfos
+        public List<KeyValuePair<int, RecordInfo.RecItem>> LastRecordInfos
         {
             get => _lastRecordInfos;
             set => _lastRecordInfos = value ?? throw new ArgumentNullException(nameof(value));
@@ -209,9 +209,9 @@ namespace LibCommon.Structs.GB28181
         /// </summary>
         /// <param name="orderBy"></param>
         /// <returns></returns>
-        public List<RecordInfo.Item> GetLastRecordInfoList(OrderBy orderBy = OrderBy.ASC)
+        public List<RecordInfo.RecItem> GetLastRecordInfoList(OrderBy orderBy = OrderBy.ASC)
         {
-            List<RecordInfo.Item> result = new List<RecordInfo.Item>();
+            List<RecordInfo.RecItem> result = new List<RecordInfo.RecItem>();
             foreach (var kv in LastRecordInfos)
             {
                 if (kv.Value != null)

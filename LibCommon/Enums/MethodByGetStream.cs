@@ -10,5 +10,6 @@ namespace LibCommon.Enums
     {
         SelfMethod, //内置方法AddStreamProxy
         UseFFmpeg, //引用ffmpeg,AddFFmpegSourceProxy
+        None,//不需要
     }
 }

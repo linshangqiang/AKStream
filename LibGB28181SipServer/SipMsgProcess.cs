@@ -352,7 +352,6 @@ namespace LibGB28181SipServer
                         break;
                     case "CATALOG": //处理设备目录
                         await SendOkMessage(sipRequest);
-                        Logger.Debug("------------------>" + sipRequest.Body);
                         Common.TmpCatalogs.Enqueue(UtilsHelper.XMLToObject<Catalog>(bodyXml));
                         Logger.Debug(
                             $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}设备目录信息->{sipRequest}");
@@ -439,7 +438,7 @@ namespace LibGB28181SipServer
                                             item.PushStatus = PushStatus.IDLE;
                                             item.MediaServerStreamInfo = new MediaServerStreamInfo();
                                             sipChannel1.LastRecordInfos.Add(
-                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                                new KeyValuePair<int, RecordInfo.RecItem>(sn, item));
                                         }
                                     }
                                 }
@@ -470,7 +469,7 @@ namespace LibGB28181SipServer
                                             item.PushStatus = PushStatus.IDLE;
                                             item.MediaServerStreamInfo = new MediaServerStreamInfo();
                                             sipChannel1.LastRecordInfos.Add(
-                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                                new KeyValuePair<int, RecordInfo.RecItem>(sn, item));
                                         }
                                     }
                                 }
@@ -500,7 +499,7 @@ namespace LibGB28181SipServer
                                             item.MediaServerStreamInfo = new MediaServerStreamInfo();
 
                                             sipChannel1.LastRecordInfos.Add(
-                                                new KeyValuePair<int, RecordInfo.Item>(sn, item));
+                                                new KeyValuePair<int, RecordInfo.RecItem>(sn, item));
                                         }
                                     }
                                 }
@@ -529,15 +528,15 @@ namespace LibGB28181SipServer
                             var ret = Common.NeedResponseRequests.TryRemove(callId, out NeedReturnTask _task);
                             if (ret && _task != null)
                             {
-                                ((RecordInfo.Item) _task.Obj).PushStatus = PushStatus.IDLE;
-                                ((RecordInfo.Item) _task.Obj).MediaServerStreamInfo = null;
+                                ((RecordInfo.RecItem) _task.Obj).PushStatus = PushStatus.IDLE;
+                                ((RecordInfo.RecItem) _task.Obj).MediaServerStreamInfo = null;
                                 Task.Run(() =>
                                 {
-                                    OnInviteHistoryVideoFinished?.Invoke((RecordInfo.Item) _task.Obj);
+                                    OnInviteHistoryVideoFinished?.Invoke((RecordInfo.RecItem) _task.Obj);
                                 }); //抛线程出去处理
 
                                 Logger.Debug(
-                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的点播结束消息->{_task.SipDevice.DeviceId}->{_task.SipChannel.DeviceId}->Stream->{((RecordInfo.Item) _task.Obj).SsrcId}:{((RecordInfo.Item) _task.Obj).Stream}");
+                                    $"[{Common.LoggerHead}]->收到来自{remoteEndPoint}的点播结束消息->{_task.SipDevice.DeviceId}->{_task.SipChannel.DeviceId}->Stream->{((RecordInfo.RecItem) _task.Obj).SsrcId}:{((RecordInfo.RecItem) _task.Obj).Stream}");
                             }
                         }
 
@@ -852,7 +851,7 @@ namespace LibGB28181SipServer
         /// <param name="sipResponse"></param>
         /// <param name="sipChannel"></param>
         /// <returns></returns>
-        private static async Task InviteEnd(SIPResponse sipResponse, RecordInfo.Item record)
+        private static async Task InviteEnd(SIPResponse sipResponse, RecordInfo.RecItem record)
         {
             var from = sipResponse.Header.From;
             var to = sipResponse.Header.To;
@@ -933,7 +932,7 @@ namespace LibGB28181SipServer
         /// <param name="sipResponse"></param>
         /// <param name="sipChannel"></param>
         /// <returns></returns>
-        private static async Task InviteOk(SIPResponse sipResponse, RecordInfo.Item record)
+        private static async Task InviteOk(SIPResponse sipResponse, RecordInfo.RecItem record)
         {
             var from = sipResponse.Header.From;
             var to = sipResponse.Header.To;
@@ -1019,7 +1018,7 @@ namespace LibGB28181SipServer
                                 }
                                 else
                                 {
-                                    var record = (RecordInfo.Item) _task.Obj;
+                                    var record = (RecordInfo.RecItem) _task.Obj;
                                     await InviteOk(sipResponse, record);
                                     if (_task.TimeoutCheckTimer != null && _task.TimeoutCheckTimer.Enabled == true)
                                     {
@@ -1040,21 +1039,21 @@ namespace LibGB28181SipServer
                                 }
                                 else
                                 {
-                                    var record = (RecordInfo.Item) _task.Obj;
+                                    var record = (RecordInfo.RecItem) _task.Obj;
                                     await InviteEnd(sipResponse, record);
                                     var ret1 = Common.NeedResponseRequests.TryRemove(
                                         "MEDIASTATUS" + sipResponse.Header.CallId,
                                         out NeedReturnTask _task1);
                                     if (ret1 && _task1 != null)
                                     {
-                                        ((RecordInfo.Item) _task1.Obj).PushStatus = PushStatus.IDLE;
-                                        ((RecordInfo.Item) _task1.Obj).MediaServerStreamInfo = null;
+                                        ((RecordInfo.RecItem) _task1.Obj).PushStatus = PushStatus.IDLE;
+                                        ((RecordInfo.RecItem) _task1.Obj).MediaServerStreamInfo = null;
                                         Task.Run(() =>
                                         {
-                                            OnInviteHistoryVideoFinished?.Invoke((RecordInfo.Item) _task1.Obj);
+                                            OnInviteHistoryVideoFinished?.Invoke((RecordInfo.RecItem) _task1.Obj);
                                         }); //抛线程出去处理
                                         Logger.Debug(
-                                            $"[{Common.LoggerHead}]->结束点播->{_task1.SipDevice.DeviceId}->{_task1.SipChannel.DeviceId}->Stream->{((RecordInfo.Item) _task1.Obj).SsrcId}:{((RecordInfo.Item) _task1.Obj).Stream}");
+                                            $"[{Common.LoggerHead}]->结束点播->{_task1.SipDevice.DeviceId}->{_task1.SipChannel.DeviceId}->Stream->{((RecordInfo.RecItem) _task1.Obj).SsrcId}:{((RecordInfo.RecItem) _task1.Obj).Stream}");
                                     }
                                 }
 

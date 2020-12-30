@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AKStreamWeb.Attributes;
 using AKStreamWeb.Services;
 using LibCommon;
+using LibCommon.Structs;
 using LibCommon.Structs.WebRequest.AKStreamKeeper;
 using LibCommon.Structs.WebResponse.AKStreamKeeper;
 using Microsoft.AspNetCore.Mvc;
@@ -71,7 +72,7 @@ namespace AKStreamWeb.Controllers
         /// <exception cref="AkStreamException"></exception>
         [Route("GetBacklogTaskList")]
         [HttpGet]
-        public List<ResKeeperCutMergeTaskStatusResponse> GetBacklogTaskList(
+        public ResKeeperCutMergeTaskStatusResponseList GetBacklogTaskList(
             [FromHeader(Name = "AccessKey")] string AccessKey, string mediaServerId)
         {
             ResponseStruct rs;

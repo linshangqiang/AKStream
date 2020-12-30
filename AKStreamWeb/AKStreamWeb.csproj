@@ -25,4 +25,9 @@
       <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Config\AKStreamWeb.json" />
+      <_ContentIncludedByDefault Remove="Config\SipServerConfig.json" />
+    </ItemGroup>
+
 </Project>
